@@ -1,31 +1,33 @@
 # Matt Pic Grab Image
 
-按关键词或随机获取一张**可商用、可二改、无需署名**的图片，并自动保存本地文件、来源页、授权信息和风险提示。
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-默认使用 `strict_cc0` 模式：优先从 CC0 / Public Domain 来源拿图，不把 Pexels、Pixabay、Unsplash 这类平台授权误写成 CC0。
+Find a **commercial-use, editable, no-attribution-required** image by keyword or at random, then save the image locally with its source page, license metadata, and risk notes.
 
-![山水主题示例](docs/assets/example-shanshui-landscape.jpg)
+The default mode is `strict_cc0`: it prioritizes CC0 / Public Domain sources and does not mislabel Pexels, Pixabay, or Unsplash platform licenses as CC0.
 
-## 适合谁用
+<img src="docs/assets/example-shanshui-landscape.jpg" width="520" alt="Chinese landscape painting example">
 
-- 写文章、做封面、发社交平台，需要一张能放心使用的配图。
-- 做推文截图、公众号头图、Notion/Slides 背景，需要本地缓存图片。
-- 用 Codex 写内容，希望一句话拿到图片、来源、授权和本地路径。
-- 想区分「免费商用」和「CC0 / Public Domain」，不想在版权链路上糊弄自己。
+## Who This Is For
 
-## 你会得到什么
+- Writers, creators, and builders who need a usable image for covers, social posts, and article illustrations.
+- Codex users who want one prompt to return an image URL, local file path, source page, license, and risk flags.
+- Anyone who wants to separate "free commercial use" from true CC0 / Public Domain sourcing.
+- People who need reusable local image caches with metadata, not just one-off hotlinks.
 
-一次调用会返回：
+## What You Get
 
-- 高清图片 URL
-- 本地缓存路径
-- 来源页 URL
-- 授权类型和授权链接
-- 作者、馆藏或来源信息
-- 风险提示，例如人物、商标、Openverse 聚合来源提醒
-- 完整 JSON 元数据，方便之后引用和复查
+Each run returns:
 
-示例输出重点字段：
+- High-resolution image URL
+- Local cached file path
+- Source page URL
+- License name and license URL
+- Creator, collection, or source metadata
+- Risk flags such as recognizable people, trademarks, or Openverse aggregation
+- A metadata JSON file for later citation and review
+
+Important output fields:
 
 ```json
 {
@@ -41,42 +43,44 @@
 }
 ```
 
-## 安装
+## Install
 
-下载或克隆本仓库后，在仓库根目录执行：
+Download or clone this repository, then run this from the repository root:
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 ln -s "$PWD/skills/matt-pic-grab-image" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image"
 ```
 
-需要本机安装 Bun：
+You also need Bun:
 
 ```bash
 bun --version
 ```
 
-## 用 Codex 调用
+## Use With Codex
 
-直接用自然语言：
-
-```text
-使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
-```
+Ask in natural language:
 
 ```text
 Use $matt-pic-grab-image to find a CC0 history painting for an article cover.
 ```
 
 ```text
-使用 $matt-pic-grab-image 随机找一张可商用的自然风景背景图，并保存本地
+Use $matt-pic-grab-image to find a random commercially usable nature background and save it locally.
 ```
 
-Codex 会自动决定关键词 fallback、数据源顺序和返回说明。中文关键词会保留原文，同时补一个英文 fallback，提高命中率。
+Chinese prompts work well too:
 
-## 直接命令行使用
+```text
+使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
+```
 
-山水主题：
+Codex will preserve the original query and add a concise English fallback when useful.
+
+## Use From The Command Line
+
+Chinese landscape:
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -89,7 +93,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --seed shanshui-commercial-safe
 ```
 
-历史题材：
+History painting:
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -99,7 +103,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --count 1
 ```
 
-随机背景：
+Random background:
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -108,7 +112,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --orientation landscape
 ```
 
-只返回 URL 和元数据，不下载图片：
+Return URL and metadata only, without downloading:
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -117,7 +121,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --no-download
 ```
 
-也可以用 package scripts：
+Package shortcuts:
 
 ```bash
 bun run pic:shanshui
@@ -125,70 +129,29 @@ bun run pic:history
 bun run pic:random
 ```
 
-## 案例
+## Examples
 
-### 1. 中文关键词：山水
+| Skill | Use Case | Prompt / Command | Result | License Trail |
+| --- | --- | --- | --- | --- |
+| `matt-pic-grab-image` | Chinese landscape image | `使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改` | <img src="docs/assets/example-shanshui-landscape.jpg" width="220" alt="Chinese landscape painting"> | `CC0 / Public Domain`<br>The Metropolitan Museum of Art Open Access<br>`risk_flags: []` |
+| `matt-pic-grab-image` | Historical article cover | `Use $matt-pic-grab-image to find a CC0 historical painting for a cover.` | <img src="docs/assets/example-history-socrates.webp" width="220" alt="Historical painting example"> | `CC0` via Openverse metadata<br>Source URL preserved for review |
+| `matt-pic-grab-image` | Random nature background | `bun run pic:random` | <img src="docs/assets/example-mountain-landscape.jpg" width="220" alt="Mountain landscape example"> | `CC0` via Openverse metadata<br>Local cache and metadata saved |
 
-Prompt:
-
-```text
-使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
-```
-
-Result:
-
-![山水主题示例](docs/assets/example-shanshui-landscape.jpg)
-
-- 标题：Landscape
-- 来源：The Metropolitan Museum of Art Open Access
-- 授权：CC0 / Public Domain
-- 图片 URL：`https://images.metmuseum.org/CRDImages/as/original/DP156857.jpg`
-- 来源页：`https://www.metmuseum.org/art/collection/search/51378`
-- 风险提示：`risk_flags` 为空
-
-### 2. 历史题材封面
-
-Prompt:
-
-```text
-Use $matt-pic-grab-image to find a CC0 historical painting for a cover.
-```
-
-Result:
-
-![历史题材示例](docs/assets/example-history-socrates.webp)
-
-适合历史文章、读书笔记、思想史主题封面。若结果来自 Openverse，输出会保留聚合来源提醒，方便高强度商业使用前复核原始来源页。
-
-### 3. 随机自然背景
-
-Command:
-
-```bash
-bun run pic:random
-```
-
-Result:
-
-![自然背景示例](docs/assets/example-mountain-landscape.jpg)
-
-适合做文章分隔图、推文长截图背景、Slides 章节页。
-
-## 两种授权模式
+## License Modes
 
 ### `strict_cc0`
 
-默认模式。适合「版权安全优先」的内容生产。
+Default mode. Use this when copyright safety matters most.
 
-数据源：
+Sources:
 
-- Openverse：只筛 `license=cc0`
-- The Met Open Access：只取 `isPublicDomain=true`
-- Smithsonian Open Access：可选，需要 `SMITHSONIAN_API_KEY`
+- Openverse: filtered to `license=cc0`
+- The Met Open Access: filtered to `isPublicDomain=true`
+- Smithsonian Open Access: optional, requires `SMITHSONIAN_API_KEY`
 
 ### `stock_beauty`
 
-仅在你明确接受平台图库授权时使用。它更偏现代 stock-photo 审美，但不是 CC0。
+Use only when you explicitly accept platform stock licenses. This mode can produce more modern stock-photo aesthetics, but it is not CC0.
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -198,70 +161,70 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --orientation landscape
 ```
 
-需要：
+Required keys:
 
 ```bash
 PEXELS_API_KEY=
 PIXABAY_API_KEY=
 ```
 
-输出会标注为 `Pexels License` 或 `Pixabay Content License`，不会写成 CC0。
+Results are labeled as `Pexels License` or `Pixabay Content License`, never as CC0.
 
-## 参数
+## Options
 
-| 参数 | 说明 |
+| Option | Description |
 | --- | --- |
-| `--query "text"` | 关键词搜索 |
-| `--fallback-query "text"` | 备用关键词，可重复使用 |
-| `--random` | 随机拿图 |
-| `--mode strict_cc0\|stock_beauty` | 授权模式，默认 `strict_cc0` |
-| `--provider openverse,met` | 指定数据源顺序 |
-| `--orientation landscape` | 横图 |
-| `--orientation portrait` | 竖图 |
-| `--orientation square` | 方图 |
-| `--orientation any` | 不限制方向 |
-| `--count 1` | 返回数量，1 到 10 |
-| `--cache-dir PATH` | 指定缓存目录 |
-| `--no-download` | 不下载，只返回 URL 和元数据 |
-| `--seed VALUE` | 固定随机结果，方便复现 |
+| `--query "text"` | Search keyword |
+| `--fallback-query "text"` | Repeatable fallback query |
+| `--random` | Pick from safe broad subjects |
+| `--mode strict_cc0\|stock_beauty` | License mode, default `strict_cc0` |
+| `--provider openverse,met` | Override provider order |
+| `--orientation landscape` | Landscape image |
+| `--orientation portrait` | Portrait image |
+| `--orientation square` | Square image |
+| `--orientation any` | No orientation filter |
+| `--count 1` | Number of results, 1 to 10 |
+| `--cache-dir PATH` | Custom cache directory |
+| `--no-download` | Return URL and metadata without saving the image |
+| `--seed VALUE` | Make random/provider choices repeatable |
 
-## 缓存
+## Cache
 
-默认缓存目录：
+Default cache directory:
 
 ```text
 ~/.cache/matt-pic-grab-image
 ```
 
-图片文件：
+Images:
 
 ```text
 ~/.cache/matt-pic-grab-image/images/{provider}/...
 ```
 
-元数据文件：
+Metadata:
 
 ```text
 ~/.cache/matt-pic-grab-image/meta/{provider}-{id}.json
 ```
 
-可以通过环境变量覆盖：
+Override it with:
 
 ```bash
 export MATT_PIC_GRAB_CACHE_DIR="/your/cache/path"
 ```
 
-## 可选 API Key
+## Optional API Keys
 
-默认不需要 key 也能用 Openverse 和 The Met。
+Openverse and The Met work without keys by default.
 
-如果你需要更稳定或更多来源：
+For heavier usage or optional providers:
 
 ```bash
 cp .env.example .env
 ```
 
-支持：
+Supported variables:
 
 - `OPENVERSE_CLIENT_ID`
 - `OPENVERSE_CLIENT_SECRET`
@@ -270,15 +233,15 @@ cp .env.example .env
 - `PIXABAY_API_KEY`
 - `MATT_PIC_GRAB_CACHE_DIR`
 
-## 版权说明
+## Copyright Notes
 
-这个项目的代码使用 MIT License。
+This repository's code is MIT licensed.
 
-图片不由本项目授权。Skill 会尽量筛选 CC0 / Public Domain 元数据，并保存来源页与授权链接。但 CC0 / Public Domain 主要解决版权问题，不自动清除商标权、肖像权、隐私权、私人财产权或现代艺术品等额外风险。
+Images are not licensed by this repository. The skill filters for CC0 / Public Domain metadata where possible and preserves source and license URLs, but CC0 / Public Domain mainly addresses copyright. It does not automatically clear trademarks, privacy rights, publicity rights, private property rights, or rights around modern artworks.
 
-如果用于广告、商品包装、大规模商业分发等高强度用途，请打开 `source_url` 再做一次人工复核。
+For ads, packaging, large-scale commercial distribution, or other high-stakes usage, open `source_url` and review the original source page.
 
-## 验证
+## Validate
 
 ```bash
 bun run validate:pic-skill
