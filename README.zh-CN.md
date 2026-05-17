@@ -45,7 +45,15 @@
 
 ## 安装
 
-下载或克隆本仓库后，在仓库根目录执行：
+Codex 推荐安装方式：
+
+```text
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+```
+
+安装后重启 Codex，让它发现新 Skill。
+
+如果你已经把仓库 clone 到本地，也可以手动安装：
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"

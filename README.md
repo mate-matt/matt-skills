@@ -45,7 +45,15 @@ Important output fields:
 
 ## Install
 
-Download or clone this repository, then run this from the repository root:
+Recommended for Codex:
+
+```text
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+```
+
+Restart Codex after installation so it can discover the new skill.
+
+Manual install from a local clone:
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
