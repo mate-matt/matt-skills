@@ -1,0 +1,18 @@
+{
+  "name": "matt-skills",
+  "version": "0.1.0",
+  "description": "A personal open-source collection of Codex skills and skill-backed tools.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "pic:help": "bun run skills/matt-pic-grab-image/scripts/grab-image.ts --help",
+    "pic:random": "bun run skills/matt-pic-grab-image/scripts/grab-image.ts --random --mode strict_cc0 --orientation landscape",
+    "pic:shanshui": "bun run skills/matt-pic-grab-image/scripts/grab-image.ts --query '山水' --fallback-query 'Chinese landscape painting' --mode strict_cc0 --provider met,openverse --orientation landscape --count 1",
+    "pic:history": "bun run skills/matt-pic-grab-image/scripts/grab-image.ts --query 'history painting' --mode strict_cc0 --orientation landscape --count 1",
+    "validate:pic-skill": "bun run scripts/validate-skill.mjs skills/matt-pic-grab-image",
+    "validate:pic-skill:official": "python3 ${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py skills/matt-pic-grab-image"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
