@@ -6,6 +6,7 @@ export type RenderTemplate =
   | 'thread-vertical'
   | 'quote-wall';
 
+export type ArticleShotStyle = 'article-x' | 'article-clean';
 export type OutputFormat = 'png' | 'webp';
 export type ThemeName = 'light' | 'dark';
 export type MediaMode = 'none' | 'first' | 'grid' | 'mosaic' | 'full';
@@ -123,6 +124,7 @@ export interface ArticleMedia {
   mediaKey?: string;
   type: 'image' | 'video' | 'gif';
   url: string;
+  assetUrl?: string;
   width?: number;
   height?: number;
   altText?: string;
@@ -138,6 +140,8 @@ export interface SocialArticle {
   createdAt: string;
   modifiedAt?: string;
   author: SocialAuthor;
+  sourceCreatedAt?: string;
+  sourceMetrics?: SocialMetrics;
   cover?: ArticleMedia;
   blocks: ArticleBlock[];
   entities: ArticleEntity[];
@@ -166,6 +170,16 @@ export interface RenderOptions {
   maxPosts?: number;
 }
 
+export interface ArticleShotRenderOptions {
+  style: ArticleShotStyle;
+  width: number;
+  theme: ThemeName;
+  timezone: string;
+  showSourceFooter: boolean;
+  showCover: boolean;
+  showActions: boolean;
+}
+
 export interface ScreenshotOptions {
   width: number;
   scale: number;
@@ -174,6 +188,18 @@ export interface ScreenshotOptions {
   transparent: boolean;
   outPath: string;
   debugHtmlPath?: string | undefined;
+}
+
+export interface LongScreenshotOptions extends ScreenshotOptions {
+  sliceHeight?: number | undefined;
+  slicePathForIndex?: ((index: number) => string) | undefined;
+  writeLong: boolean;
+}
+
+export interface LongScreenshotResult {
+  outPath?: string | undefined;
+  slicePaths: string[];
+  cssHeight: number;
 }
 
 export interface CommonCliOptions {

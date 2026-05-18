@@ -80,6 +80,8 @@ function buildMetadata(
     preview_text: article.previewText,
     created_at: article.createdAt,
     modified_at: article.modifiedAt ?? null,
+    source_created_at: article.sourceCreatedAt ?? null,
+    source_metrics: article.sourceMetrics ?? null,
     author: {
       name: article.author.name,
       handle: article.author.handle,

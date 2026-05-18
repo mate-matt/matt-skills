@@ -312,6 +312,10 @@ function normalizeArticleResponse(raw, provider = "x") {
   };
   const modifiedAt = asString(article.modified_at);
   if (modifiedAt !== void 0) normalized.modifiedAt = modifiedAt;
+  const sourceCreatedAt = asString(status.created_at);
+  if (sourceCreatedAt !== void 0) normalized.sourceCreatedAt = sourceCreatedAt;
+  const sourceMetrics = normalizeSourceMetrics(status);
+  if (sourceMetrics !== void 0) normalized.sourceMetrics = sourceMetrics;
   if (cover !== void 0) normalized.cover = cover;
   return normalized;
 }
@@ -409,6 +413,22 @@ function normalizeArticleMedia(raw, fallbackMediaId) {
   const altText = asString(mediaInfo.ext_alt_text);
   if (altText !== void 0) media.altText = altText;
   return media;
+}
+function normalizeSourceMetrics(status) {
+  const metrics = {};
+  const replies = asNumber(status.replies);
+  const reposts = asNumber(status.reposts);
+  const quotes = asNumber(status.quotes);
+  const likes = asNumber(status.likes);
+  const views = asNumber(status.views);
+  const bookmarks = asNumber(status.bookmarks);
+  if (replies !== void 0) metrics.replies = replies;
+  if (reposts !== void 0) metrics.reposts = reposts;
+  if (quotes !== void 0) metrics.quotes = quotes;
+  if (likes !== void 0) metrics.likes = likes;
+  if (views !== void 0) metrics.views = views;
+  if (bookmarks !== void 0) metrics.bookmarks = bookmarks;
+  return Object.keys(metrics).length > 0 ? metrics : void 0;
 }
 function asRecord2(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
@@ -544,6 +564,572 @@ import path3 from "path";
 
 // src/render/renderHtml.tsx
 import { renderToStaticMarkup } from "react-dom/server";
+
+// src/render/styles/article.ts
+function buildArticleStyles(options) {
+  const dark = options.theme === "dark";
+  const colors = dark ? {
+    canvas: "#0f1419",
+    surface: "#16181c",
+    surfaceSoft: "#1f2329",
+    text: "#f7f9f9",
+    muted: "#8b98a5",
+    border: "#2f3336",
+    accent: "#1d9bf0",
+    code: "#111418"
+  } : {
+    canvas: "#f6f8fa",
+    surface: "#ffffff",
+    surfaceSoft: "#f7f9fb",
+    text: "#0f1419",
+    muted: "#536471",
+    border: "#eff3f4",
+    accent: "#1d9bf0",
+    code: "#f6f8fa"
+  };
+  return `
+:root {
+  --capture-width: ${options.width}px;
+  --canvas: ${colors.canvas};
+  --surface: ${colors.surface};
+  --surface-soft: ${colors.surfaceSoft};
+  --text: ${colors.text};
+  --muted: ${colors.muted};
+  --border: ${colors.border};
+  --accent: ${colors.accent};
+  --code: ${colors.code};
+  --shadow-soft: 0 18px 52px rgba(15, 20, 25, ${dark ? "0.38" : "0.13"});
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-width: var(--capture-width);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.capture {
+  width: var(--capture-width);
+  overflow: hidden;
+}
+
+.article-shot {
+  background: var(--surface);
+}
+
+.article-x {
+  padding: 0 20px 20px;
+}
+
+.article-clean {
+  padding: 34px 38px 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+}
+
+.article-topbar {
+  height: 58px;
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: center;
+  gap: 12px;
+}
+
+.article-topbar-title {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.article-topbar-icon {
+  width: 28px;
+  height: 28px;
+  stroke: var(--text);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.article-author-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+  min-width: 0;
+}
+
+.article-author-identity,
+.article-clean-byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.article-clean-byline {
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-author-identity .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e6ecf0, #cfd9de);
+  color: #42515c;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.article-author-identity .avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.article-author-text {
+  min-width: 0;
+}
+
+.article-author-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.article-author-name {
+  font-size: 19px;
+  line-height: 1.18;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.article-author-handle,
+.article-meta {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.verified {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.verified-rosette {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.verified-rosette svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rosette-shape {
+  fill: var(--accent);
+}
+
+.rosette-check {
+  fill: none;
+  stroke: white;
+  stroke-width: 2.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.article-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.article-boost-button,
+.article-icon-button {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  padding: 0;
+}
+
+.article-boost-button {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 18px;
+  line-height: 42px;
+  font-weight: 800;
+}
+
+.article-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 36px;
+  color: var(--text);
+}
+
+.article-icon-button svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+.article-more-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--muted);
+}
+
+.article-more-button span {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.article-clean-kicker {
+  color: var(--accent);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.article-cover {
+  position: relative;
+  margin-top: 28px;
+  aspect-ratio: 2 / 0.8;
+  overflow: hidden;
+  background: var(--surface-soft);
+}
+
+.article-clean .article-cover {
+  margin-top: 0;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.article-cover img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.article-inline-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.article-title {
+  margin: 52px 0 28px;
+  color: var(--text);
+  font-size: 38px;
+  line-height: 1.16;
+  font-weight: 900;
+}
+
+.article-clean .article-title {
+  margin: 28px 0 18px;
+  font-size: 36px;
+  line-height: 1.18;
+}
+
+.article-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.15fr 1fr 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.article-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  height: 30px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.article-action.is-highlighted {
+  color: #f91880;
+}
+
+.article-action svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+}
+
+.article-meta {
+  margin: 0 0 28px;
+}
+
+.article-clean-byline .article-meta {
+  margin: 0;
+}
+
+.article-body {
+  padding-top: 0;
+}
+
+.article-paragraph,
+.article-list-item,
+.article-blockquote,
+.article-embed-link,
+.article-markdown {
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1.76;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.article-paragraph {
+  margin: 0 0 28px;
+}
+
+.article-heading,
+.article-heading-one,
+.article-subheading {
+  color: var(--text);
+  font-weight: 900;
+  line-height: 1.26;
+}
+
+.article-heading,
+.article-heading-one {
+  margin: 46px 0 18px;
+  font-size: 29px;
+}
+
+.article-subheading {
+  margin: 34px 0 14px;
+  font-size: 24px;
+}
+
+.article-list-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.article-list-marker {
+  text-align: center;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.article-blockquote {
+  margin: 28px 0;
+  padding: 8px 0 8px 20px;
+  border-left: 4px solid var(--border);
+  color: var(--text);
+}
+
+.article-link {
+  color: var(--accent);
+}
+
+.article-paragraph code,
+.article-list-item code,
+.article-blockquote code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.06em 0.28em;
+}
+
+.article-media {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  margin: 30px 0 34px;
+}
+
+.article-media-count-2,
+.article-media-count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.article-media-count-3 {
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.article-media-count-3 .article-inline-image:first-child {
+  grid-row: span 2;
+}
+
+.article-inline-image {
+  position: relative;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface-soft);
+}
+
+.article-media-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: white;
+  background: rgba(15, 20, 25, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.article-code,
+.article-markdown {
+  position: relative;
+  margin: 28px 0 34px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--code);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.62;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.article-code code {
+  font-family: inherit;
+}
+
+.article-code-language {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.article-embed-link {
+  margin: 24px 0 30px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.source-footer {
+  margin-top: 34px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .article-x {
+    padding: 0 18px 18px;
+  }
+
+  .article-clean {
+    padding: 28px 24px 24px;
+    border-radius: 14px;
+  }
+
+  .article-title {
+    font-size: 34px;
+  }
+
+  .article-paragraph,
+  .article-list-item,
+  .article-blockquote,
+  .article-markdown {
+    font-size: 21px;
+  }
+}
+`;
+}
 
 // src/render/styles/base.ts
 function buildStyles(options) {
@@ -1192,30 +1778,6 @@ a {
 `;
 }
 
-// src/render/templates/components/MediaGrid.tsx
-import { jsx, jsxs } from "react/jsx-runtime";
-function MediaGrid({ media, mode }) {
-  const selected = selectMedia(media, mode);
-  if (selected.length === 0) return null;
-  return /* @__PURE__ */ jsx("div", { className: `media-grid count-${Math.min(selected.length, 4)}`, children: selected.slice(0, 4).map((item, index) => {
-    const imageSrc = item.thumbnailAssetUrl ?? item.assetUrl ?? item.thumbnailUrl ?? item.url;
-    const badge = item.type === "video" ? "Video" : item.type === "gif" ? "GIF" : item.type === "external" ? "Link" : null;
-    return /* @__PURE__ */ jsxs("div", { className: "media-item", children: [
-      /* @__PURE__ */ jsx("img", { src: imageSrc, alt: item.altText ?? "" }),
-      badge ? /* @__PURE__ */ jsx("span", { className: "media-badge", children: badge }) : null
-    ] }, `${item.url}-${index}`);
-  }) });
-}
-function selectMedia(media, mode) {
-  if (mode === "none") return [];
-  const nonMosaic = media.filter((item) => item.type !== "mosaic");
-  const mosaic = media.find((item) => item.type === "mosaic");
-  if (mode === "mosaic") return mosaic ? [mosaic] : nonMosaic.slice(0, 4);
-  if (mode === "first") return nonMosaic.slice(0, 1);
-  if (mode === "full") return nonMosaic.length > 0 ? nonMosaic : media;
-  return nonMosaic.length > 0 ? nonMosaic.slice(0, 4) : media.slice(0, 1);
-}
-
 // src/utils/format.ts
 function formatMetric(value) {
   if (value === void 0 || Number.isNaN(value)) return "";
@@ -1293,11 +1855,11 @@ function trimNumber(value) {
 }
 
 // src/render/templates/components/Avatar.tsx
-import { jsx as jsx2 } from "react/jsx-runtime";
+import { jsx } from "react/jsx-runtime";
 function Avatar({ author }) {
   const src = author.avatarAssetUrl ?? author.avatarUrl;
   const initials = getInitials(author.name || author.handle);
-  return /* @__PURE__ */ jsx2("div", { className: "avatar", "aria-label": `${author.name} avatar`, children: src ? /* @__PURE__ */ jsx2("img", { src, alt: "" }) : /* @__PURE__ */ jsx2("span", { children: initials }) });
+  return /* @__PURE__ */ jsx("div", { className: "avatar", "aria-label": `${author.name} avatar`, children: src ? /* @__PURE__ */ jsx("img", { src, alt: "" }) : /* @__PURE__ */ jsx("span", { children: initials }) });
 }
 function getInitials(value) {
   const cleaned = value.trim().replace(/^@/, "");
@@ -1307,43 +1869,396 @@ function getInitials(value) {
   return cleaned.slice(0, 2).toUpperCase();
 }
 
+// src/render/templates/components/SourceFooter.tsx
+import { jsxs } from "react/jsx-runtime";
+function SourceFooter({ post }) {
+  const label = post.sourceLabel ?? post.provider;
+  const url = truncateMiddle(compactUrl(post.url), 88);
+  return /* @__PURE__ */ jsxs("div", { className: "source-footer", children: [
+    "Source: ",
+    label,
+    " / @",
+    post.author.handle,
+    " \xB7 ",
+    url
+  ] });
+}
+
 // src/render/templates/components/VerificationBadge.tsx
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 function VerificationBadge({ author }) {
   if (!author.verified) return null;
   const isBlueVerified = author.verificationType === void 0 || author.verificationType === null || author.verificationType === "individual";
   if (!isBlueVerified) {
-    return /* @__PURE__ */ jsx3("span", { className: "verified verified-standard", children: "\u2713" });
+    return /* @__PURE__ */ jsx2("span", { className: "verified verified-standard", children: "\u2713" });
   }
-  return /* @__PURE__ */ jsx3("span", { className: "verified-rosette", "aria-label": "Verified account", children: /* @__PURE__ */ jsxs2("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
-    /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsx2("span", { className: "verified-rosette", "aria-label": "Verified account", children: /* @__PURE__ */ jsxs2("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx2(
       "path",
       {
         className: "rosette-shape",
         d: "M12 1.9 14.1 4l2.9-.7 1 2.8 2.8 1-.7 2.9 2.1 2.1-2.1 2.1.7 2.9-2.8 1-1 2.8-2.9-.7L12 22.1 9.9 20l-2.9.7-1-2.8-2.8-1 .7-2.9-2.1-2.1L3.9 10l-.7-2.9 2.8-1 1-2.8 2.9.7L12 1.9Z"
       }
     ),
-    /* @__PURE__ */ jsx3("path", { className: "rosette-check", d: "m8.3 12.2 2.3 2.3 5.2-5.4" })
+    /* @__PURE__ */ jsx2("path", { className: "rosette-check", d: "m8.3 12.2 2.3 2.3 5.2-5.4" })
   ] }) });
 }
 
-// src/render/templates/components/PostHeader.tsx
-import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
-function PostHeader({ post, timezone, showTimestamp, compact = false, showAvatar = true, actions }) {
-  return /* @__PURE__ */ jsxs3("div", { className: `header-row${showAvatar ? "" : " no-avatar"}`, children: [
-    showAvatar ? /* @__PURE__ */ jsx4(Avatar, { author: post.author }) : null,
-    /* @__PURE__ */ jsxs3("div", { className: "author-block", children: [
-      /* @__PURE__ */ jsxs3("div", { className: "author-line", children: [
-        /* @__PURE__ */ jsx4("span", { className: "author-name", children: post.author.name }),
-        /* @__PURE__ */ jsx4(VerificationBadge, { author: post.author })
+// src/render/templates/ArticleShot.tsx
+import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
+function ArticleShot({ article, options }) {
+  return /* @__PURE__ */ jsxs3("article", { className: `capture article-shot ${options.style}`, "data-capture": true, children: [
+    options.style === "article-x" ? /* @__PURE__ */ jsx3(ArticleXChrome, { article, options }) : /* @__PURE__ */ jsx3(ArticleCleanChrome, { article, options }),
+    options.showSourceFooter ? /* @__PURE__ */ jsx3(ArticleSourceFooter, { article }) : null
+  ] });
+}
+function ArticleXChrome({ article, options }) {
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
+    /* @__PURE__ */ jsxs3("div", { className: "article-topbar", children: [
+      /* @__PURE__ */ jsx3(Icon, { name: "back" }),
+      /* @__PURE__ */ jsx3("div", { className: "article-topbar-title", children: "Article" }),
+      /* @__PURE__ */ jsx3(Icon, { name: "expand" })
+    ] }),
+    /* @__PURE__ */ jsx3(ArticleAuthorRow, { article, showActions: options.showActions }),
+    /* @__PURE__ */ jsx3(ArticleCover, { article, showCover: options.showCover }),
+    /* @__PURE__ */ jsx3("h1", { className: "article-title", children: article.title }),
+    options.showActions ? /* @__PURE__ */ jsx3(ArticleActionBar, { article }) : null,
+    /* @__PURE__ */ jsx3(ArticleMeta, { article, timezone: options.timezone }),
+    /* @__PURE__ */ jsx3(ArticleBody, { article })
+  ] });
+}
+function ArticleCleanChrome({ article, options }) {
+  return /* @__PURE__ */ jsxs3(Fragment, { children: [
+    /* @__PURE__ */ jsx3("div", { className: "article-clean-kicker", children: "X Article" }),
+    /* @__PURE__ */ jsx3(ArticleCover, { article, showCover: options.showCover }),
+    /* @__PURE__ */ jsx3("h1", { className: "article-title", children: article.title }),
+    /* @__PURE__ */ jsxs3("div", { className: "article-clean-byline", children: [
+      /* @__PURE__ */ jsx3(ArticleAuthorIdentity, { article }),
+      /* @__PURE__ */ jsx3(ArticleMeta, { article, timezone: options.timezone })
+    ] }),
+    /* @__PURE__ */ jsx3(ArticleBody, { article })
+  ] });
+}
+function ArticleAuthorRow({ article, showActions }) {
+  return /* @__PURE__ */ jsxs3("div", { className: "article-author-row", children: [
+    /* @__PURE__ */ jsx3(ArticleAuthorIdentity, { article }),
+    showActions ? /* @__PURE__ */ jsxs3("div", { className: "article-header-actions", children: [
+      /* @__PURE__ */ jsx3("button", { className: "article-boost-button", type: "button", children: "Boost" }),
+      /* @__PURE__ */ jsx3("button", { className: "article-icon-button", type: "button", "aria-label": "Grok", children: /* @__PURE__ */ jsx3(GrokIcon, {}) }),
+      /* @__PURE__ */ jsxs3("button", { className: "article-icon-button article-more-button", type: "button", "aria-label": "More", children: [
+        /* @__PURE__ */ jsx3("span", {}),
+        /* @__PURE__ */ jsx3("span", {}),
+        /* @__PURE__ */ jsx3("span", {})
+      ] })
+    ] }) : null
+  ] });
+}
+function ArticleAuthorIdentity({ article }) {
+  return /* @__PURE__ */ jsxs3("div", { className: "article-author-identity", children: [
+    /* @__PURE__ */ jsx3(Avatar, { author: article.author }),
+    /* @__PURE__ */ jsxs3("div", { className: "article-author-text", children: [
+      /* @__PURE__ */ jsxs3("div", { className: "article-author-name-line", children: [
+        /* @__PURE__ */ jsx3("span", { className: "article-author-name", children: article.author.name }),
+        /* @__PURE__ */ jsx3(VerificationBadge, { author: article.author })
       ] }),
-      /* @__PURE__ */ jsxs3("div", { className: "meta-line", children: [
+      /* @__PURE__ */ jsxs3("div", { className: "article-author-handle", children: [
+        "@",
+        article.author.handle
+      ] })
+    ] })
+  ] });
+}
+function ArticleCover({ article, showCover }) {
+  if (!showCover || !article.cover) return null;
+  return /* @__PURE__ */ jsx3(ArticleImage, { media: article.cover, className: "article-cover", altFallback: "cover" });
+}
+function ArticleBody({ article }) {
+  const entityMap = new Map(article.entities.map((entity) => [entity.key, entity]));
+  const mediaMap = new Map(article.media.map((media) => [media.mediaId, media]));
+  const nodes = [];
+  let orderedIndex = 1;
+  for (let index = 0; index < article.blocks.length; index += 1) {
+    const block = article.blocks[index];
+    if (!block) continue;
+    const rendered = renderBlock2(block, entityMap, mediaMap, orderedIndex);
+    if (rendered === null) continue;
+    nodes.push(/* @__PURE__ */ jsx3(BlockWrapper, { children: rendered }, block.key ?? index));
+    orderedIndex = block.type === "ordered-list-item" ? orderedIndex + 1 : 1;
+  }
+  return /* @__PURE__ */ jsx3("div", { className: "article-body", children: nodes });
+}
+function BlockWrapper({ children }) {
+  return /* @__PURE__ */ jsx3(Fragment, { children });
+}
+function renderBlock2(block, entityMap, mediaMap, orderedIndex) {
+  if (block.type === "atomic") return renderAtomicBlock2(block, entityMap, mediaMap);
+  const text = renderInlineText2(block, entityMap);
+  if (text.length === 0) return null;
+  switch (block.type) {
+    case "header-one":
+      return /* @__PURE__ */ jsx3("h2", { className: "article-heading article-heading-one", children: text });
+    case "header-two":
+      return /* @__PURE__ */ jsx3("h2", { className: "article-heading", children: text });
+    case "header-three":
+    case "header-four":
+    case "header-five":
+    case "header-six":
+      return /* @__PURE__ */ jsx3("h3", { className: "article-subheading", children: text });
+    case "unordered-list-item":
+      return /* @__PURE__ */ jsxs3("div", { className: "article-list-item", children: [
+        /* @__PURE__ */ jsx3("span", { className: "article-list-marker", children: "\u2022" }),
+        /* @__PURE__ */ jsx3("div", { children: text })
+      ] });
+    case "ordered-list-item":
+      return /* @__PURE__ */ jsxs3("div", { className: "article-list-item", children: [
+        /* @__PURE__ */ jsxs3("span", { className: "article-list-marker", children: [
+          orderedIndex,
+          "."
+        ] }),
+        /* @__PURE__ */ jsx3("div", { children: text })
+      ] });
+    case "blockquote":
+      return /* @__PURE__ */ jsx3("blockquote", { className: "article-blockquote", children: text });
+    case "code-block":
+      return /* @__PURE__ */ jsx3("pre", { className: "article-code", children: /* @__PURE__ */ jsx3("code", { children: block.text }) });
+    default:
+      return /* @__PURE__ */ jsx3("p", { className: "article-paragraph", children: text });
+  }
+}
+function renderAtomicBlock2(block, entityMap, mediaMap) {
+  const range = block.entityRanges[0];
+  if (!range) return null;
+  const entity = entityMap.get(String(range.key));
+  if (!entity) return null;
+  if (entity.type === "MEDIA") {
+    const mediaItems = Array.isArray(entity.data.mediaItems) ? entity.data.mediaItems : [];
+    const images = mediaItems.map((item) => {
+      const mediaId = asRecord3(item).mediaId;
+      return typeof mediaId === "string" ? mediaMap.get(mediaId) : void 0;
+    }).filter(isDefined2);
+    if (images.length === 0) return null;
+    return /* @__PURE__ */ jsx3("figure", { className: `article-media article-media-count-${Math.min(images.length, 4)}`, children: images.map((media) => /* @__PURE__ */ jsx3(ArticleImage, { media, className: "article-inline-image" }, media.mediaId)) });
+  }
+  if (entity.type === "MARKDOWN") {
+    const markdown = entity.data.markdown;
+    return typeof markdown === "string" && markdown.trim().length > 0 ? /* @__PURE__ */ jsx3(MarkdownBlock, { markdown }) : null;
+  }
+  if (entity.type === "TWEET") {
+    const tweetId = entity.data.tweetId;
+    return typeof tweetId === "string" ? /* @__PURE__ */ jsxs3("div", { className: "article-embed-link", children: [
+      "https://x.com/i/status/",
+      tweetId
+    ] }) : null;
+  }
+  return null;
+}
+function MarkdownBlock({ markdown }) {
+  const parsed = parseCodeFence(markdown);
+  if (parsed) {
+    return /* @__PURE__ */ jsxs3("pre", { className: "article-code", children: [
+      parsed.language ? /* @__PURE__ */ jsx3("span", { className: "article-code-language", children: parsed.language }) : null,
+      /* @__PURE__ */ jsx3("code", { children: parsed.code })
+    ] });
+  }
+  return /* @__PURE__ */ jsx3("pre", { className: "article-markdown", children: markdown.trimEnd() });
+}
+function ArticleImage({ media, className, altFallback }) {
+  const src = media.assetUrl ?? media.url;
+  const alt = media.altText ?? altFallback ?? "";
+  return /* @__PURE__ */ jsxs3("div", { className, children: [
+    /* @__PURE__ */ jsx3("img", { src, alt }),
+    media.type !== "image" ? /* @__PURE__ */ jsx3("span", { className: "article-media-badge", children: media.type }) : null
+  ] });
+}
+function renderInlineText2(block, entityMap) {
+  const text = block.text;
+  if (text.length === 0) return [];
+  const boundaries = /* @__PURE__ */ new Set([0, text.length]);
+  for (const range of block.inlineStyleRanges) {
+    boundaries.add(clamp2(range.offset, 0, text.length));
+    boundaries.add(clamp2(range.offset + range.length, 0, text.length));
+  }
+  for (const range of block.entityRanges) {
+    boundaries.add(clamp2(range.offset, 0, text.length));
+    boundaries.add(clamp2(range.offset + range.length, 0, text.length));
+  }
+  const points = [...boundaries].sort((a, b) => a - b);
+  const nodes = [];
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index] ?? 0;
+    const end = points[index + 1] ?? start;
+    if (end <= start) continue;
+    const segment = text.slice(start, end);
+    const activeStyles = block.inlineStyleRanges.filter((range) => range.offset <= start && range.offset + range.length >= end);
+    const activeEntityRange = block.entityRanges.find((range) => range.offset <= start && range.offset + range.length >= end);
+    const entity = activeEntityRange ? entityMap.get(String(activeEntityRange.key)) : void 0;
+    nodes.push(renderInlineSegment(segment, activeStyles.map((range) => range.style), entity, `${start}-${end}`));
+  }
+  return nodes;
+}
+function renderInlineSegment(segment, styles, entity, key) {
+  const normalized = new Set(styles.map((style) => style.toUpperCase()));
+  let node = segment;
+  if (normalized.has("CODE")) node = /* @__PURE__ */ jsx3("code", { children: node });
+  if (normalized.has("BOLD")) node = /* @__PURE__ */ jsx3("strong", { children: node });
+  if (normalized.has("ITALIC")) node = /* @__PURE__ */ jsx3("em", { children: node });
+  if (normalized.has("STRIKETHROUGH")) node = /* @__PURE__ */ jsx3("s", { children: node });
+  if (entity?.type === "LINK" && typeof entity.data.url === "string") {
+    node = /* @__PURE__ */ jsx3("a", { className: "article-link", href: entity.data.url, children: node });
+  }
+  return /* @__PURE__ */ jsx3("span", { children: node }, key);
+}
+function ArticleActionBar({ article }) {
+  const metrics = article.sourceMetrics;
+  const reposts = (metrics?.reposts ?? 0) + (metrics?.quotes ?? 0);
+  return /* @__PURE__ */ jsxs3("div", { className: "article-actions", children: [
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Replies", value: metrics?.replies, icon: "reply" }),
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Reposts", value: reposts || void 0, icon: "repost" }),
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Likes", value: metrics?.likes, icon: "like", highlight: true }),
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Views", value: metrics?.views, icon: "views" }),
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Bookmarks", value: metrics?.bookmarks, icon: "bookmark" }),
+    /* @__PURE__ */ jsx3(ArticleAction, { label: "Share", icon: "share" })
+  ] });
+}
+function ArticleAction({
+  label,
+  value,
+  icon,
+  highlight = false
+}) {
+  return /* @__PURE__ */ jsxs3("div", { className: `article-action ${highlight ? "is-highlighted" : ""}`, "aria-label": label, children: [
+    /* @__PURE__ */ jsx3(ActionIcon, { name: icon }),
+    value !== void 0 ? /* @__PURE__ */ jsx3("span", { children: formatCompactMetric(value) }) : null
+  ] });
+}
+function ArticleMeta({ article, timezone }) {
+  const date = article.sourceCreatedAt ?? article.createdAt;
+  return /* @__PURE__ */ jsx3("div", { className: "article-meta", children: formatPostDetailDate(date, timezone) });
+}
+function ArticleSourceFooter({ article }) {
+  return /* @__PURE__ */ jsx3(
+    SourceFooter,
+    {
+      post: {
+        provider: article.provider,
+        id: article.sourcePostId,
+        url: article.sourceUrl,
+        text: article.title,
+        createdAt: article.sourceCreatedAt ?? article.createdAt,
+        author: article.author,
+        media: [],
+        sourceLabel: article.provider === "x" ? "X" : article.provider
+      }
+    }
+  );
+}
+function Icon({ name }) {
+  if (name === "back") {
+    return /* @__PURE__ */ jsxs3("svg", { className: "article-topbar-icon", viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsx3("path", { d: "M20 12H5" }),
+      /* @__PURE__ */ jsx3("path", { d: "m12 5-7 7 7 7" })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs3("svg", { className: "article-topbar-icon", viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx3("path", { d: "M8 3H3v5" }),
+    /* @__PURE__ */ jsx3("path", { d: "M3 3l7 7" }),
+    /* @__PURE__ */ jsx3("path", { d: "M16 21h5v-5" }),
+    /* @__PURE__ */ jsx3("path", { d: "m21 21-7-7" })
+  ] });
+}
+function GrokIcon() {
+  return /* @__PURE__ */ jsx3("svg", { viewBox: "0 0 33 32", "aria-hidden": "true", children: /* @__PURE__ */ jsx3("path", { d: "M12.745 20.54l10.97-8.19c.539-.4 1.307-.244 1.564.38 1.349 3.288.746 7.241-1.938 9.955-2.683 2.714-6.417 3.31-9.83 1.954l-3.728 1.745c5.347 3.697 11.84 2.782 15.898-1.324 3.219-3.255 4.216-7.692 3.284-11.693l.008.009c-1.351-5.878.332-8.227 3.782-13.031L33 0l-4.54 4.59v-.014L12.743 20.544m-2.263 1.987c-3.837-3.707-3.175-9.446.1-12.755 2.42-2.449 6.388-3.448 9.852-1.979l3.72-1.737c-.67-.49-1.53-1.017-2.515-1.387-4.455-1.854-9.789-.931-13.41 2.728-3.483 3.523-4.579 8.94-2.697 13.561 1.405 3.454-.899 5.898-3.22 8.364C1.49 30.2.666 31.074 0 32l10.478-9.466" }) });
+}
+function ActionIcon({ name }) {
+  if (name === "reply") {
+    return /* @__PURE__ */ jsx3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx3("path", { d: "M20 12a7.5 7.5 0 0 1-7.9 7.5 8.3 8.3 0 0 1-3.2-.8L4 20l1.4-4.4A7.3 7.3 0 0 1 4 12a7.5 7.5 0 0 1 8-7.5 7.5 7.5 0 0 1 8 7.5Z" }) });
+  }
+  if (name === "repost") {
+    return /* @__PURE__ */ jsxs3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsx3("path", { d: "M17 3l3 3-3 3" }),
+      /* @__PURE__ */ jsx3("path", { d: "M4 11V8a2 2 0 0 1 2-2h14" }),
+      /* @__PURE__ */ jsx3("path", { d: "M7 21l-3-3 3-3" }),
+      /* @__PURE__ */ jsx3("path", { d: "M20 13v3a2 2 0 0 1-2 2H4" })
+    ] });
+  }
+  if (name === "like") {
+    return /* @__PURE__ */ jsx3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx3("path", { d: "M20.5 8.9c0 5.1-8.5 10.2-8.5 10.2S3.5 14 3.5 8.9A4.4 4.4 0 0 1 8 4.5a5 5 0 0 1 4 2 5 5 0 0 1 4-2 4.4 4.4 0 0 1 4.5 4.4Z" }) });
+  }
+  if (name === "views") {
+    return /* @__PURE__ */ jsxs3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsx3("path", { d: "M4 20V10" }),
+      /* @__PURE__ */ jsx3("path", { d: "M10 20V4" }),
+      /* @__PURE__ */ jsx3("path", { d: "M16 20v-7" }),
+      /* @__PURE__ */ jsx3("path", { d: "M22 20V8" })
+    ] });
+  }
+  if (name === "bookmark") {
+    return /* @__PURE__ */ jsx3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx3("path", { d: "M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" }) });
+  }
+  return /* @__PURE__ */ jsxs3("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx3("path", { d: "M12 4v11" }),
+    /* @__PURE__ */ jsx3("path", { d: "M8 8l4-4 4 4" }),
+    /* @__PURE__ */ jsx3("path", { d: "M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" })
+  ] });
+}
+function parseCodeFence(markdown) {
+  const match = markdown.trim().match(/^```([A-Za-z0-9_-]+)?\n([\s\S]*?)\n?```$/);
+  if (!match) return void 0;
+  const language = match[1];
+  const code = match[2] ?? "";
+  return language ? { language, code } : { code };
+}
+function asRecord3(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value) ? value : {};
+}
+function isDefined2(value) {
+  return value !== void 0;
+}
+function clamp2(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+// src/render/templates/components/MediaGrid.tsx
+import { jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
+function MediaGrid({ media, mode }) {
+  const selected = selectMedia(media, mode);
+  if (selected.length === 0) return null;
+  return /* @__PURE__ */ jsx4("div", { className: `media-grid count-${Math.min(selected.length, 4)}`, children: selected.slice(0, 4).map((item, index) => {
+    const imageSrc = item.thumbnailAssetUrl ?? item.assetUrl ?? item.thumbnailUrl ?? item.url;
+    const badge = item.type === "video" ? "Video" : item.type === "gif" ? "GIF" : item.type === "external" ? "Link" : null;
+    return /* @__PURE__ */ jsxs4("div", { className: "media-item", children: [
+      /* @__PURE__ */ jsx4("img", { src: imageSrc, alt: item.altText ?? "" }),
+      badge ? /* @__PURE__ */ jsx4("span", { className: "media-badge", children: badge }) : null
+    ] }, `${item.url}-${index}`);
+  }) });
+}
+function selectMedia(media, mode) {
+  if (mode === "none") return [];
+  const nonMosaic = media.filter((item) => item.type !== "mosaic");
+  const mosaic = media.find((item) => item.type === "mosaic");
+  if (mode === "mosaic") return mosaic ? [mosaic] : nonMosaic.slice(0, 4);
+  if (mode === "first") return nonMosaic.slice(0, 1);
+  if (mode === "full") return nonMosaic.length > 0 ? nonMosaic : media;
+  return nonMosaic.length > 0 ? nonMosaic.slice(0, 4) : media.slice(0, 1);
+}
+
+// src/render/templates/components/PostHeader.tsx
+import { jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
+function PostHeader({ post, timezone, showTimestamp, compact = false, showAvatar = true, actions }) {
+  return /* @__PURE__ */ jsxs5("div", { className: `header-row${showAvatar ? "" : " no-avatar"}`, children: [
+    showAvatar ? /* @__PURE__ */ jsx5(Avatar, { author: post.author }) : null,
+    /* @__PURE__ */ jsxs5("div", { className: "author-block", children: [
+      /* @__PURE__ */ jsxs5("div", { className: "author-line", children: [
+        /* @__PURE__ */ jsx5("span", { className: "author-name", children: post.author.name }),
+        /* @__PURE__ */ jsx5(VerificationBadge, { author: post.author })
+      ] }),
+      /* @__PURE__ */ jsxs5("div", { className: "meta-line", children: [
         "@",
         post.author.handle,
         showTimestamp ? ` \xB7 ${formatPostDate(post.createdAt, timezone, compact ? "short" : "long")}` : null
       ] })
     ] }),
-    actions ? /* @__PURE__ */ jsx4("div", { className: "header-actions", children: actions }) : null
+    actions ? /* @__PURE__ */ jsx5("div", { className: "header-actions", children: actions }) : null
   ] });
 }
 
@@ -1354,76 +2269,61 @@ function postBodyText(post, translatedText) {
 }
 
 // src/render/templates/components/PostText.tsx
-import { Fragment, jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 function PostText({ post, className = "post-text", showTranslation, translatedText }) {
-  return /* @__PURE__ */ jsxs4(Fragment, { children: [
-    /* @__PURE__ */ jsx5("p", { className, children: postBodyText(post, translatedText) }),
-    showTranslation && !translatedText && post.translation?.text ? /* @__PURE__ */ jsxs4("div", { className: "translation-box", children: [
-      /* @__PURE__ */ jsx5("div", { className: "translation-label", children: "Translation" }),
+  return /* @__PURE__ */ jsxs6(Fragment2, { children: [
+    /* @__PURE__ */ jsx6("p", { className, children: postBodyText(post, translatedText) }),
+    showTranslation && !translatedText && post.translation?.text ? /* @__PURE__ */ jsxs6("div", { className: "translation-box", children: [
+      /* @__PURE__ */ jsx6("div", { className: "translation-label", children: "Translation" }),
       post.translation.text
     ] }) : null,
-    post.communityNote?.text ? /* @__PURE__ */ jsxs4("div", { className: "community-note", children: [
-      /* @__PURE__ */ jsx5("div", { className: "note-label", children: "Community note" }),
+    post.communityNote?.text ? /* @__PURE__ */ jsxs6("div", { className: "community-note", children: [
+      /* @__PURE__ */ jsx6("div", { className: "note-label", children: "Community note" }),
       post.communityNote.text
     ] }) : null
   ] });
 }
 
 // src/render/templates/components/QuotedPost.tsx
-import { jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
 function QuotedPost({ post, timezone, mediaMode, translatedText }) {
   if (!post) return null;
-  return /* @__PURE__ */ jsxs5("div", { className: "quote-card", children: [
-    /* @__PURE__ */ jsx6(PostHeader, { post, timezone, showTimestamp: false, compact: true }),
-    /* @__PURE__ */ jsx6("div", { className: "quote-text", children: postBodyText(post, translatedText) }),
-    /* @__PURE__ */ jsx6(MediaGrid, { media: post.media, mode: mediaMode === "none" ? "none" : "first" })
-  ] });
-}
-
-// src/render/templates/components/SourceFooter.tsx
-import { jsxs as jsxs6 } from "react/jsx-runtime";
-function SourceFooter({ post }) {
-  const label = post.sourceLabel ?? post.provider;
-  const url = truncateMiddle(compactUrl(post.url), 88);
-  return /* @__PURE__ */ jsxs6("div", { className: "source-footer", children: [
-    "Source: ",
-    label,
-    " / @",
-    post.author.handle,
-    " \xB7 ",
-    url
+  return /* @__PURE__ */ jsxs7("div", { className: "quote-card", children: [
+    /* @__PURE__ */ jsx7(PostHeader, { post, timezone, showTimestamp: false, compact: true }),
+    /* @__PURE__ */ jsx7("div", { className: "quote-text", children: postBodyText(post, translatedText) }),
+    /* @__PURE__ */ jsx7(MediaGrid, { media: post.media, mode: mediaMode === "none" ? "none" : "first" })
   ] });
 }
 
 // src/render/templates/PostClean.tsx
-import { jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs8 } from "react/jsx-runtime";
 function PostClean({ post, options }) {
-  return /* @__PURE__ */ jsxs7("article", { className: "capture post-clean", "data-capture": true, children: [
-    /* @__PURE__ */ jsx7("div", { className: "clean-kicker", children: "Source quotation" }),
-    /* @__PURE__ */ jsx7(PostText, { post, className: "clean-text", showTranslation: options.showTranslation, translatedText: options.translatedText }),
-    /* @__PURE__ */ jsx7(MediaGrid, { media: post.media, mode: options.mediaMode === "grid" ? "first" : options.mediaMode }),
-    /* @__PURE__ */ jsx7(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
-    /* @__PURE__ */ jsx7("div", { className: "clean-author", children: /* @__PURE__ */ jsx7(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp }) }),
-    options.showSourceFooter ? /* @__PURE__ */ jsx7(SourceFooter, { post }) : null
+  return /* @__PURE__ */ jsxs8("article", { className: "capture post-clean", "data-capture": true, children: [
+    /* @__PURE__ */ jsx8("div", { className: "clean-kicker", children: "Source quotation" }),
+    /* @__PURE__ */ jsx8(PostText, { post, className: "clean-text", showTranslation: options.showTranslation, translatedText: options.translatedText }),
+    /* @__PURE__ */ jsx8(MediaGrid, { media: post.media, mode: options.mediaMode === "grid" ? "first" : options.mediaMode }),
+    /* @__PURE__ */ jsx8(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
+    /* @__PURE__ */ jsx8("div", { className: "clean-author", children: /* @__PURE__ */ jsx8(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp }) }),
+    options.showSourceFooter ? /* @__PURE__ */ jsx8(SourceFooter, { post }) : null
   ] });
 }
 
 // src/render/templates/components/Poll.tsx
-import { jsx as jsx8, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs9 } from "react/jsx-runtime";
 function Poll({ poll }) {
   if (!poll) return null;
-  return /* @__PURE__ */ jsxs8("div", { className: "poll", children: [
-    poll.choices.map((choice) => /* @__PURE__ */ jsxs8("div", { className: "poll-choice", children: [
-      /* @__PURE__ */ jsx8("div", { className: "poll-fill", style: { width: `${Math.max(0, Math.min(100, choice.percentage))}%` } }),
-      /* @__PURE__ */ jsxs8("div", { className: "poll-label", children: [
-        /* @__PURE__ */ jsx8("span", { children: choice.label }),
-        /* @__PURE__ */ jsxs8("span", { children: [
+  return /* @__PURE__ */ jsxs9("div", { className: "poll", children: [
+    poll.choices.map((choice) => /* @__PURE__ */ jsxs9("div", { className: "poll-choice", children: [
+      /* @__PURE__ */ jsx9("div", { className: "poll-fill", style: { width: `${Math.max(0, Math.min(100, choice.percentage))}%` } }),
+      /* @__PURE__ */ jsxs9("div", { className: "poll-label", children: [
+        /* @__PURE__ */ jsx9("span", { children: choice.label }),
+        /* @__PURE__ */ jsxs9("span", { children: [
           Math.round(choice.percentage),
           "%"
         ] })
       ] })
     ] }, choice.label)),
-    /* @__PURE__ */ jsxs8("div", { className: "poll-total", children: [
+    /* @__PURE__ */ jsxs9("div", { className: "poll-total", children: [
       formatCount(poll.totalVotes),
       " votes",
       poll.timeLeft ? ` \xB7 ${poll.timeLeft}` : null
@@ -1432,52 +2332,52 @@ function Poll({ poll }) {
 }
 
 // src/render/templates/PostMobile.tsx
-import { Fragment as Fragment2, jsx as jsx9, jsxs as jsxs9 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx10, jsxs as jsxs10 } from "react/jsx-runtime";
 function PostMobile({ post, options }) {
-  return /* @__PURE__ */ jsxs9("article", { className: "capture post-mobile", "data-capture": true, children: [
-    /* @__PURE__ */ jsx9(PostHeader, { post, timezone: options.timezone, showTimestamp: false, actions: /* @__PURE__ */ jsx9(MobileHeaderActions, {}) }),
-    /* @__PURE__ */ jsx9(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
-    /* @__PURE__ */ jsx9(MediaGrid, { media: post.media, mode: options.mediaMode }),
-    /* @__PURE__ */ jsx9(Poll, { poll: post.poll }),
-    /* @__PURE__ */ jsx9(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
-    options.showTimestamp ? /* @__PURE__ */ jsx9(MobileDetailMeta, { post, timezone: options.timezone }) : null,
-    options.showStats ? /* @__PURE__ */ jsx9(MobileActionBar, { post }) : null,
-    options.showSourceFooter ? /* @__PURE__ */ jsx9(SourceFooter, { post }) : null
+  return /* @__PURE__ */ jsxs10("article", { className: "capture post-mobile", "data-capture": true, children: [
+    /* @__PURE__ */ jsx10(PostHeader, { post, timezone: options.timezone, showTimestamp: false, actions: /* @__PURE__ */ jsx10(MobileHeaderActions, {}) }),
+    /* @__PURE__ */ jsx10(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
+    /* @__PURE__ */ jsx10(MediaGrid, { media: post.media, mode: options.mediaMode }),
+    /* @__PURE__ */ jsx10(Poll, { poll: post.poll }),
+    /* @__PURE__ */ jsx10(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
+    options.showTimestamp ? /* @__PURE__ */ jsx10(MobileDetailMeta, { post, timezone: options.timezone }) : null,
+    options.showStats ? /* @__PURE__ */ jsx10(MobileActionBar, { post }) : null,
+    options.showSourceFooter ? /* @__PURE__ */ jsx10(SourceFooter, { post }) : null
   ] });
 }
 function MobileHeaderActions() {
-  return /* @__PURE__ */ jsxs9("div", { className: "mobile-header-actions", children: [
-    /* @__PURE__ */ jsx9("button", { className: "subscribe-button", type: "button", children: "Subscribe" }),
-    /* @__PURE__ */ jsx9("button", { className: "icon-button", type: "button", "aria-label": "Grok", children: /* @__PURE__ */ jsx9(GrokIcon, {}) }),
-    /* @__PURE__ */ jsxs9("button", { className: "icon-button more-button", type: "button", "aria-label": "More", children: [
-      /* @__PURE__ */ jsx9("span", {}),
-      /* @__PURE__ */ jsx9("span", {}),
-      /* @__PURE__ */ jsx9("span", {})
+  return /* @__PURE__ */ jsxs10("div", { className: "mobile-header-actions", children: [
+    /* @__PURE__ */ jsx10("button", { className: "subscribe-button", type: "button", children: "Subscribe" }),
+    /* @__PURE__ */ jsx10("button", { className: "icon-button", type: "button", "aria-label": "Grok", children: /* @__PURE__ */ jsx10(GrokIcon2, {}) }),
+    /* @__PURE__ */ jsxs10("button", { className: "icon-button more-button", type: "button", "aria-label": "More", children: [
+      /* @__PURE__ */ jsx10("span", {}),
+      /* @__PURE__ */ jsx10("span", {}),
+      /* @__PURE__ */ jsx10("span", {})
     ] })
   ] });
 }
-function GrokIcon() {
-  return /* @__PURE__ */ jsx9("svg", { viewBox: "0 0 33 32", "aria-hidden": "true", children: /* @__PURE__ */ jsx9("path", { d: "M12.745 20.54l10.97-8.19c.539-.4 1.307-.244 1.564.38 1.349 3.288.746 7.241-1.938 9.955-2.683 2.714-6.417 3.31-9.83 1.954l-3.728 1.745c5.347 3.697 11.84 2.782 15.898-1.324 3.219-3.255 4.216-7.692 3.284-11.693l.008.009c-1.351-5.878.332-8.227 3.782-13.031L33 0l-4.54 4.59v-.014L12.743 20.544m-2.263 1.987c-3.837-3.707-3.175-9.446.1-12.755 2.42-2.449 6.388-3.448 9.852-1.979l3.72-1.737c-.67-.49-1.53-1.017-2.515-1.387-4.455-1.854-9.789-.931-13.41 2.728-3.483 3.523-4.579 8.94-2.697 13.561 1.405 3.454-.899 5.898-3.22 8.364C1.49 30.2.666 31.074 0 32l10.478-9.466" }) });
+function GrokIcon2() {
+  return /* @__PURE__ */ jsx10("svg", { viewBox: "0 0 33 32", "aria-hidden": "true", children: /* @__PURE__ */ jsx10("path", { d: "M12.745 20.54l10.97-8.19c.539-.4 1.307-.244 1.564.38 1.349 3.288.746 7.241-1.938 9.955-2.683 2.714-6.417 3.31-9.83 1.954l-3.728 1.745c5.347 3.697 11.84 2.782 15.898-1.324 3.219-3.255 4.216-7.692 3.284-11.693l.008.009c-1.351-5.878.332-8.227 3.782-13.031L33 0l-4.54 4.59v-.014L12.743 20.544m-2.263 1.987c-3.837-3.707-3.175-9.446.1-12.755 2.42-2.449 6.388-3.448 9.852-1.979l3.72-1.737c-.67-.49-1.53-1.017-2.515-1.387-4.455-1.854-9.789-.931-13.41 2.728-3.483 3.523-4.579 8.94-2.697 13.561 1.405 3.454-.899 5.898-3.22 8.364C1.49 30.2.666 31.074 0 32l10.478-9.466" }) });
 }
 function MobileDetailMeta({ post, timezone }) {
   const views = formatCompactMetric(post.metrics?.views);
-  return /* @__PURE__ */ jsxs9("div", { className: "mobile-detail-meta", children: [
+  return /* @__PURE__ */ jsxs10("div", { className: "mobile-detail-meta", children: [
     formatPostDetailDate(post.createdAt, timezone),
-    views ? /* @__PURE__ */ jsxs9(Fragment2, { children: [
+    views ? /* @__PURE__ */ jsxs10(Fragment3, { children: [
       " \xB7 ",
-      /* @__PURE__ */ jsx9("strong", { children: views }),
+      /* @__PURE__ */ jsx10("strong", { children: views }),
       " Views"
     ] }) : null
   ] });
 }
 function MobileActionBar({ post }) {
   const reposts = (post.metrics?.reposts ?? 0) + (post.metrics?.quotes ?? 0);
-  return /* @__PURE__ */ jsxs9("div", { className: "mobile-actions", children: [
-    /* @__PURE__ */ jsx9(MobileAction, { label: "Replies", value: post.metrics?.replies, icon: "reply" }),
-    /* @__PURE__ */ jsx9(MobileAction, { label: "Reposts", value: reposts || void 0, icon: "repost" }),
-    /* @__PURE__ */ jsx9(MobileAction, { label: "Likes", value: post.metrics?.likes, icon: "like" }),
-    /* @__PURE__ */ jsx9(MobileAction, { label: "Bookmarks", value: post.metrics?.bookmarks, icon: "bookmark" }),
-    /* @__PURE__ */ jsx9(MobileAction, { label: "Share", icon: "share" })
+  return /* @__PURE__ */ jsxs10("div", { className: "mobile-actions", children: [
+    /* @__PURE__ */ jsx10(MobileAction, { label: "Replies", value: post.metrics?.replies, icon: "reply" }),
+    /* @__PURE__ */ jsx10(MobileAction, { label: "Reposts", value: reposts || void 0, icon: "repost" }),
+    /* @__PURE__ */ jsx10(MobileAction, { label: "Likes", value: post.metrics?.likes, icon: "like" }),
+    /* @__PURE__ */ jsx10(MobileAction, { label: "Bookmarks", value: post.metrics?.bookmarks, icon: "bookmark" }),
+    /* @__PURE__ */ jsx10(MobileAction, { label: "Share", icon: "share" })
   ] });
 }
 function MobileAction({
@@ -1485,38 +2385,38 @@ function MobileAction({
   value,
   icon
 }) {
-  return /* @__PURE__ */ jsxs9("div", { className: "mobile-action", "aria-label": label, children: [
-    /* @__PURE__ */ jsx9(ActionIcon, { name: icon }),
-    value !== void 0 ? /* @__PURE__ */ jsx9("strong", { children: formatMetric(value) }) : null
+  return /* @__PURE__ */ jsxs10("div", { className: "mobile-action", "aria-label": label, children: [
+    /* @__PURE__ */ jsx10(ActionIcon2, { name: icon }),
+    value !== void 0 ? /* @__PURE__ */ jsx10("strong", { children: formatMetric(value) }) : null
   ] });
 }
-function ActionIcon({ name }) {
+function ActionIcon2({ name }) {
   if (name === "reply") {
-    return /* @__PURE__ */ jsx9("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx9("path", { d: "M20 12a7.5 7.5 0 0 1-7.9 7.5 8.3 8.3 0 0 1-3.2-.8L4 20l1.4-4.4A7.3 7.3 0 0 1 4 12a7.5 7.5 0 0 1 8-7.5 7.5 7.5 0 0 1 8 7.5Z" }) });
+    return /* @__PURE__ */ jsx10("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx10("path", { d: "M20 12a7.5 7.5 0 0 1-7.9 7.5 8.3 8.3 0 0 1-3.2-.8L4 20l1.4-4.4A7.3 7.3 0 0 1 4 12a7.5 7.5 0 0 1 8-7.5 7.5 7.5 0 0 1 8 7.5Z" }) });
   }
   if (name === "repost") {
-    return /* @__PURE__ */ jsxs9("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
-      /* @__PURE__ */ jsx9("path", { d: "M17 3l3 3-3 3" }),
-      /* @__PURE__ */ jsx9("path", { d: "M4 11V8a2 2 0 0 1 2-2h14" }),
-      /* @__PURE__ */ jsx9("path", { d: "M7 21l-3-3 3-3" }),
-      /* @__PURE__ */ jsx9("path", { d: "M20 13v3a2 2 0 0 1-2 2H4" })
+    return /* @__PURE__ */ jsxs10("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsx10("path", { d: "M17 3l3 3-3 3" }),
+      /* @__PURE__ */ jsx10("path", { d: "M4 11V8a2 2 0 0 1 2-2h14" }),
+      /* @__PURE__ */ jsx10("path", { d: "M7 21l-3-3 3-3" }),
+      /* @__PURE__ */ jsx10("path", { d: "M20 13v3a2 2 0 0 1-2 2H4" })
     ] });
   }
   if (name === "like") {
-    return /* @__PURE__ */ jsx9("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx9("path", { d: "M20.5 8.9c0 5.1-8.5 10.2-8.5 10.2S3.5 14 3.5 8.9A4.4 4.4 0 0 1 8 4.5a5 5 0 0 1 4 2 5 5 0 0 1 4-2 4.4 4.4 0 0 1 4.5 4.4Z" }) });
+    return /* @__PURE__ */ jsx10("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx10("path", { d: "M20.5 8.9c0 5.1-8.5 10.2-8.5 10.2S3.5 14 3.5 8.9A4.4 4.4 0 0 1 8 4.5a5 5 0 0 1 4 2 5 5 0 0 1 4-2 4.4 4.4 0 0 1 4.5 4.4Z" }) });
   }
   if (name === "bookmark") {
-    return /* @__PURE__ */ jsx9("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx9("path", { d: "M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" }) });
+    return /* @__PURE__ */ jsx10("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx10("path", { d: "M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" }) });
   }
-  return /* @__PURE__ */ jsxs9("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
-    /* @__PURE__ */ jsx9("path", { d: "M12 4v11" }),
-    /* @__PURE__ */ jsx9("path", { d: "M8 8l4-4 4 4" }),
-    /* @__PURE__ */ jsx9("path", { d: "M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" })
+  return /* @__PURE__ */ jsxs10("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx10("path", { d: "M12 4v11" }),
+    /* @__PURE__ */ jsx10("path", { d: "M8 8l4-4 4 4" }),
+    /* @__PURE__ */ jsx10("path", { d: "M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" })
   ] });
 }
 
 // src/render/templates/components/Metrics.tsx
-import { jsx as jsx10, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs11 } from "react/jsx-runtime";
 function Metrics({ metrics }) {
   if (!metrics) return null;
   const items = [
@@ -1528,66 +2428,69 @@ function Metrics({ metrics }) {
   ];
   const visible = items.filter(([, value]) => value !== void 0);
   if (visible.length === 0) return null;
-  return /* @__PURE__ */ jsx10("div", { className: "metrics", children: visible.map(([label, value]) => /* @__PURE__ */ jsxs10("span", { className: "metric", children: [
-    /* @__PURE__ */ jsx10("strong", { children: formatMetric(value) }),
-    /* @__PURE__ */ jsx10("span", { children: label })
+  return /* @__PURE__ */ jsx11("div", { className: "metrics", children: visible.map(([label, value]) => /* @__PURE__ */ jsxs11("span", { className: "metric", children: [
+    /* @__PURE__ */ jsx11("strong", { children: formatMetric(value) }),
+    /* @__PURE__ */ jsx11("span", { children: label })
   ] }, label)) });
 }
 
 // src/render/templates/QuoteWall.tsx
-import { jsx as jsx11, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs12 } from "react/jsx-runtime";
 function QuoteWall({ sourcePost, quotes, options }) {
   const columns = options.columns ?? (options.width <= 560 ? 1 : 2);
   const style = { "--wall-columns": columns };
   const sourceText = postBodyText(sourcePost, options.translatedText);
-  return /* @__PURE__ */ jsxs11("section", { className: "capture quote-wall", style, "data-capture": true, children: [
-    /* @__PURE__ */ jsx11("h1", { className: "wall-title", children: "Quoted reactions" }),
-    /* @__PURE__ */ jsxs11("p", { className: "wall-subtitle", children: [
+  return /* @__PURE__ */ jsxs12("section", { className: "capture quote-wall", style, "data-capture": true, children: [
+    /* @__PURE__ */ jsx12("h1", { className: "wall-title", children: "Quoted reactions" }),
+    /* @__PURE__ */ jsxs12("p", { className: "wall-subtitle", children: [
       "Responses quoting @",
       sourcePost.author.handle,
       ": ",
       sourceText.slice(0, 120),
       sourceText.length > 120 ? "..." : ""
     ] }),
-    quotes.length > 0 ? /* @__PURE__ */ jsx11("div", { className: "wall-grid", children: quotes.map((quote) => /* @__PURE__ */ jsxs11("article", { className: "wall-card", children: [
-      /* @__PURE__ */ jsx11(PostHeader, { post: quote, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true }),
-      /* @__PURE__ */ jsx11(PostText, { post: quote, showTranslation: options.showTranslation, translatedText: options.translatedText }),
-      options.showStats ? /* @__PURE__ */ jsx11(Metrics, { metrics: quote.metrics }) : null
-    ] }, quote.id)) }) : /* @__PURE__ */ jsx11("div", { className: "empty-state", children: "No quote posts were returned for this source post." }),
-    options.showSourceFooter ? /* @__PURE__ */ jsx11(SourceFooter, { post: sourcePost }) : null
+    quotes.length > 0 ? /* @__PURE__ */ jsx12("div", { className: "wall-grid", children: quotes.map((quote) => /* @__PURE__ */ jsxs12("article", { className: "wall-card", children: [
+      /* @__PURE__ */ jsx12(PostHeader, { post: quote, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true }),
+      /* @__PURE__ */ jsx12(PostText, { post: quote, showTranslation: options.showTranslation, translatedText: options.translatedText }),
+      options.showStats ? /* @__PURE__ */ jsx12(Metrics, { metrics: quote.metrics }) : null
+    ] }, quote.id)) }) : /* @__PURE__ */ jsx12("div", { className: "empty-state", children: "No quote posts were returned for this source post." }),
+    options.showSourceFooter ? /* @__PURE__ */ jsx12(SourceFooter, { post: sourcePost }) : null
   ] });
 }
 
 // src/render/templates/ThreadVertical.tsx
-import { jsx as jsx12, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs13 } from "react/jsx-runtime";
 function ThreadVertical({ thread, options }) {
   const posts = thread.posts.slice(0, options.maxPosts ?? thread.posts.length);
-  return /* @__PURE__ */ jsx12("section", { className: "capture thread-vertical", "data-capture": true, children: posts.map((post, index) => /* @__PURE__ */ jsxs12("article", { className: "thread-item", children: [
-    /* @__PURE__ */ jsxs12("div", { className: "thread-rail", children: [
-      /* @__PURE__ */ jsx12(Avatar, { author: post.author }),
-      /* @__PURE__ */ jsx12("div", { className: "thread-line" })
+  return /* @__PURE__ */ jsx13("section", { className: "capture thread-vertical", "data-capture": true, children: posts.map((post, index) => /* @__PURE__ */ jsxs13("article", { className: "thread-item", children: [
+    /* @__PURE__ */ jsxs13("div", { className: "thread-rail", children: [
+      /* @__PURE__ */ jsx13(Avatar, { author: post.author }),
+      /* @__PURE__ */ jsx13("div", { className: "thread-line" })
     ] }),
-    /* @__PURE__ */ jsxs12("div", { className: "thread-body", children: [
-      /* @__PURE__ */ jsx12(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true, showAvatar: false }),
-      /* @__PURE__ */ jsx12(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
-      /* @__PURE__ */ jsx12(MediaGrid, { media: post.media, mode: options.mediaMode }),
-      options.showStats ? /* @__PURE__ */ jsx12(Metrics, { metrics: post.metrics }) : null,
-      options.showSourceFooter && index === posts.length - 1 ? /* @__PURE__ */ jsx12(SourceFooter, { post: thread.root }) : null
+    /* @__PURE__ */ jsxs13("div", { className: "thread-body", children: [
+      /* @__PURE__ */ jsx13(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true, showAvatar: false }),
+      /* @__PURE__ */ jsx13(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
+      /* @__PURE__ */ jsx13(MediaGrid, { media: post.media, mode: options.mediaMode }),
+      options.showStats ? /* @__PURE__ */ jsx13(Metrics, { metrics: post.metrics }) : null,
+      options.showSourceFooter && index === posts.length - 1 ? /* @__PURE__ */ jsx13(SourceFooter, { post: thread.root }) : null
     ] })
   ] }, post.id)) });
 }
 
 // src/render/renderHtml.tsx
-import { jsx as jsx13 } from "react/jsx-runtime";
+import { jsx as jsx14 } from "react/jsx-runtime";
 function renderPostHtml(post, options) {
-  const element = options.template === "post-clean" ? /* @__PURE__ */ jsx13(PostClean, { post, options }) : /* @__PURE__ */ jsx13(PostMobile, { post, options });
+  const element = options.template === "post-clean" ? /* @__PURE__ */ jsx14(PostClean, { post, options }) : /* @__PURE__ */ jsx14(PostMobile, { post, options });
   return renderDocument(element, options);
 }
 function renderThreadHtml(thread, options) {
-  return renderDocument(/* @__PURE__ */ jsx13(ThreadVertical, { thread, options }), options);
+  return renderDocument(/* @__PURE__ */ jsx14(ThreadVertical, { thread, options }), options);
 }
 function renderQuoteWallHtml(sourcePost, quotes, options) {
-  return renderDocument(/* @__PURE__ */ jsx13(QuoteWall, { sourcePost, quotes, options }), options);
+  return renderDocument(/* @__PURE__ */ jsx14(QuoteWall, { sourcePost, quotes, options }), options);
+}
+function renderArticleShotHtml(article, options) {
+  return renderArticleDocument(/* @__PURE__ */ jsx14(ArticleShot, { article, options }), options);
 }
 function defaultWidthForTemplate(template) {
   if (template === "quote-wall") return 920;
@@ -1602,6 +2505,20 @@ function renderDocument(element, options) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=${options.width}, initial-scale=1" />
     <style>${buildStyles(options)}</style>
+  </head>
+  <body>
+    ${body}
+  </body>
+</html>`;
+}
+function renderArticleDocument(element, options) {
+  const body = renderToStaticMarkup(element);
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=${options.width}, initial-scale=1" />
+    <style>${buildArticleStyles(options)}</style>
   </head>
   <body>
     ${body}
@@ -1732,6 +2649,8 @@ function buildMetadata(article, assetMode, assets) {
     preview_text: article.previewText,
     created_at: article.createdAt,
     modified_at: article.modifiedAt ?? null,
+    source_created_at: article.sourceCreatedAt ?? null,
+    source_metrics: article.sourceMetrics ?? null,
     author: {
       name: article.author.name,
       handle: article.author.handle,
@@ -1744,6 +2663,9 @@ function buildMetadata(article, assetMode, assets) {
     assets
   };
 }
+
+// src/cli/commands/articleShot.ts
+import path6 from "path";
 
 // src/cache/index.ts
 import { createHash as createHash2 } from "crypto";
@@ -1859,264 +2781,6 @@ function escapeXml(value) {
   });
 }
 
-// src/normalize/socialPost.ts
-function normalizePost(raw, provider = "x", depth = 0) {
-  const source = asRecord3(raw);
-  const author = normalizeAuthor(source.author, provider);
-  const createdAt = asString2(source.created_at) ?? timestampToIso(asNumber2(source.created_timestamp)) ?? "";
-  const text = asString2(source.text) ?? asString2(asRecord3(source.raw_text).text) ?? "";
-  const id = asString2(source.id) ?? "";
-  if (!id) {
-    throw new Error("FxEmbed status payload is missing an id.");
-  }
-  const post = {
-    provider,
-    id,
-    url: asString2(source.url) ?? fallbackStatusUrl(provider, author.handle, id),
-    text,
-    createdAt,
-    author,
-    media: normalizeMedia(source.media),
-    sourceLabel: provider === "x" ? "X" : "Bluesky"
-  };
-  const createdTimestamp = asNumber2(source.created_timestamp);
-  if (createdTimestamp !== void 0) post.createdTimestamp = createdTimestamp;
-  const metrics = normalizeMetrics(source);
-  if (Object.keys(metrics).length > 0) post.metrics = metrics;
-  const quoteRaw = source.quote;
-  if (depth < 2 && isObject(quoteRaw) && asString2(asRecord3(quoteRaw).type) !== "tombstone") {
-    try {
-      post.quote = normalizePost(quoteRaw, provider, depth + 1);
-    } catch {
-    }
-  }
-  const poll = normalizePoll(source.poll);
-  if (poll) post.poll = poll;
-  const translation = normalizeTranslation(source.translation);
-  if (translation) post.translation = translation;
-  const lang = asString2(source.lang);
-  if (lang !== void 0) post.lang = lang;
-  const sourceName = asString2(source.source);
-  if (sourceName !== void 0) post.source = sourceName;
-  const possiblySensitive = asBoolean2(source.possibly_sensitive);
-  if (possiblySensitive !== void 0) post.possiblySensitive = possiblySensitive;
-  const communityNote = normalizeCommunityNote(source.community_note);
-  if (communityNote !== void 0) post.communityNote = communityNote;
-  return post;
-}
-function normalizeThreadResponse(raw, provider = "x") {
-  const envelope = asRecord3(raw);
-  const root = normalizePost(envelope.status, provider);
-  const rawThread = Array.isArray(envelope.thread) ? envelope.thread : [];
-  const posts = rawThread.map((item) => safeNormalizePost(item, provider)).filter((post) => Boolean(post));
-  if (!posts.some((post) => post.id === root.id)) {
-    posts.unshift(root);
-  }
-  return {
-    provider,
-    root,
-    posts,
-    author: root.author
-  };
-}
-function normalizePostResponse(raw, provider = "x") {
-  const envelope = asRecord3(raw);
-  return normalizePost(envelope.status ?? raw, provider);
-}
-function normalizeQuotesResponse(raw, provider = "x") {
-  const envelope = asRecord3(raw);
-  const results = Array.isArray(envelope.results) ? envelope.results : [];
-  return results.flatMap((item) => extractPosts(item, provider));
-}
-function extractPosts(raw, provider) {
-  const record = asRecord3(raw);
-  if (record.type === "status" || record.author) {
-    const post = safeNormalizePost(record, provider);
-    return post ? [post] : [];
-  }
-  if (isObject(record.status)) {
-    const post = safeNormalizePost(record.status, provider);
-    return post ? [post] : [];
-  }
-  if (Array.isArray(record.thread)) {
-    return record.thread.map((item) => safeNormalizePost(item, provider)).filter((post) => Boolean(post));
-  }
-  return [];
-}
-function safeNormalizePost(raw, provider) {
-  try {
-    return normalizePost(raw, provider);
-  } catch {
-    return void 0;
-  }
-}
-function normalizeAuthor(raw, provider) {
-  const record = asRecord3(raw);
-  const handle = stripAt2(
-    asString2(record.screen_name) ?? asString2(record.handle) ?? asString2(record.username) ?? asString2(record.did) ?? "unknown"
-  );
-  const author = {
-    name: asString2(record.name) ?? asString2(record.display_name) ?? handle,
-    handle
-  };
-  const id = asString2(record.id);
-  if (id !== void 0) author.id = id;
-  const avatarUrl = asString2(record.avatar_url) ?? asString2(record.avatar) ?? asString2(record.avatarUrl);
-  if (avatarUrl !== void 0) author.avatarUrl = avatarUrl;
-  const bannerUrl = asString2(record.banner_url) ?? asString2(record.bannerUrl);
-  if (bannerUrl !== void 0) author.bannerUrl = bannerUrl;
-  const description = asString2(record.description);
-  if (description !== void 0) author.description = description;
-  const verification = asRecord3(record.verification);
-  const verified = asBoolean2(verification.verified);
-  if (verified !== void 0) author.verified = verified;
-  const verificationType = asString2(verification.type);
-  if (verificationType === "organization" || verificationType === "government" || verificationType === "individual") {
-    author.verificationType = verificationType;
-  } else if (verification.type === null) {
-    author.verificationType = null;
-  }
-  const followers = asNumber2(record.followers);
-  if (followers !== void 0) author.followers = followers;
-  const following = asNumber2(record.following);
-  if (following !== void 0) author.following = following;
-  const location = asString2(record.location);
-  if (location !== void 0) author.location = location;
-  const joined = asString2(record.joined);
-  if (joined !== void 0) author.joined = joined;
-  if (provider === "bluesky" && author.handle === "unknown") author.handle = author.name;
-  return author;
-}
-function normalizeMedia(raw) {
-  const record = asRecord3(raw);
-  const candidates = [];
-  if (Array.isArray(record.all)) candidates.push(...record.all);
-  if (candidates.length === 0 && Array.isArray(record.photos)) candidates.push(...record.photos);
-  if (candidates.length === 0 && Array.isArray(record.videos)) candidates.push(...record.videos);
-  if (candidates.length === 0 && isObject(record.mosaic)) candidates.push(record.mosaic);
-  if (isObject(record.external)) candidates.push(record.external);
-  const seen = /* @__PURE__ */ new Set();
-  const media = [];
-  for (const item of candidates) {
-    const normalized = normalizeMediaItem(item);
-    if (!normalized) continue;
-    const key = `${normalized.type}:${normalized.url}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    media.push(normalized);
-  }
-  return media;
-}
-function normalizeMediaItem(raw) {
-  const record = asRecord3(raw);
-  const originalType = asString2(record.type) ?? "photo";
-  const url = asString2(record.url) ?? asString2(record.thumbnail_url);
-  if (!url) return void 0;
-  const mediaType = originalType === "mosaic_photo" ? "mosaic" : originalType === "video" ? "video" : originalType === "gif" ? "gif" : originalType === "external" ? "external" : "photo";
-  const media = {
-    type: mediaType,
-    url
-  };
-  const id = asString2(record.id);
-  if (id !== void 0) media.id = id;
-  const thumbnailUrl = asString2(record.thumbnail_url);
-  if (thumbnailUrl !== void 0) media.thumbnailUrl = thumbnailUrl;
-  const width = asNumber2(record.width);
-  if (width !== void 0) media.width = width;
-  const height = asNumber2(record.height);
-  if (height !== void 0) media.height = height;
-  const altText = asString2(record.altText) ?? asString2(record.alt_text);
-  if (altText !== void 0) media.altText = altText;
-  const duration = asNumber2(record.duration);
-  if (duration !== void 0) media.duration = duration;
-  return media;
-}
-function normalizeMetrics(source) {
-  const metrics = {};
-  const replies = asNumber2(source.replies);
-  if (replies !== void 0) metrics.replies = replies;
-  const reposts = asNumber2(source.reposts);
-  if (reposts !== void 0) metrics.reposts = reposts;
-  const quotes = asNumber2(source.quotes);
-  if (quotes !== void 0) metrics.quotes = quotes;
-  const likes = asNumber2(source.likes);
-  if (likes !== void 0) metrics.likes = likes;
-  const views = asNumber2(source.views);
-  if (views !== void 0) metrics.views = views;
-  const bookmarks = asNumber2(source.bookmarks);
-  if (bookmarks !== void 0) metrics.bookmarks = bookmarks;
-  return metrics;
-}
-function normalizePoll(raw) {
-  const record = asRecord3(raw);
-  if (!Array.isArray(record.choices)) return void 0;
-  const choices = record.choices.map((choice) => {
-    const item = asRecord3(choice);
-    const label = asString2(item.label);
-    const count = asNumber2(item.count);
-    const percentage = asNumber2(item.percentage);
-    if (!label || count === void 0 || percentage === void 0) return void 0;
-    return { label, count, percentage };
-  }).filter((choice) => Boolean(choice));
-  if (choices.length === 0) return void 0;
-  const poll = {
-    choices,
-    totalVotes: asNumber2(record.total_votes) ?? 0
-  };
-  const endsAt = asString2(record.ends_at);
-  if (endsAt !== void 0) poll.endsAt = endsAt;
-  const timeLeft = asString2(record.time_left_en);
-  if (timeLeft !== void 0) poll.timeLeft = timeLeft;
-  return poll;
-}
-function normalizeTranslation(raw) {
-  const record = asRecord3(raw);
-  const text = asString2(record.text);
-  if (!text) return void 0;
-  const translation = { text };
-  const sourceLang = asString2(record.source_lang);
-  if (sourceLang !== void 0) translation.sourceLang = sourceLang;
-  const targetLang = asString2(record.target_lang);
-  if (targetLang !== void 0) translation.targetLang = targetLang;
-  const provider = asString2(record.provider);
-  if (provider !== void 0) translation.provider = provider;
-  return translation;
-}
-function normalizeCommunityNote(raw) {
-  if (raw === null) return null;
-  const record = asRecord3(raw);
-  const text = asString2(record.text);
-  return text ? { text } : void 0;
-}
-function asRecord3(value) {
-  return isObject(value) ? value : {};
-}
-function isObject(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-function asString2(value) {
-  return typeof value === "string" && value.length > 0 ? value : void 0;
-}
-function asNumber2(value) {
-  return typeof value === "number" && Number.isFinite(value) ? value : void 0;
-}
-function asBoolean2(value) {
-  return typeof value === "boolean" ? value : void 0;
-}
-function stripAt2(handle) {
-  return handle.startsWith("@") ? handle.slice(1) : handle;
-}
-function timestampToIso(timestamp) {
-  if (timestamp === void 0) return void 0;
-  const millis = timestamp >= 1e12 ? timestamp : timestamp * 1e3;
-  const date = new Date(millis);
-  return Number.isNaN(date.getTime()) ? void 0 : date.toISOString();
-}
-function fallbackStatusUrl(provider, handle, id) {
-  if (provider === "x") return `https://x.com/${handle}/status/${id}`;
-  return `https://bsky.app/profile/${handle}/post/${id}`;
-}
-
 // src/render/assets.ts
 async function hydratePostAssets(post, cache) {
   const avatarAssetUrl = post.author.avatarUrl ? await cache.resolveImage(post.author.avatarUrl, post.author.handle) : void 0;
@@ -2145,6 +2809,20 @@ async function hydrateThreadAssets(thread, cache) {
 async function hydratePostsAssets(posts, cache) {
   return Promise.all(posts.map((post) => hydratePostAssets(post, cache)));
 }
+async function hydrateArticleAssets(article, cache) {
+  const avatarAssetUrl = article.author.avatarUrl ? await cache.resolveImage(article.author.avatarUrl, article.author.handle) : void 0;
+  const cover = article.cover ? await hydrateArticleMedia(article.cover, cache) : void 0;
+  const media = await Promise.all(article.media.map((item) => hydrateArticleMedia(item, cache)));
+  return {
+    ...article,
+    author: avatarAssetUrl ? {
+      ...article.author,
+      avatarAssetUrl
+    } : article.author,
+    ...cover ? { cover } : {},
+    media
+  };
+}
 async function hydrateMedia(media, cache) {
   if (media.type === "video" || media.type === "external") {
     const thumbnailSource = media.thumbnailUrl;
@@ -2159,6 +2837,12 @@ async function hydrateMedia(media, cache) {
       thumbnailAssetUrl: await cache.resolveImage(placeholderImageDataUrl(media.type), media.type)
     };
   }
+  return {
+    ...media,
+    assetUrl: await cache.resolveImage(media.url, media.type)
+  };
+}
+async function hydrateArticleMedia(media, cache) {
   return {
     ...media,
     assetUrl: await cache.resolveImage(media.url, media.type)
@@ -2223,6 +2907,536 @@ async function captureHtml(html, options) {
   } finally {
     await browser.close();
   }
+}
+async function captureHtmlLong(html, options) {
+  if (options.writeLong) await ensureParentDir(options.outPath);
+  if (options.debugHtmlPath) {
+    await ensureParentDir(options.debugHtmlPath);
+    await writeFile4(options.debugHtmlPath, html, "utf8");
+  }
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const initialHeight = Math.min(Math.max(options.sliceHeight ?? 1400, 1200), 8e3);
+    const page = await browser.newPage({
+      viewport: {
+        width: options.width,
+        height: initialHeight
+      },
+      deviceScaleFactor: options.scale
+    });
+    await page.setContent(html, { waitUntil: "networkidle" });
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all(
+        Array.from(document.images).map((img) => {
+          if (img.complete) return null;
+          return img.decode().catch(() => null);
+        })
+      );
+    });
+    const capture = page.locator("[data-capture]").first();
+    await capture.waitFor({ state: "visible", timeout: 1e4 });
+    const box = await capture.boundingBox();
+    if (!box) throw new Error("Could not measure capture element.");
+    const cssHeight = Math.ceil(box.height);
+    const singleCaptureLimit = 16e3;
+    const requestedSliceHeight = options.sliceHeight ? Math.max(1, Math.round(options.sliceHeight)) : void 0;
+    if (!requestedSliceHeight && cssHeight <= singleCaptureLimit) {
+      await page.setViewportSize({ width: options.width, height: Math.min(Math.max(cssHeight + 80, 1200), singleCaptureLimit) });
+      const pngBuffer = await capture.screenshot({
+        type: "png",
+        animations: "disabled",
+        caret: "hide",
+        omitBackground: options.transparent,
+        scale: "device"
+      });
+      if (options.writeLong) {
+        await writeImage(pngBuffer, options.outPath, options.format, options.quality);
+      }
+      return {
+        outPath: options.writeLong ? options.outPath : void 0,
+        slicePaths: [],
+        cssHeight
+      };
+    }
+    const sliceCssHeight = Math.min(requestedSliceHeight ?? 8e3, 8e3);
+    const pngSlices = [];
+    const slicePaths = [];
+    for (let offset = 0, index = 0; offset < cssHeight; offset += sliceCssHeight, index += 1) {
+      const height = Math.min(sliceCssHeight, cssHeight - offset);
+      const pngBuffer = await captureSlice(page, {
+        offset,
+        height,
+        width: Math.ceil(box.width),
+        transparent: options.transparent
+      });
+      pngSlices.push(pngBuffer);
+      const slicePath = options.slicePathForIndex?.(index);
+      if (slicePath) {
+        await ensureParentDir(slicePath);
+        await writeImage(pngBuffer, slicePath, options.format, options.quality);
+        slicePaths.push(slicePath);
+      }
+    }
+    if (options.writeLong) {
+      const joined = pngSlices.length === 1 ? pngSlices[0] : await joinPngSlices(pngSlices, options.transparent);
+      if (!joined) throw new Error("Could not assemble long screenshot.");
+      await writeImage(joined, options.outPath, options.format, options.quality);
+    }
+    return {
+      outPath: options.writeLong ? options.outPath : void 0,
+      slicePaths,
+      cssHeight
+    };
+  } finally {
+    await browser.close();
+  }
+}
+async function captureSlice(page, options) {
+  await page.setViewportSize({ width: options.width, height: options.height });
+  await page.evaluate(({ offset, height, width }) => {
+    const capture = document.querySelector("[data-capture]");
+    if (!capture) throw new Error("Missing capture element.");
+    let slice2 = document.querySelector("[data-capture-slice]");
+    if (!slice2) {
+      slice2 = document.createElement("div");
+      slice2.setAttribute("data-capture-slice", "");
+      document.body.innerHTML = "";
+      document.body.appendChild(slice2);
+      slice2.appendChild(capture);
+    }
+    Object.assign(document.documentElement.style, {
+      margin: "0",
+      padding: "0"
+    });
+    Object.assign(document.body.style, {
+      margin: "0",
+      padding: "0",
+      overflow: "hidden",
+      background: "transparent",
+      width: `${width}px`,
+      height: `${height}px`
+    });
+    Object.assign(slice2.style, {
+      position: "relative",
+      width: `${width}px`,
+      height: `${height}px`,
+      overflow: "hidden",
+      background: "transparent"
+    });
+    Object.assign(capture.style, {
+      position: "absolute",
+      left: "0",
+      top: "0",
+      width: `${width}px`,
+      transform: `translateY(-${offset}px)`,
+      transformOrigin: "top left"
+    });
+  }, options);
+  const slice = page.locator("[data-capture-slice]").first();
+  return slice.screenshot({
+    type: "png",
+    animations: "disabled",
+    caret: "hide",
+    omitBackground: options.transparent,
+    scale: "device"
+  });
+}
+async function joinPngSlices(slices, transparent) {
+  if (slices.length === 0) return void 0;
+  const metadata = await Promise.all(slices.map((slice) => sharp(slice).metadata()));
+  const width = metadata.reduce((max, item) => Math.max(max, item.width ?? 0), 0);
+  const height = metadata.reduce((sum, item) => sum + (item.height ?? 0), 0);
+  if (width <= 0 || height <= 0) return void 0;
+  let top = 0;
+  const composite = slices.map((input, index) => {
+    const item = metadata[index];
+    const currentTop = top;
+    top += item?.height ?? 0;
+    return { input, left: 0, top: currentTop };
+  });
+  return sharp({
+    create: {
+      width,
+      height,
+      channels: transparent ? 4 : 3,
+      background: transparent ? { r: 0, g: 0, b: 0, alpha: 0 } : { r: 255, g: 255, b: 255 }
+    }
+  }).composite(composite).png().toBuffer();
+}
+async function writeImage(buffer, outPath, format, quality) {
+  if (format === "webp") {
+    await sharp(buffer).webp({ quality }).toFile(outPath);
+    return;
+  }
+  await writeFile4(outPath, buffer);
+}
+
+// src/cli/commands/articleShot.ts
+async function renderArticleShotCommand(input, rawOptions) {
+  const parsed = parseSocialUrl(input);
+  if (parsed.provider !== "x") throw new Error("First version supports X/Twitter article screenshots only.");
+  const raw = rawOptions.fixture ? await readJsonFixture(rawOptions.fixture) : await new FxTwitterClient().getPost(parsed.id, { lang: rawOptions.lang, aboutAccount: true });
+  const article = normalizeArticleResponse(raw, "x");
+  const resolved = resolveArticleShotOptions(article.sourcePostId, rawOptions);
+  const hydrated = await hydrateArticleAssets(article, new AssetCache({ cacheDir: resolved.cacheDir }));
+  const html = renderArticleShotHtml(hydrated, resolved.render);
+  const result = await captureHtmlLong(html, {
+    width: resolved.render.width,
+    scale: resolved.scale,
+    format: resolved.format,
+    quality: resolved.quality,
+    transparent: resolved.transparent,
+    outPath: resolved.outPath,
+    ...resolved.debugHtmlPath ? { debugHtmlPath: resolved.debugHtmlPath } : {},
+    ...resolved.sliceHeight !== void 0 ? { sliceHeight: resolved.sliceHeight } : {},
+    ...resolved.slicePathForIndex ? { slicePathForIndex: resolved.slicePathForIndex } : {},
+    writeLong: true
+  });
+  return result.outPath ?? resolved.outPath;
+}
+function resolveArticleShotOptions(id, raw) {
+  const format = parseEnum2(raw.format, ["png", "webp"], "png");
+  const width = parsePositiveInteger2(raw.width, 540);
+  const scale = parsePositiveInteger2(raw.scale, 2);
+  const quality = parsePositiveInteger2(raw.quality, 92);
+  const theme = parseEnum2(raw.theme, ["light", "dark"], "light");
+  const style = parseEnum2(raw.style, ["article-x", "article-clean"], "article-x");
+  const timezone = typeof raw.timezone === "string" && raw.timezone ? raw.timezone : "Asia/Shanghai";
+  const sliceHeight = parseOptionalPositiveInteger2(raw.sliceHeight);
+  const output = resolveArticleShotOutput(id, format, raw.out, sliceHeight !== void 0);
+  const debugHtmlPath = raw.debugHtml ? debugHtmlPathForOutput(output.outPath) : void 0;
+  const cacheDir = toAbsolutePath(typeof raw.cacheDir === "string" && raw.cacheDir ? raw.cacheDir : "cache/assets");
+  const render = {
+    style,
+    width,
+    theme,
+    timezone,
+    showSourceFooter: !raw.hideSourceFooter,
+    showCover: raw.cover !== false,
+    showActions: style === "article-x" && !raw.hideActions
+  };
+  return {
+    render,
+    format,
+    scale,
+    quality,
+    transparent: Boolean(raw.transparent),
+    outPath: output.outPath,
+    cacheDir,
+    ...sliceHeight !== void 0 ? { sliceHeight } : {},
+    ...output.slicePathForIndex ? { slicePathForIndex: output.slicePathForIndex } : {},
+    ...typeof raw.lang === "string" ? { lang: raw.lang } : {},
+    ...typeof raw.fixture === "string" ? { fixture: raw.fixture } : {},
+    ...debugHtmlPath ? { debugHtmlPath } : {}
+  };
+}
+function resolveArticleShotOutput(id, format, requested, sliced) {
+  const timestamp = timestampForFilename2();
+  const defaultBase = `article-shot-${id}-${timestamp}`;
+  if (!requested) {
+    const outPath2 = toAbsolutePath(path6.join("output", `${defaultBase}.${format}`));
+    return {
+      outPath: outPath2,
+      ...sliced ? { slicePathForIndex: (index) => path6.join(path6.dirname(outPath2), `${defaultBase}-${padIndex(index)}.${format}`) } : {}
+    };
+  }
+  const absolute = toAbsolutePath(requested);
+  const ext = path6.extname(absolute);
+  if (ext) {
+    const parsed = path6.parse(absolute);
+    return {
+      outPath: absolute,
+      ...sliced ? { slicePathForIndex: (index) => path6.join(parsed.dir, `${parsed.name}-${padIndex(index)}${ext}`) } : {}
+    };
+  }
+  const outPath = path6.join(absolute, `article-long.${format}`);
+  return {
+    outPath,
+    ...sliced ? { slicePathForIndex: (index) => path6.join(absolute, `article-${padIndex(index)}.${format}`) } : {}
+  };
+}
+function debugHtmlPathForOutput(outPath) {
+  const parsed = path6.parse(outPath);
+  return path6.join(parsed.dir, `${parsed.name}.html`);
+}
+function timestampForFilename2() {
+  return (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-");
+}
+function padIndex(index) {
+  return String(index + 1).padStart(2, "0");
+}
+function parsePositiveInteger2(value, fallback) {
+  const number = typeof value === "number" ? value : typeof value === "string" ? Number(value) : fallback;
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  return Math.round(number);
+}
+function parseOptionalPositiveInteger2(value) {
+  if (value === void 0) return void 0;
+  const number = typeof value === "number" ? value : typeof value === "string" ? Number(value) : void 0;
+  if (!number || !Number.isFinite(number) || number <= 0) return void 0;
+  return Math.round(number);
+}
+function parseEnum2(value, allowed, fallback) {
+  return typeof value === "string" && allowed.includes(value) ? value : fallback;
+}
+
+// src/normalize/socialPost.ts
+function normalizePost(raw, provider = "x", depth = 0) {
+  const source = asRecord4(raw);
+  const author = normalizeAuthor(source.author, provider);
+  const createdAt = asString2(source.created_at) ?? timestampToIso(asNumber2(source.created_timestamp)) ?? "";
+  const text = asString2(source.text) ?? asString2(asRecord4(source.raw_text).text) ?? "";
+  const id = asString2(source.id) ?? "";
+  if (!id) {
+    throw new Error("FxEmbed status payload is missing an id.");
+  }
+  const post = {
+    provider,
+    id,
+    url: asString2(source.url) ?? fallbackStatusUrl(provider, author.handle, id),
+    text,
+    createdAt,
+    author,
+    media: normalizeMedia(source.media),
+    sourceLabel: provider === "x" ? "X" : "Bluesky"
+  };
+  const createdTimestamp = asNumber2(source.created_timestamp);
+  if (createdTimestamp !== void 0) post.createdTimestamp = createdTimestamp;
+  const metrics = normalizeMetrics(source);
+  if (Object.keys(metrics).length > 0) post.metrics = metrics;
+  const quoteRaw = source.quote;
+  if (depth < 2 && isObject(quoteRaw) && asString2(asRecord4(quoteRaw).type) !== "tombstone") {
+    try {
+      post.quote = normalizePost(quoteRaw, provider, depth + 1);
+    } catch {
+    }
+  }
+  const poll = normalizePoll(source.poll);
+  if (poll) post.poll = poll;
+  const translation = normalizeTranslation(source.translation);
+  if (translation) post.translation = translation;
+  const lang = asString2(source.lang);
+  if (lang !== void 0) post.lang = lang;
+  const sourceName = asString2(source.source);
+  if (sourceName !== void 0) post.source = sourceName;
+  const possiblySensitive = asBoolean2(source.possibly_sensitive);
+  if (possiblySensitive !== void 0) post.possiblySensitive = possiblySensitive;
+  const communityNote = normalizeCommunityNote(source.community_note);
+  if (communityNote !== void 0) post.communityNote = communityNote;
+  return post;
+}
+function normalizeThreadResponse(raw, provider = "x") {
+  const envelope = asRecord4(raw);
+  const root = normalizePost(envelope.status, provider);
+  const rawThread = Array.isArray(envelope.thread) ? envelope.thread : [];
+  const posts = rawThread.map((item) => safeNormalizePost(item, provider)).filter((post) => Boolean(post));
+  if (!posts.some((post) => post.id === root.id)) {
+    posts.unshift(root);
+  }
+  return {
+    provider,
+    root,
+    posts,
+    author: root.author
+  };
+}
+function normalizePostResponse(raw, provider = "x") {
+  const envelope = asRecord4(raw);
+  return normalizePost(envelope.status ?? raw, provider);
+}
+function normalizeQuotesResponse(raw, provider = "x") {
+  const envelope = asRecord4(raw);
+  const results = Array.isArray(envelope.results) ? envelope.results : [];
+  return results.flatMap((item) => extractPosts(item, provider));
+}
+function extractPosts(raw, provider) {
+  const record = asRecord4(raw);
+  if (record.type === "status" || record.author) {
+    const post = safeNormalizePost(record, provider);
+    return post ? [post] : [];
+  }
+  if (isObject(record.status)) {
+    const post = safeNormalizePost(record.status, provider);
+    return post ? [post] : [];
+  }
+  if (Array.isArray(record.thread)) {
+    return record.thread.map((item) => safeNormalizePost(item, provider)).filter((post) => Boolean(post));
+  }
+  return [];
+}
+function safeNormalizePost(raw, provider) {
+  try {
+    return normalizePost(raw, provider);
+  } catch {
+    return void 0;
+  }
+}
+function normalizeAuthor(raw, provider) {
+  const record = asRecord4(raw);
+  const handle = stripAt2(
+    asString2(record.screen_name) ?? asString2(record.handle) ?? asString2(record.username) ?? asString2(record.did) ?? "unknown"
+  );
+  const author = {
+    name: asString2(record.name) ?? asString2(record.display_name) ?? handle,
+    handle
+  };
+  const id = asString2(record.id);
+  if (id !== void 0) author.id = id;
+  const avatarUrl = asString2(record.avatar_url) ?? asString2(record.avatar) ?? asString2(record.avatarUrl);
+  if (avatarUrl !== void 0) author.avatarUrl = avatarUrl;
+  const bannerUrl = asString2(record.banner_url) ?? asString2(record.bannerUrl);
+  if (bannerUrl !== void 0) author.bannerUrl = bannerUrl;
+  const description = asString2(record.description);
+  if (description !== void 0) author.description = description;
+  const verification = asRecord4(record.verification);
+  const verified = asBoolean2(verification.verified);
+  if (verified !== void 0) author.verified = verified;
+  const verificationType = asString2(verification.type);
+  if (verificationType === "organization" || verificationType === "government" || verificationType === "individual") {
+    author.verificationType = verificationType;
+  } else if (verification.type === null) {
+    author.verificationType = null;
+  }
+  const followers = asNumber2(record.followers);
+  if (followers !== void 0) author.followers = followers;
+  const following = asNumber2(record.following);
+  if (following !== void 0) author.following = following;
+  const location = asString2(record.location);
+  if (location !== void 0) author.location = location;
+  const joined = asString2(record.joined);
+  if (joined !== void 0) author.joined = joined;
+  if (provider === "bluesky" && author.handle === "unknown") author.handle = author.name;
+  return author;
+}
+function normalizeMedia(raw) {
+  const record = asRecord4(raw);
+  const candidates = [];
+  if (Array.isArray(record.all)) candidates.push(...record.all);
+  if (candidates.length === 0 && Array.isArray(record.photos)) candidates.push(...record.photos);
+  if (candidates.length === 0 && Array.isArray(record.videos)) candidates.push(...record.videos);
+  if (candidates.length === 0 && isObject(record.mosaic)) candidates.push(record.mosaic);
+  if (isObject(record.external)) candidates.push(record.external);
+  const seen = /* @__PURE__ */ new Set();
+  const media = [];
+  for (const item of candidates) {
+    const normalized = normalizeMediaItem(item);
+    if (!normalized) continue;
+    const key = `${normalized.type}:${normalized.url}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    media.push(normalized);
+  }
+  return media;
+}
+function normalizeMediaItem(raw) {
+  const record = asRecord4(raw);
+  const originalType = asString2(record.type) ?? "photo";
+  const url = asString2(record.url) ?? asString2(record.thumbnail_url);
+  if (!url) return void 0;
+  const mediaType = originalType === "mosaic_photo" ? "mosaic" : originalType === "video" ? "video" : originalType === "gif" ? "gif" : originalType === "external" ? "external" : "photo";
+  const media = {
+    type: mediaType,
+    url
+  };
+  const id = asString2(record.id);
+  if (id !== void 0) media.id = id;
+  const thumbnailUrl = asString2(record.thumbnail_url);
+  if (thumbnailUrl !== void 0) media.thumbnailUrl = thumbnailUrl;
+  const width = asNumber2(record.width);
+  if (width !== void 0) media.width = width;
+  const height = asNumber2(record.height);
+  if (height !== void 0) media.height = height;
+  const altText = asString2(record.altText) ?? asString2(record.alt_text);
+  if (altText !== void 0) media.altText = altText;
+  const duration = asNumber2(record.duration);
+  if (duration !== void 0) media.duration = duration;
+  return media;
+}
+function normalizeMetrics(source) {
+  const metrics = {};
+  const replies = asNumber2(source.replies);
+  if (replies !== void 0) metrics.replies = replies;
+  const reposts = asNumber2(source.reposts);
+  if (reposts !== void 0) metrics.reposts = reposts;
+  const quotes = asNumber2(source.quotes);
+  if (quotes !== void 0) metrics.quotes = quotes;
+  const likes = asNumber2(source.likes);
+  if (likes !== void 0) metrics.likes = likes;
+  const views = asNumber2(source.views);
+  if (views !== void 0) metrics.views = views;
+  const bookmarks = asNumber2(source.bookmarks);
+  if (bookmarks !== void 0) metrics.bookmarks = bookmarks;
+  return metrics;
+}
+function normalizePoll(raw) {
+  const record = asRecord4(raw);
+  if (!Array.isArray(record.choices)) return void 0;
+  const choices = record.choices.map((choice) => {
+    const item = asRecord4(choice);
+    const label = asString2(item.label);
+    const count = asNumber2(item.count);
+    const percentage = asNumber2(item.percentage);
+    if (!label || count === void 0 || percentage === void 0) return void 0;
+    return { label, count, percentage };
+  }).filter((choice) => Boolean(choice));
+  if (choices.length === 0) return void 0;
+  const poll = {
+    choices,
+    totalVotes: asNumber2(record.total_votes) ?? 0
+  };
+  const endsAt = asString2(record.ends_at);
+  if (endsAt !== void 0) poll.endsAt = endsAt;
+  const timeLeft = asString2(record.time_left_en);
+  if (timeLeft !== void 0) poll.timeLeft = timeLeft;
+  return poll;
+}
+function normalizeTranslation(raw) {
+  const record = asRecord4(raw);
+  const text = asString2(record.text);
+  if (!text) return void 0;
+  const translation = { text };
+  const sourceLang = asString2(record.source_lang);
+  if (sourceLang !== void 0) translation.sourceLang = sourceLang;
+  const targetLang = asString2(record.target_lang);
+  if (targetLang !== void 0) translation.targetLang = targetLang;
+  const provider = asString2(record.provider);
+  if (provider !== void 0) translation.provider = provider;
+  return translation;
+}
+function normalizeCommunityNote(raw) {
+  if (raw === null) return null;
+  const record = asRecord4(raw);
+  const text = asString2(record.text);
+  return text ? { text } : void 0;
+}
+function asRecord4(value) {
+  return isObject(value) ? value : {};
+}
+function isObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function asString2(value) {
+  return typeof value === "string" && value.length > 0 ? value : void 0;
+}
+function asNumber2(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : void 0;
+}
+function asBoolean2(value) {
+  return typeof value === "boolean" ? value : void 0;
+}
+function stripAt2(handle) {
+  return handle.startsWith("@") ? handle.slice(1) : handle;
+}
+function timestampToIso(timestamp) {
+  if (timestamp === void 0) return void 0;
+  const millis = timestamp >= 1e12 ? timestamp : timestamp * 1e3;
+  const date = new Date(millis);
+  return Number.isNaN(date.getTime()) ? void 0 : date.toISOString();
+}
+function fallbackStatusUrl(provider, handle, id) {
+  if (provider === "x") return `https://x.com/${handle}/status/${id}`;
+  return `https://bsky.app/profile/${handle}/post/${id}`;
 }
 
 // src/cli/commands/post.ts
@@ -2314,13 +3528,14 @@ async function renderThreadCommand(input, rawOptions) {
 
 // src/cli/index.ts
 var program = new Command();
-program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.1.1");
+program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.0");
 addPostCommand(program);
 addShortcutPostCommand(program, "post-mobile", "Render a 430px mobile-style X post card.", "post-mobile");
 addShortcutPostCommand(program, "post-clean", "Render an editorial source quotation card.", "post-clean");
 addThreadCommand(program);
 addQuoteWallCommand(program);
 addArticleCommand(program);
+addArticleShotCommand(program);
 program.parseAsync(process.argv).catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`Error: ${message}`);
@@ -2374,6 +3589,14 @@ function addArticleCommand(parent) {
   const command = new Command("article-md").description("Export an X Article to Markdown with cover and inline media assets.").argument("<url-or-id>", "X/Twitter status URL or numeric status id containing an X Article.").option("-o, --out <dir>", "Output directory. Defaults to output/articles/<status-id>.").option("--assets <local|remote|none>", "How image assets should be referenced.", "local").option("--lang <code>", "Request FxEmbed with a target language when available.").option("--fixture <path>", "Read a saved FxEmbed article JSON response instead of calling the API.").option("--no-raw", "Do not write raw.fxembed.json.").option("--no-metadata", "Do not write metadata.json.").option("--no-title", "Do not prepend the article title as a Markdown H1.").option("--no-cover", "Do not include the cover image in article.md.");
   command.action(async (input, options) => {
     const out = await exportArticleCommand(input, options);
+    console.log(out);
+  });
+  parent.addCommand(command);
+}
+function addArticleShotCommand(parent) {
+  const command = new Command("article-shot").description("Render an X Article as a local long screenshot.").argument("<url-or-id>", "X/Twitter status URL or numeric status id containing an X Article.").option("-o, --out <path>", "Output image path, or output directory when no extension is provided.").option("--style <article-x|article-clean>", "Article screenshot style.", "article-x").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.", "540").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed with a target language when available.").option("--slice-height <px>", "Also export platform-friendly image slices at this CSS-pixel height.").option("--fixture <path>", "Read a saved FxEmbed article JSON response instead of calling the API.").option("--hide-source-footer", "Hide provenance footer.").option("--hide-actions", "Hide the X-style action row and header actions.").option("--no-cover", "Do not render the article cover image.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
+  command.action(async (input, options) => {
+    const out = await renderArticleShotCommand(input, options);
     console.log(out);
   });
   parent.addCommand(command);

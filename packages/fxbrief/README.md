@@ -2,13 +2,14 @@
 
 `fxbrief` is a local CLI for turning FxEmbed-powered X/Twitter data into clean editorial image assets and Markdown archives. It fetches post data from the public FxTwitter API, normalizes the response into local models, renders static React templates to HTML, captures the result with Playwright, and exports X Articles to Markdown with local media assets.
 
-The first version includes five production paths:
+The first version includes six production paths:
 
 - `post-mobile`: 430px mobile-style X post card for close-to-source quotation.
 - `post-clean`: editorial quote card that keeps provenance without imitating an official screenshot too closely.
 - `thread-vertical`: long vertical image for an unrolled thread.
 - `quote-wall`: reaction wall built from quote posts.
 - `article-md`: Markdown export for X Articles, including cover and inline media.
+- `article-shot`: local long screenshot for X Articles, with optional platform-friendly slices.
 
 ## Install From npm
 
@@ -80,6 +81,21 @@ Export an X Article to Markdown:
 fxbrief article-md "https://x.com/user/status/123"
 ```
 
+Render an X Article as a long screenshot:
+
+```bash
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --width 540 --scale 2
+```
+
+Render a cleaner article image and export slices for social platforms:
+
+```bash
+fxbrief article-shot "https://x.com/user/status/123" \
+  --style article-clean \
+  --slice-height 1800 \
+  --out output/my-article
+```
+
 Render the post body translated into Chinese while keeping the surrounding UI unchanged:
 
 ```bash
@@ -119,7 +135,7 @@ output/articles/<status-id>/
 
 ## Article Options
 
-`article-md` has its own output-oriented options:
+`article-md` exports a Markdown archive:
 
 - `--out <dir>`: output directory. Default is `output/articles/<status-id>`.
 - `--assets <local|remote|none>`: download images locally, keep remote image URLs, or omit images. Default is `local`.
@@ -127,6 +143,16 @@ output/articles/<status-id>/
 - `--no-metadata`: skip `metadata.json`.
 - `--no-title`: do not prepend the article title as `# H1`.
 - `--no-cover`: do not include the cover image in `article.md`.
+- `--fixture <path>`: read a saved FxEmbed article payload for testing.
+
+`article-shot` renders an X Article to PNG/WebP:
+
+- `--style <article-x|article-clean>`: choose an X-like article page or a cleaner editorial layout. Default is `article-x`.
+- `--width <px>`: screenshot width in CSS pixels. Default is `540`, which creates a 1080px-wide image with `--scale 2`.
+- `--slice-height <px>`: also export numbered slices at this CSS-pixel height.
+- `--hide-actions`: remove X-like header and engagement actions.
+- `--hide-source-footer`: remove the provenance footer.
+- `--no-cover`: omit the cover image.
 - `--fixture <path>`: read a saved FxEmbed article payload for testing.
 
 ## Output Model
@@ -139,7 +165,9 @@ The CLI always prints the final image path to stdout. If `--out` is not provided
 
 Remote avatars and media are cached under `cache/assets/` and embedded into the rendered HTML as data URLs before screenshot capture. This makes the final Playwright render local and stable.
 
-Article exports do not use Playwright. They convert FxEmbed's X Article blocks directly into Markdown so the original text order and content are preserved. Local article assets are written beside `article.md`.
+Article Markdown exports do not use Playwright. They convert FxEmbed's X Article blocks directly into Markdown so the original text order and content are preserved. Local article assets are written beside `article.md`.
+
+Article screenshots use the same local-rendering model as post images: FxEmbed data is normalized, remote article images and avatars are hydrated into data URLs, React renders a static HTML document, and Playwright captures the local article. When the article is too tall for a single practical browser capture, `fxbrief` captures chunks and stitches them with `sharp`. If `--slice-height` is provided, it also writes numbered slice images next to the long screenshot.
 
 ## Local Fixtures
 
@@ -161,6 +189,7 @@ You can also render a single fixture through the CLI:
 ```bash
 npm run dev -- post-mobile 1234567890123456789 --fixture fixtures/post.json --out output/test.png
 npm run dev -- article-md 3333333333333333333 --fixture fixtures/article.json --out output/test-article
+npm run dev -- article-shot 3333333333333333333 --fixture fixtures/article.json --out output/article-shot.png --debug-html
 ```
 
 ## Editorial Safety

@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
+import { normalizeArticleResponse } from '../src/normalize/socialArticle.js';
 import { normalizePostResponse, normalizeQuotesResponse, normalizeThreadResponse } from '../src/normalize/socialPost.js';
-import { renderPostHtml, renderQuoteWallHtml, renderThreadHtml } from '../src/render/renderHtml.js';
-import type { RenderOptions } from '../src/types.js';
+import { renderArticleShotHtml, renderPostHtml, renderQuoteWallHtml, renderThreadHtml } from '../src/render/renderHtml.js';
+import type { ArticleShotRenderOptions, RenderOptions } from '../src/types.js';
 
 const baseOptions: RenderOptions = {
   template: 'post-mobile',
@@ -15,6 +16,16 @@ const baseOptions: RenderOptions = {
   showTimestamp: true,
   showTranslation: false,
   translatedText: false,
+};
+
+const articleOptions: ArticleShotRenderOptions = {
+  style: 'article-x',
+  width: 540,
+  theme: 'light',
+  timezone: 'Asia/Shanghai',
+  showSourceFooter: true,
+  showCover: true,
+  showActions: true,
 };
 
 describe('rendering', () => {
@@ -59,5 +70,18 @@ describe('rendering', () => {
     expect(quotes).toHaveLength(2);
     expect(html).toContain('Quoted reactions');
     expect(html).toContain('Reporter One');
+  });
+
+  it('normalizes and renders an article-shot HTML document', async () => {
+    const raw = JSON.parse(await readFile('fixtures/article.json', 'utf8')) as unknown;
+    const article = normalizeArticleResponse(raw, 'x');
+    const html = renderArticleShotHtml(article, articleOptions);
+
+    expect(article.sourceMetrics?.likes).toBe(12);
+    expect(html).toContain('article-shot article-x');
+    expect(html).toContain('Synthetic X Article');
+    expect(html).toContain('Inline fixture image');
+    expect(html).toContain('article-code');
+    expect(html).toContain('Source: X / @example');
   });
 });

@@ -9,7 +9,7 @@ This repository currently includes:
 | Name | Type | Use Case |
 | --- | --- | --- |
 | `fxbrief` | npm CLI | Render X/Twitter posts, threads, quote walls, and X Articles into local editorial assets using FxEmbed data. |
-| `fx-brief-material-renderer` | Codex skill | Use `fxbrief` from Codex to generate source cards, thread images, quote walls, and X Article Markdown archives. |
+| `fx-brief-material-renderer` | Codex skill | Use `fxbrief` from Codex to generate source cards, thread images, quote walls, X Article Markdown archives, and X Article long screenshots. |
 | `matt-pic-grab-image` | Codex skill + Bun script | Find and cache license-safe images with source, license, and risk metadata. |
 
 ## fxbrief CLI
@@ -40,6 +40,7 @@ fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
 fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --slice-height 1800
 ```
 
 Translate only the post body:

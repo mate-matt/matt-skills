@@ -9,7 +9,7 @@
 | 名称 | 类型 | 用途 |
 | --- | --- | --- |
 | `fxbrief` | npm CLI | 基于 FxEmbed 数据，把 X/Twitter 推文、线程、引用墙和 X 长文渲染成本地新闻素材。 |
-| `fx-brief-material-renderer` | Codex skill | 在 Codex 里调用 `fxbrief`，生成推文卡片、线程长图、引用墙和 X 长文 Markdown。 |
+| `fx-brief-material-renderer` | Codex skill | 在 Codex 里调用 `fxbrief`，生成推文卡片、线程长图、引用墙、X 长文 Markdown 和 X 长文长截图。 |
 | `matt-pic-grab-image` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、授权和风险元数据。 |
 
 ## fxbrief CLI
@@ -40,6 +40,7 @@ fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
 fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --slice-height 1800
 ```
 
 只翻译推文正文，保留其它 UI：

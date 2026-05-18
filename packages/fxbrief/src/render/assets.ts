@@ -1,4 +1,4 @@
-import type { SocialMedia, SocialPost, SocialThread } from '../types.js';
+import type { ArticleMedia, SocialArticle, SocialMedia, SocialPost, SocialThread } from '../types.js';
 import { AssetCache } from '../cache/index.js';
 
 export async function hydratePostAssets(post: SocialPost, cache: AssetCache): Promise<SocialPost> {
@@ -34,6 +34,24 @@ export async function hydratePostsAssets(posts: SocialPost[], cache: AssetCache)
   return Promise.all(posts.map((post) => hydratePostAssets(post, cache)));
 }
 
+export async function hydrateArticleAssets(article: SocialArticle, cache: AssetCache): Promise<SocialArticle> {
+  const avatarAssetUrl = article.author.avatarUrl ? await cache.resolveImage(article.author.avatarUrl, article.author.handle) : undefined;
+  const cover = article.cover ? await hydrateArticleMedia(article.cover, cache) : undefined;
+  const media = await Promise.all(article.media.map((item) => hydrateArticleMedia(item, cache)));
+
+  return {
+    ...article,
+    author: avatarAssetUrl
+      ? {
+          ...article.author,
+          avatarAssetUrl,
+        }
+      : article.author,
+    ...(cover ? { cover } : {}),
+    media,
+  };
+}
+
 async function hydrateMedia(media: SocialMedia, cache: AssetCache): Promise<SocialMedia> {
   if (media.type === 'video' || media.type === 'external') {
     const thumbnailSource = media.thumbnailUrl;
@@ -49,6 +67,13 @@ async function hydrateMedia(media: SocialMedia, cache: AssetCache): Promise<Soci
     };
   }
 
+  return {
+    ...media,
+    assetUrl: await cache.resolveImage(media.url, media.type),
+  };
+}
+
+async function hydrateArticleMedia(media: ArticleMedia, cache: AssetCache): Promise<ArticleMedia> {
   return {
     ...media,
     assetUrl: await cache.resolveImage(media.url, media.type),

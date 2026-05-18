@@ -7,6 +7,7 @@ import type {
   ProviderName,
   SocialArticle,
   SocialAuthor,
+  SocialMetrics,
 } from '../types.js';
 
 export function normalizeArticleResponse(raw: unknown, provider: ProviderName = 'x'): SocialArticle {
@@ -41,6 +42,10 @@ export function normalizeArticleResponse(raw: unknown, provider: ProviderName = 
 
   const modifiedAt = asString(article.modified_at);
   if (modifiedAt !== undefined) normalized.modifiedAt = modifiedAt;
+  const sourceCreatedAt = asString(status.created_at);
+  if (sourceCreatedAt !== undefined) normalized.sourceCreatedAt = sourceCreatedAt;
+  const sourceMetrics = normalizeSourceMetrics(status);
+  if (sourceMetrics !== undefined) normalized.sourceMetrics = sourceMetrics;
   if (cover !== undefined) normalized.cover = cover;
 
   return normalized;
@@ -159,6 +164,25 @@ function normalizeArticleMedia(raw: unknown, fallbackMediaId?: string): ArticleM
   if (altText !== undefined) media.altText = altText;
 
   return media;
+}
+
+function normalizeSourceMetrics(status: Record<string, unknown>): SocialMetrics | undefined {
+  const metrics: SocialMetrics = {};
+  const replies = asNumber(status.replies);
+  const reposts = asNumber(status.reposts);
+  const quotes = asNumber(status.quotes);
+  const likes = asNumber(status.likes);
+  const views = asNumber(status.views);
+  const bookmarks = asNumber(status.bookmarks);
+
+  if (replies !== undefined) metrics.replies = replies;
+  if (reposts !== undefined) metrics.reposts = reposts;
+  if (quotes !== undefined) metrics.quotes = quotes;
+  if (likes !== undefined) metrics.likes = likes;
+  if (views !== undefined) metrics.views = views;
+  if (bookmarks !== undefined) metrics.bookmarks = bookmarks;
+
+  return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
 
 function asRecord(value: unknown): Record<string, unknown> {

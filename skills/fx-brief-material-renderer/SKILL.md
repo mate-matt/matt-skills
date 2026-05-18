@@ -1,11 +1,11 @@
 ---
 name: fx-brief-material-renderer
-description: Use this skill when asked to render X/Twitter posts, threads, quote reactions, or X Articles into local editorial assets with the fx-brief CLI and FxEmbed data. Applies to post-mobile, post-clean, thread-vertical, quote-wall, article-md, social quote cards, tweet cards, news source cards, and Markdown exports of X long-form articles with images.
+description: Use this skill when asked to render X/Twitter posts, threads, quote reactions, or X Articles into local editorial assets with the fx-brief CLI and FxEmbed data. Applies to post-mobile, post-clean, thread-vertical, quote-wall, article-md, article-shot, social quote cards, tweet cards, news source cards, Markdown exports of X long-form articles with images, and X Article long screenshots.
 ---
 
 # fx-brief Material Renderer
 
-Use the globally installed `fxbrief` CLI to generate deterministic social-source image assets and X Article Markdown archives. Do not hand-build screenshots, manually reconstruct article Markdown, or run this repository's TypeScript source when the published CLI can export the asset.
+Use the globally installed `fxbrief` CLI to generate deterministic social-source image assets, X Article Markdown archives, and X Article long screenshots. Do not hand-build screenshots, manually reconstruct article Markdown, or run this repository's TypeScript source when the published CLI can export the asset.
 
 ## CLI Requirement
 
@@ -36,6 +36,7 @@ npx playwright install chromium
    - `thread-vertical` for an unrolled thread long image.
    - `quote-wall` for quote-post reactions.
    - `article-md` for an X Article Markdown export with cover and inline media.
+   - `article-shot` for an X Article long screenshot suitable for sharing to other platforms.
 3. Run `fxbrief` directly from `PATH`.
 4. Verify the output exists. For visual changes, use `--debug-html` or render fixtures; for `article-md`, inspect `article.md` and `metadata.json`.
 5. Report the absolute output path to the user.
@@ -48,6 +49,8 @@ When the user asks for a translated output but does not name a language, infer t
 
 Do not translate names, handles, timestamps, metrics, buttons, source footer, or other UI labels. Use `--show-translation` only when the user explicitly asks to show both the original and translated text.
 
+For `article-md` and `article-shot`, preserve the original article text unless the user explicitly asks for a translated article. These commands are commonly used for archiving or reposting the author's own long-form source, so do not infer translation merely from the conversation language.
+
 ## Commands
 
 ```bash
@@ -56,6 +59,8 @@ fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
 fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --width 540 --scale 2
+fxbrief article-shot "https://x.com/user/status/123" --style article-clean --slice-height 1800 --out output/my-article
 fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
 ```
 
@@ -65,9 +70,10 @@ fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-te
 - Keep the source footer on by default for editorial provenance.
 - Use PNG unless the user asks for WebP.
 - Use `--scale 2` for image assets.
-- Use `--lang <code> --translated-text` when the user asks for translated output, or when the conversation language implies a translated output is expected.
+- Use `--lang <code> --translated-text` for post/thread/quote screenshots when the user asks for translated output, or when the conversation language implies a translated output is expected.
 - For `article-md`, keep the defaults unless asked otherwise: local assets, `metadata.json`, and `raw.fxembed.json`.
 - For X Article exports, do not summarize, translate, reorder, or rewrite source text. Report the `article.md` path and mention the `assets/` directory.
+- For `article-shot`, default to `--style article-x --width 540 --scale 2`. Add `--slice-height 1800` when the user wants images for social platforms such as Xiaohongshu, WeChat, or Instagram carousels. Report the long screenshot path and any slice paths.
 
 ## Validation
 
