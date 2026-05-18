@@ -5,15 +5,21 @@ description: Use this skill when asked to render X/Twitter posts, threads, quote
 
 # fx-brief Material Renderer
 
-Use the `fxbrief` CLI to generate deterministic social-source image assets and X Article Markdown archives. Do not hand-build screenshots or manually reconstruct article Markdown when the CLI can export them.
+Use the globally installed `fxbrief` CLI to generate deterministic social-source image assets and X Article Markdown archives. Do not hand-build screenshots, manually reconstruct article Markdown, or run this repository's TypeScript source when the published CLI can export the asset.
 
-## CLI Resolution
+## CLI Requirement
 
-Use the first available option:
+Run only the global CLI command:
 
-1. If `fxbrief` is on `PATH`, run `fxbrief ...`.
-2. If working inside this repository, run `npm --prefix packages/fxbrief run dev -- ...` for source execution.
-3. Otherwise run `npx -y @mate-matt/fxbrief@latest ...`.
+```bash
+fxbrief --help
+```
+
+If `fxbrief` is missing, tell the user to install it:
+
+```bash
+npm install -g @mate-matt/fxbrief
+```
 
 The screenshot commands use Playwright. If Chromium is missing, tell the user to run:
 
@@ -30,7 +36,7 @@ npx playwright install chromium
    - `thread-vertical` for an unrolled thread long image.
    - `quote-wall` for quote-post reactions.
    - `article-md` for an X Article Markdown export with cover and inline media.
-3. Run the CLI using the resolution order above.
+3. Run `fxbrief` directly from `PATH`.
 4. Verify the output exists. For visual changes, use `--debug-html` or render fixtures; for `article-md`, inspect `article.md` and `metadata.json`.
 5. Report the absolute output path to the user.
 
@@ -42,18 +48,6 @@ fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
 fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
-```
-
-Repository source mode:
-
-```bash
-npm --prefix packages/fxbrief run dev -- post-mobile "https://x.com/user/status/123" --scale 2
-```
-
-No local CLI install:
-
-```bash
-npx -y @mate-matt/fxbrief@latest post-mobile "https://x.com/user/status/123" --scale 2
 ```
 
 ## Defaults
@@ -68,13 +62,11 @@ npx -y @mate-matt/fxbrief@latest post-mobile "https://x.com/user/status/123" --s
 
 ## Validation
 
-For code or template changes, run:
+For normal usage, verify the installed CLI and generated output:
 
 ```bash
-npm --prefix packages/fxbrief run typecheck
-npm --prefix packages/fxbrief test
-npm --prefix packages/fxbrief run build
-npm --prefix packages/fxbrief run render:fixture
+fxbrief --version
+fxbrief --help
 ```
 
-Fixture outputs are written to `output/fixture-*.png`.
+For visual tasks, render the user's URL to an explicit `--out` path and confirm the file exists.
