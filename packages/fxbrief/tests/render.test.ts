@@ -14,6 +14,7 @@ const baseOptions: RenderOptions = {
   showSourceFooter: true,
   showTimestamp: true,
   showTranslation: false,
+  translatedText: false,
 };
 
 describe('rendering', () => {
@@ -24,6 +25,20 @@ describe('rendering', () => {
     expect(html).toContain('data-capture');
     expect(html).toContain('Example News Lab');
     expect(html).toContain('Source: X');
+  });
+
+  it('can render translated body text in place of the original', async () => {
+    const raw = JSON.parse(await readFile('fixtures/post.json', 'utf8')) as unknown;
+    const post = normalizePostResponse(raw, 'x');
+    post.translation = {
+      text: 'OpenAI 今天发布了一项新的研究更新，开发者社区已经在测试它会给新闻编辑室带来什么变化。',
+      targetLang: 'zh-cn',
+    };
+
+    const html = renderPostHtml(post, { ...baseOptions, translatedText: true });
+    expect(html).toContain('OpenAI 今天发布了一项新的研究更新');
+    expect(html).not.toContain('OpenAI announced a new research update today');
+    expect(html).not.toContain('<div class="translation-box">');
   });
 
   it('normalizes and renders thread HTML', async () => {

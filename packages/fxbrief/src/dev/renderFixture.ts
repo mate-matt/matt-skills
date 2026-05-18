@@ -16,6 +16,7 @@ const baseOptions: RenderOptions = {
   showSourceFooter: true,
   showTimestamp: true,
   showTranslation: false,
+  translatedText: false,
 };
 
 async function main(): Promise<void> {

@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name('fxbrief')
   .description('Render clean local news materials from FxEmbed-powered X/Twitter data.')
-  .version('0.1.0');
+  .version('0.1.1');
 
 addPostCommand(program);
 addShortcutPostCommand(program, 'post-mobile', 'Render a 430px mobile-style X post card.', 'post-mobile');
@@ -35,6 +35,7 @@ function addCommonOptions(command: Command): Command {
     .option('--theme <light|dark>', 'Visual theme.', 'light')
     .option('--timezone <tz>', 'Timezone used for rendered timestamps.', 'Asia/Shanghai')
     .option('--lang <code>', 'Request FxEmbed translation for the target language, e.g. zh-cn or en.')
+    .option('--translated-text', 'Render translated post body text instead of the original when --lang returns a translation.')
     .option('--media <none|first|grid|mosaic|full>', 'Media rendering mode.')
     .option('--stats', 'Show engagement metrics.')
     .option('--hide-stats', 'Hide engagement metrics.')

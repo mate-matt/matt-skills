@@ -42,6 +42,12 @@ fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --colu
 fxbrief article-md "https://x.com/user/status/123"
 ```
 
+Translate only the post body:
+
+```bash
+fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
+```
+
 Package source:
 
 ```text

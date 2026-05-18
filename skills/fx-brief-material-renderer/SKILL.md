@@ -40,6 +40,14 @@ npx playwright install chromium
 4. Verify the output exists. For visual changes, use `--debug-html` or render fixtures; for `article-md`, inspect `article.md` and `metadata.json`.
 5. Report the absolute output path to the user.
 
+## Language Handling
+
+When the user asks for a specific output language, request that language with `--lang <code>` and render only the post body in translation with `--translated-text`.
+
+When the user asks for a translated output but does not name a language, infer the target language from the conversation language. For Chinese conversation, use `--lang zh-cn --translated-text`. For English conversation, use `--lang en --translated-text`.
+
+Do not translate names, handles, timestamps, metrics, buttons, source footer, or other UI labels. Use `--show-translation` only when the user explicitly asks to show both the original and translated text.
+
 ## Commands
 
 ```bash
@@ -48,6 +56,7 @@ fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
 fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
+fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
 ```
 
 ## Defaults
@@ -56,7 +65,7 @@ fxbrief article-md "https://x.com/user/status/123"
 - Keep the source footer on by default for editorial provenance.
 - Use PNG unless the user asks for WebP.
 - Use `--scale 2` for image assets.
-- Use `--lang zh-cn --show-translation` only when the user wants translated text included.
+- Use `--lang <code> --translated-text` when the user asks for translated output, or when the conversation language implies a translated output is expected.
 - For `article-md`, keep the defaults unless asked otherwise: local assets, `metadata.json`, and `raw.fxembed.json`.
 - For X Article exports, do not summarize, translate, reorder, or rewrite source text. Report the `article.md` path and mention the `assets/` directory.
 

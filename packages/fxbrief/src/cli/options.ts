@@ -32,7 +32,8 @@ export function resolveCliOptions(
   const showStats = raw.hideStats ? false : raw.stats ?? defaults.showStats ?? template !== 'post-clean';
   const showSourceFooter = raw.hideSourceFooter ? false : defaults.showSourceFooter ?? true;
   const showTimestamp = defaults.showTimestamp ?? true;
-  const showTranslation = Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
+  const translatedText = Boolean(raw.translatedText ?? defaults.translatedText ?? false);
+  const showTranslation = translatedText ? false : Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
   const timezone = typeof raw.timezone === 'string' && raw.timezone ? raw.timezone : 'Asia/Shanghai';
   const maxPosts = parseOptionalPositiveInteger(raw.maxPosts) ?? defaults.maxPosts;
   const columns = parseOptionalPositiveInteger(raw.columns) ?? defaults.columns;
@@ -47,6 +48,7 @@ export function resolveCliOptions(
     showSourceFooter,
     showTimestamp,
     showTranslation,
+    translatedText,
     ...(maxPosts ? { maxPosts } : {}),
     ...(columns ? { columns } : {}),
   };

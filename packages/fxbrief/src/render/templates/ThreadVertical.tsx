@@ -24,7 +24,7 @@ export function ThreadVertical({ thread, options }: ThreadVerticalProps) {
           </div>
           <div className="thread-body">
             <PostHeader post={post} timezone={options.timezone} showTimestamp={options.showTimestamp} compact showAvatar={false} />
-            <PostText post={post} showTranslation={options.showTranslation} />
+            <PostText post={post} showTranslation={options.showTranslation} translatedText={options.translatedText} />
             <MediaGrid media={post.media} mode={options.mediaMode} />
             {options.showStats ? <Metrics metrics={post.metrics} /> : null}
             {options.showSourceFooter && index === posts.length - 1 ? <SourceFooter post={thread.root} /> : null}

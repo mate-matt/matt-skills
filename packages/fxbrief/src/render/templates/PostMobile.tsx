@@ -16,10 +16,10 @@ export function PostMobile({ post, options }: PostMobileProps) {
   return (
     <article className="capture post-mobile" data-capture>
       <PostHeader post={post} timezone={options.timezone} showTimestamp={false} actions={<MobileHeaderActions />} />
-      <PostText post={post} showTranslation={options.showTranslation} />
+      <PostText post={post} showTranslation={options.showTranslation} translatedText={options.translatedText} />
       <MediaGrid media={post.media} mode={options.mediaMode} />
       <Poll poll={post.poll} />
-      <QuotedPost post={post.quote} timezone={options.timezone} mediaMode={options.mediaMode} />
+      <QuotedPost post={post.quote} timezone={options.timezone} mediaMode={options.mediaMode} translatedText={options.translatedText} />
       {options.showTimestamp ? <MobileDetailMeta post={post} timezone={options.timezone} /> : null}
       {options.showStats ? <MobileActionBar post={post} /> : null}
       {options.showSourceFooter ? <SourceFooter post={post} /> : null}

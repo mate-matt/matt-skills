@@ -1347,12 +1347,18 @@ function PostHeader({ post, timezone, showTimestamp, compact = false, showAvatar
   ] });
 }
 
+// src/render/templates/components/displayText.ts
+function postBodyText(post, translatedText) {
+  if (translatedText && post.translation?.text) return post.translation.text;
+  return post.text || "[No text]";
+}
+
 // src/render/templates/components/PostText.tsx
 import { Fragment, jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
-function PostText({ post, className = "post-text", showTranslation }) {
+function PostText({ post, className = "post-text", showTranslation, translatedText }) {
   return /* @__PURE__ */ jsxs4(Fragment, { children: [
-    /* @__PURE__ */ jsx5("p", { className, children: post.text || "[No text]" }),
-    showTranslation && post.translation?.text ? /* @__PURE__ */ jsxs4("div", { className: "translation-box", children: [
+    /* @__PURE__ */ jsx5("p", { className, children: postBodyText(post, translatedText) }),
+    showTranslation && !translatedText && post.translation?.text ? /* @__PURE__ */ jsxs4("div", { className: "translation-box", children: [
       /* @__PURE__ */ jsx5("div", { className: "translation-label", children: "Translation" }),
       post.translation.text
     ] }) : null,
@@ -1365,11 +1371,11 @@ function PostText({ post, className = "post-text", showTranslation }) {
 
 // src/render/templates/components/QuotedPost.tsx
 import { jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
-function QuotedPost({ post, timezone, mediaMode }) {
+function QuotedPost({ post, timezone, mediaMode, translatedText }) {
   if (!post) return null;
   return /* @__PURE__ */ jsxs5("div", { className: "quote-card", children: [
     /* @__PURE__ */ jsx6(PostHeader, { post, timezone, showTimestamp: false, compact: true }),
-    /* @__PURE__ */ jsx6("div", { className: "quote-text", children: post.text || "[No text]" }),
+    /* @__PURE__ */ jsx6("div", { className: "quote-text", children: postBodyText(post, translatedText) }),
     /* @__PURE__ */ jsx6(MediaGrid, { media: post.media, mode: mediaMode === "none" ? "none" : "first" })
   ] });
 }
@@ -1394,9 +1400,9 @@ import { jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
 function PostClean({ post, options }) {
   return /* @__PURE__ */ jsxs7("article", { className: "capture post-clean", "data-capture": true, children: [
     /* @__PURE__ */ jsx7("div", { className: "clean-kicker", children: "Source quotation" }),
-    /* @__PURE__ */ jsx7(PostText, { post, className: "clean-text", showTranslation: options.showTranslation }),
+    /* @__PURE__ */ jsx7(PostText, { post, className: "clean-text", showTranslation: options.showTranslation, translatedText: options.translatedText }),
     /* @__PURE__ */ jsx7(MediaGrid, { media: post.media, mode: options.mediaMode === "grid" ? "first" : options.mediaMode }),
-    /* @__PURE__ */ jsx7(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode }),
+    /* @__PURE__ */ jsx7(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
     /* @__PURE__ */ jsx7("div", { className: "clean-author", children: /* @__PURE__ */ jsx7(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp }) }),
     options.showSourceFooter ? /* @__PURE__ */ jsx7(SourceFooter, { post }) : null
   ] });
@@ -1430,10 +1436,10 @@ import { Fragment as Fragment2, jsx as jsx9, jsxs as jsxs9 } from "react/jsx-run
 function PostMobile({ post, options }) {
   return /* @__PURE__ */ jsxs9("article", { className: "capture post-mobile", "data-capture": true, children: [
     /* @__PURE__ */ jsx9(PostHeader, { post, timezone: options.timezone, showTimestamp: false, actions: /* @__PURE__ */ jsx9(MobileHeaderActions, {}) }),
-    /* @__PURE__ */ jsx9(PostText, { post, showTranslation: options.showTranslation }),
+    /* @__PURE__ */ jsx9(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
     /* @__PURE__ */ jsx9(MediaGrid, { media: post.media, mode: options.mediaMode }),
     /* @__PURE__ */ jsx9(Poll, { poll: post.poll }),
-    /* @__PURE__ */ jsx9(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode }),
+    /* @__PURE__ */ jsx9(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
     options.showTimestamp ? /* @__PURE__ */ jsx9(MobileDetailMeta, { post, timezone: options.timezone }) : null,
     options.showStats ? /* @__PURE__ */ jsx9(MobileActionBar, { post }) : null,
     options.showSourceFooter ? /* @__PURE__ */ jsx9(SourceFooter, { post }) : null
@@ -1533,18 +1539,19 @@ import { jsx as jsx11, jsxs as jsxs11 } from "react/jsx-runtime";
 function QuoteWall({ sourcePost, quotes, options }) {
   const columns = options.columns ?? (options.width <= 560 ? 1 : 2);
   const style = { "--wall-columns": columns };
+  const sourceText = postBodyText(sourcePost, options.translatedText);
   return /* @__PURE__ */ jsxs11("section", { className: "capture quote-wall", style, "data-capture": true, children: [
     /* @__PURE__ */ jsx11("h1", { className: "wall-title", children: "Quoted reactions" }),
     /* @__PURE__ */ jsxs11("p", { className: "wall-subtitle", children: [
       "Responses quoting @",
       sourcePost.author.handle,
       ": ",
-      sourcePost.text.slice(0, 120),
-      sourcePost.text.length > 120 ? "..." : ""
+      sourceText.slice(0, 120),
+      sourceText.length > 120 ? "..." : ""
     ] }),
     quotes.length > 0 ? /* @__PURE__ */ jsx11("div", { className: "wall-grid", children: quotes.map((quote) => /* @__PURE__ */ jsxs11("article", { className: "wall-card", children: [
       /* @__PURE__ */ jsx11(PostHeader, { post: quote, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true }),
-      /* @__PURE__ */ jsx11(PostText, { post: quote, showTranslation: options.showTranslation }),
+      /* @__PURE__ */ jsx11(PostText, { post: quote, showTranslation: options.showTranslation, translatedText: options.translatedText }),
       options.showStats ? /* @__PURE__ */ jsx11(Metrics, { metrics: quote.metrics }) : null
     ] }, quote.id)) }) : /* @__PURE__ */ jsx11("div", { className: "empty-state", children: "No quote posts were returned for this source post." }),
     options.showSourceFooter ? /* @__PURE__ */ jsx11(SourceFooter, { post: sourcePost }) : null
@@ -1562,7 +1569,7 @@ function ThreadVertical({ thread, options }) {
     ] }),
     /* @__PURE__ */ jsxs12("div", { className: "thread-body", children: [
       /* @__PURE__ */ jsx12(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true, showAvatar: false }),
-      /* @__PURE__ */ jsx12(PostText, { post, showTranslation: options.showTranslation }),
+      /* @__PURE__ */ jsx12(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
       /* @__PURE__ */ jsx12(MediaGrid, { media: post.media, mode: options.mediaMode }),
       options.showStats ? /* @__PURE__ */ jsx12(Metrics, { metrics: post.metrics }) : null,
       options.showSourceFooter && index === posts.length - 1 ? /* @__PURE__ */ jsx12(SourceFooter, { post: thread.root }) : null
@@ -1613,7 +1620,8 @@ function resolveCliOptions(template, id, raw, defaults = {}) {
   const showStats = raw.hideStats ? false : raw.stats ?? defaults.showStats ?? template !== "post-clean";
   const showSourceFooter = raw.hideSourceFooter ? false : defaults.showSourceFooter ?? true;
   const showTimestamp = defaults.showTimestamp ?? true;
-  const showTranslation = Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
+  const translatedText = Boolean(raw.translatedText ?? defaults.translatedText ?? false);
+  const showTranslation = translatedText ? false : Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
   const timezone = typeof raw.timezone === "string" && raw.timezone ? raw.timezone : "Asia/Shanghai";
   const maxPosts = parseOptionalPositiveInteger(raw.maxPosts) ?? defaults.maxPosts;
   const columns = parseOptionalPositiveInteger(raw.columns) ?? defaults.columns;
@@ -1627,6 +1635,7 @@ function resolveCliOptions(template, id, raw, defaults = {}) {
     showSourceFooter,
     showTimestamp,
     showTranslation,
+    translatedText,
     ...maxPosts ? { maxPosts } : {},
     ...columns ? { columns } : {}
   };
@@ -2305,7 +2314,7 @@ async function renderThreadCommand(input, rawOptions) {
 
 // src/cli/index.ts
 var program = new Command();
-program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.1.0");
+program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.1.1");
 addPostCommand(program);
 addShortcutPostCommand(program, "post-mobile", "Render a 430px mobile-style X post card.", "post-mobile");
 addShortcutPostCommand(program, "post-clean", "Render an editorial source quotation card.", "post-clean");
@@ -2318,7 +2327,7 @@ program.parseAsync(process.argv).catch((error) => {
   process.exitCode = 1;
 });
 function addCommonOptions(command) {
-  return command.option("-o, --out <path>", "Output file path, or output directory when no extension is provided.").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed translation for the target language, e.g. zh-cn or en.").option("--media <none|first|grid|mosaic|full>", "Media rendering mode.").option("--stats", "Show engagement metrics.").option("--hide-stats", "Hide engagement metrics.").option("--hide-source-footer", "Hide provenance footer.").option("--show-translation", "Show translation block when FxEmbed returns one.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
+  return command.option("-o, --out <path>", "Output file path, or output directory when no extension is provided.").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed translation for the target language, e.g. zh-cn or en.").option("--translated-text", "Render translated post body text instead of the original when --lang returns a translation.").option("--media <none|first|grid|mosaic|full>", "Media rendering mode.").option("--stats", "Show engagement metrics.").option("--hide-stats", "Hide engagement metrics.").option("--hide-source-footer", "Hide provenance footer.").option("--show-translation", "Show translation block when FxEmbed returns one.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
 }
 function addPostCommand(parent) {
   const command = addCommonOptions(

@@ -161,6 +161,7 @@ export interface RenderOptions {
   showSourceFooter: boolean;
   showTimestamp: boolean;
   showTranslation: boolean;
+  translatedText: boolean;
   columns?: number;
   maxPosts?: number;
 }
@@ -192,6 +193,7 @@ export interface CommonCliOptions {
   stats?: boolean;
   media?: MediaMode;
   showTranslation?: boolean;
+  translatedText?: boolean;
   fixture?: string | undefined;
 }
 

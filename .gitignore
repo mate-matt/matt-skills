@@ -11,6 +11,7 @@ coverage/
 !.env.example
 
 .cache/
+cache/
 tmp/
 
 # Private creator drafts. Keep this local; do not publish.

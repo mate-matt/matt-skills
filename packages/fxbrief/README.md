@@ -80,6 +80,12 @@ Export an X Article to Markdown:
 fxbrief article-md "https://x.com/user/status/123"
 ```
 
+Render the post body translated into Chinese while keeping the surrounding UI unchanged:
+
+```bash
+fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
+```
+
 By default, this creates:
 
 ```text
@@ -102,6 +108,7 @@ output/articles/<status-id>/
 - `--theme <light|dark>`: visual theme.
 - `--timezone <tz>`: timestamp timezone. Default is `Asia/Shanghai`.
 - `--lang <code>`: request FxEmbed translation, for example `zh-cn`.
+- `--translated-text`: render the translated post body in place of the original text when FxEmbed returns a translation.
 - `--show-translation`: display translation if FxEmbed returns one.
 - `--media <none|first|grid|mosaic|full>`: media rendering mode.
 - `--stats` / `--hide-stats`: show or hide engagement metrics.

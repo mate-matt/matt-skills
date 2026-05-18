@@ -14,9 +14,9 @@ export function PostClean({ post, options }: PostCleanProps) {
   return (
     <article className="capture post-clean" data-capture>
       <div className="clean-kicker">Source quotation</div>
-      <PostText post={post} className="clean-text" showTranslation={options.showTranslation} />
+      <PostText post={post} className="clean-text" showTranslation={options.showTranslation} translatedText={options.translatedText} />
       <MediaGrid media={post.media} mode={options.mediaMode === 'grid' ? 'first' : options.mediaMode} />
-      <QuotedPost post={post.quote} timezone={options.timezone} mediaMode={options.mediaMode} />
+      <QuotedPost post={post.quote} timezone={options.timezone} mediaMode={options.mediaMode} translatedText={options.translatedText} />
       <div className="clean-author">
         <PostHeader post={post} timezone={options.timezone} showTimestamp={options.showTimestamp} />
       </div>
