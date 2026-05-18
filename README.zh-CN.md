@@ -55,6 +55,14 @@ fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-te
 packages/fxbrief
 ```
 
+生成示例：
+
+```text
+examples/fxbrief
+```
+
+示例目录把 X 长文 Markdown、长文本地图片资源，以及对应的 `article-shot` 长截图输出放在 CLI 源码旁边，方便统一查看。
+
 ## Codex Skills
 
 安装 X/FxEmbed 渲染 skill：

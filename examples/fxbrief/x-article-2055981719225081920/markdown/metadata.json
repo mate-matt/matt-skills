@@ -1,0 +1,66 @@
+{
+  "provider": "x",
+  "source_url": "https://x.com/mate_mattt/status/2055981719225081920",
+  "source_post_id": "2055981719225081920",
+  "article_id": "2055929145012678657",
+  "title": "疯狂 Builder 第 1 期：我把“安全拿图”做成了一个 Skill，帮你节省不必要的文生图 Token",
+  "preview_text": "GPT Image 2 让大家文生图成瘾，其实不是所有图片都需要文生图。很多时候，我们只是需要一张：\n文章封面图\n推文长截图背景\n公众号配图\n Notion / 博客头图\nAI 教程里的视觉缓冲图\n这类图不一定要从 0",
+  "created_at": "2026-05-17T12:00:14.000Z",
+  "modified_at": "2026-05-17T12:00:14.000Z",
+  "source_created_at": "Sun May 17 12:00:14 +0000 2026",
+  "source_metrics": {
+    "replies": 0,
+    "reposts": 0,
+    "quotes": 2,
+    "likes": 3,
+    "views": 2285,
+    "bookmarks": 5
+  },
+  "author": {
+    "name": "马特Matt",
+    "handle": "mate_mattt",
+    "id": "3492108198",
+    "verified": true,
+    "verification_type": "individual"
+  },
+  "block_count": 44,
+  "asset_mode": "local",
+  "assets": [
+    {
+      "role": "cover",
+      "mediaId": "2055952762651992064",
+      "sourceUrl": "https://pbs.twimg.com/media/HIg2JQza4AAQBYR.jpg",
+      "file": "/Users/saint/Documents/matt-skills/examples/fxbrief/x-article-2055981719225081920/markdown/assets/cover.jpg",
+      "markdownPath": "assets/cover.jpg",
+      "width": 1921,
+      "height": 768
+    },
+    {
+      "role": "media",
+      "mediaId": "2055973247318188032",
+      "sourceUrl": "https://pbs.twimg.com/media/HIhIxoIbYAA_a71.jpg",
+      "file": "/Users/saint/Documents/matt-skills/examples/fxbrief/x-article-2055981719225081920/markdown/assets/image-01.jpg",
+      "markdownPath": "assets/image-01.jpg",
+      "width": 1620,
+      "height": 1138
+    },
+    {
+      "role": "media",
+      "mediaId": "2055975800877514752",
+      "sourceUrl": "https://pbs.twimg.com/media/HIhLGQ4agAAqMLe.jpg",
+      "file": "/Users/saint/Documents/matt-skills/examples/fxbrief/x-article-2055981719225081920/markdown/assets/image-02.jpg",
+      "markdownPath": "assets/image-02.jpg",
+      "width": 1632,
+      "height": 1208
+    },
+    {
+      "role": "media",
+      "mediaId": "2055978913961254912",
+      "sourceUrl": "https://pbs.twimg.com/media/HIhN7eBaoAATrTR.jpg",
+      "file": "/Users/saint/Documents/matt-skills/examples/fxbrief/x-article-2055981719225081920/markdown/assets/image-03.jpg",
+      "markdownPath": "assets/image-03.jpg",
+      "width": 1956,
+      "height": 732
+    }
+  ]
+}

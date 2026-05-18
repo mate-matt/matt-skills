@@ -55,6 +55,14 @@ Package source:
 packages/fxbrief
 ```
 
+Generated examples:
+
+```text
+examples/fxbrief
+```
+
+The example folder keeps an X Article Markdown export, local article media, and the matching `article-shot` long screenshot output beside the CLI source.
+
 ## Codex Skills
 
 Install the X/FxEmbed renderer skill:

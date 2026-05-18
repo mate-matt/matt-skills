@@ -1,0 +1,920 @@
+{
+  "status": {
+    "type": "status",
+    "url": "https://x.com/mate_mattt/status/2055981719225081920",
+    "id": "2055981719225081920",
+    "text": "",
+    "raw_text": {
+      "text": "https://t.co/MnGWHmaRyv",
+      "display_text_range": [
+        0,
+        23
+      ],
+      "facets": []
+    },
+    "author": {
+      "screen_name": "mate_mattt",
+      "url": "https://x.com/mate_mattt",
+      "id": "3492108198",
+      "followers": 183,
+      "following": 253,
+      "likes": 158,
+      "media_count": 42,
+      "statuses": 1083,
+      "name": "马特Matt",
+      "description": "👷🏻‍♂️ 疯狂的 AI builder\n🚀 AI 爱好者 | 持续打造自己的 agent 军团\n☕️ 星巴克网络质检员",
+      "raw_description": {
+        "text": "👷🏻‍♂️ 疯狂的 AI builder\n🚀 AI 爱好者 | 持续打造自己的 agent 军团\n☕️ 星巴克网络质检员",
+        "facets": []
+      },
+      "location": "San Francisco, CA",
+      "banner_url": "https://pbs.twimg.com/profile_banners/3492108198/1441709691",
+      "avatar_url": "https://pbs.twimg.com/profile_images/2034469128036356097/V5W1fHUo_200x200.jpg",
+      "joined": "Tue Sep 08 10:51:17 +0000 2015",
+      "protected": false,
+      "website": null,
+      "verification": {
+        "verified": true,
+        "verified_at": null,
+        "type": "individual"
+      },
+      "type": "profile",
+      "about_account": {
+        "based_in": "United States",
+        "created_country_accurate": true,
+        "source": "United States App Store",
+        "username_changes": {
+          "count": 3,
+          "last_changed_at": "2026-03-04T08:12:10.327Z"
+        }
+      }
+    },
+    "replies": 0,
+    "reposts": 0,
+    "likes": 3,
+    "bookmarks": 5,
+    "quotes": 2,
+    "embed_card": "tweet",
+    "created_at": "Sun May 17 12:00:14 +0000 2026",
+    "created_timestamp": 1779019214,
+    "possibly_sensitive": false,
+    "views": 2285,
+    "is_note_tweet": false,
+    "community_note": null,
+    "lang": null,
+    "replying_to": null,
+    "media": {},
+    "source": "Twitter Web App",
+    "article": {
+      "created_at": "2026-05-17T12:00:14.000Z",
+      "modified_at": "2026-05-17T12:00:14.000Z",
+      "id": "2055929145012678657",
+      "title": "疯狂 Builder 第 1 期：我把“安全拿图”做成了一个 Skill，帮你节省不必要的文生图 Token",
+      "preview_text": "GPT Image 2 让大家文生图成瘾，其实不是所有图片都需要文生图。很多时候，我们只是需要一张：\n文章封面图\n推文长截图背景\n公众号配图\n Notion / 博客头图\nAI 教程里的视觉缓冲图\n这类图不一定要从 0",
+      "cover_media": {
+        "id": "QXBpTWVkaWE6DAAFCgABHIg2JQza4AAKAAIAAAAA0CVXpgAA",
+        "media_id": "2055952762651992064",
+        "media_info": {
+          "__typename": "ApiImage",
+          "color_info": {
+            "palette": [
+              {
+                "percentage": 80.87,
+                "rgb": {
+                  "blue": 236,
+                  "green": 245,
+                  "red": 251
+                }
+              },
+              {
+                "percentage": 4.32,
+                "rgb": {
+                  "blue": 40,
+                  "green": 47,
+                  "red": 46
+                }
+              },
+              {
+                "percentage": 2.45,
+                "rgb": {
+                  "blue": 251,
+                  "green": 128,
+                  "red": 81
+                }
+              },
+              {
+                "percentage": 2.28,
+                "rgb": {
+                  "blue": 248,
+                  "green": 212,
+                  "red": 197
+                }
+              },
+              {
+                "percentage": 0.92,
+                "rgb": {
+                  "blue": 252,
+                  "green": 88,
+                  "red": 20
+                }
+              }
+            ]
+          },
+          "original_img_height": 768,
+          "original_img_url": "https://pbs.twimg.com/media/HIg2JQza4AAQBYR.jpg",
+          "original_img_width": 1921
+        },
+        "media_key": "3_2055952762651992064"
+      },
+      "content": {
+        "blocks": [
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 13,
+                "offset": 23,
+                "style": "Bold"
+              }
+            ],
+            "key": "kcum",
+            "text": "GPT Image 2 让大家文生图成瘾，其实不是所有图片都需要文生图。很多时候，我们只是需要一张：",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "ea6he",
+            "text": "文章封面图",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "8b61o",
+            "text": "推文长截图背景",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "688u6",
+            "text": "公众号配图",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "f1g0a",
+            "text": " Notion / 博客头图",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "9d8eo",
+            "text": "AI 教程里的视觉缓冲图",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "3p56e",
+            "text": "这类图不一定要从 0 生成。网上已经有很多公开的高质量图片来源，里面有大量免费、可商用、可修改的图片，而且很多来源本身就提供 API。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "1ai37",
+            "text": "Openverse：可以按 license 筛 CC0",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bmsrr",
+            "text": "Smithsonian Open Access：CC0 开放馆藏",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "361tl",
+            "text": "Pexels / Pixabay：现代图库审美强，但要注意它们不是 CC0，而是平台 License",
+            "type": "unordered-list-item"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bh92h",
+            "text": "但是自己手动筛选搜图很麻烦，所以我构建一个 skill，让你一句话搞定精准搜图，并自动下载，结果还带元数据，并且免费，可商用，可二改。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "5nf2r",
+            "text": "matt-pic-grab-image skill 帮你自动实现",
+            "type": "header-two"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "fcsgk",
+            "text": "直接上使用案例，保证看完后你就迫不及待的去 github 点 start 去了：",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 0,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "8547n",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 1,
+                "length": 24,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "551dk",
+            "text": "点我，去 Github 开源仓库点 start。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "frhjg",
+            "text": "丰富的元信息方便接入其他流程、并且提醒版权问题",
+            "type": "header-two"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "dqa05",
+            "text": "结果中自带元数据：标题，来源，授权，创作者等元信息。方便将 skill 接入其他流程中进行二次创作。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 2,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "9vh20",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "7675g",
+            "text": "如图，该图片信息明确提示 Openverse 是聚合元数据，不是法律担保。普通内容创作够用了。如果是广告、商品包装、大规模商业使用，就打开 source_url 再复核一次。辅助商业化行为中进行合理的处理版权。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 8,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "8glrt",
+            "text": "内容创作的好伙伴",
+            "type": "header-two"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "6k32n",
+            "text": "很多内容创作里，图片需求大概可以分两类。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "epuq5",
+            "text": "第一类是「必须生成」：例如不存在的画面、你要统一品牌风格、你要特殊构图，这种当然适合文生图。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bicug",
+            "text": "第二类是「找到就行」：山水、历史画、星空、森林、植物插画、博物馆藏品、抽象纹理；这种如果每次都用文生图，其实有点浪费。除了浪费钱，还有等待时间， prompt 调参，版权等问题；并且后续复用时找不到出处。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "6fm1d",
+            "text": "公开图库里已经有很多好图，直接搜索、筛选、缓存、引用，反而更稳。对内容创作者来说，这可能比多生成一张“看起来不错但说不清来源”的图更有价值。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "epo3p",
+            "text": "疯狂 Builder 系列第一期",
+            "type": "header-two"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "albgv",
+            "text": "最近我在疯狂使用 codex 进行构建，简直沉迷其中，把 codex building 当做了像钓鱼一样的乐趣了。总结了一下，我已经构建了起码 10 多个大大小小的工具，很多都在自己的工作流程中发挥这作用。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "8vrhl",
+            "text": "所以，后续计划不断的开源，或者分享自己的构建过程和产品，欢迎大家关注我，一起讨论 codex building。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 3,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "drjfa",
+            "text": "开源 ",
+            "type": "header-two"
+          },
+          {
+            "data": {
+              "urls": [
+                {
+                  "fromIndex": 8,
+                  "text": "https://github.com/mate-matt/matt-skills",
+                  "toIndex": 48
+                }
+              ]
+            },
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 8,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "91qth",
+            "text": "Github: https://github.com/mate-matt/matt-skills ",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 13,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "fbvej",
+            "text": "Codex 推荐安装方式：",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 3,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "39qh4",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "9sjlf",
+            "text": "安装后重启 Codex，让它发现新 Skill。如果你已经把仓库 clone 到本地，也可以手动安装(需要本机安装 Bun)：",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 4,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "4agge",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 10,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "2igkd",
+            "text": "用 Codex 调用",
+            "type": "unstyled"
+          },
+          {
+            "data": {
+              "cashtags": [
+                {
+                  "fromIndex": 3,
+                  "text": "matt",
+                  "toIndex": 8
+                }
+              ]
+            },
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "20jth",
+            "text": "使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改",
+            "type": "blockquote"
+          },
+          {
+            "data": {
+              "cashtags": [
+                {
+                  "fromIndex": 4,
+                  "text": "matt",
+                  "toIndex": 9
+                }
+              ]
+            },
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "7g1a4",
+            "text": "Use $matt-pic-grab-image to find a CC0 history painting for an article cover.",
+            "type": "blockquote"
+          },
+          {
+            "data": {
+              "cashtags": [
+                {
+                  "fromIndex": 3,
+                  "text": "matt",
+                  "toIndex": 8
+                }
+              ]
+            },
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "7i9c",
+            "text": "使用 $matt-pic-grab-image 随机找一张可商用的自然风景背景图，并保存本地",
+            "type": "blockquote"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "fg9mu",
+            "text": "Codex 会自动决定关键词 fallback、数据源顺序和返回说明。中文关键词会保留原文，同时补一个英文 fallback，提高命中率。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [
+              {
+                "length": 10,
+                "offset": 0,
+                "style": "Bold"
+              }
+            ],
+            "key": "2h3g8",
+            "text": "也可以直接命令行使用",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 5,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "63jtq",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "dp2hn",
+            "text": "更多细节，可前往 github 开源仓库",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 6,
+                "length": 1,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "cjh6m",
+            "text": " ",
+            "type": "atomic"
+          },
+          {
+            "data": {},
+            "entityRanges": [
+              {
+                "key": 7,
+                "length": 24,
+                "offset": 0
+              }
+            ],
+            "inlineStyleRanges": [],
+            "key": "11so6",
+            "text": "点我，去 Github 开源仓库点 start。",
+            "type": "unstyled"
+          },
+          {
+            "data": {},
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "59hrb",
+            "text": "",
+            "type": "unstyled"
+          }
+        ],
+        "entityMap": [
+          {
+            "key": "4",
+            "value": {
+              "data": {
+                "markdown": "```shell\nmkdir -p \"${CODEX_HOME:-$HOME/.codex}/skills\"\nln -s \"$PWD/skills/matt-pic-grab-image\" \"${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image\"\n\n```"
+              },
+              "mutability": "Mutable",
+              "type": "MARKDOWN"
+            }
+          },
+          {
+            "key": "5",
+            "value": {
+              "data": {
+                "markdown": "```shell\nbun run skills/matt-pic-grab-image/scripts/grab-image.ts \\\n  --query \"山水\" \\\n  --fallback-query \"Chinese landscape painting\" \\\n  --mode strict_cc0 \\\n  --provider met,openverse \\\n  --orientation landscape \\\n  --count 1 \\\n  --seed shanshui-commercial-safe\n```"
+              },
+              "mutability": "Mutable",
+              "type": "MARKDOWN"
+            }
+          },
+          {
+            "key": "6",
+            "value": {
+              "data": {
+                "entityKey": "5320fbc3-a9d9-4a77-a8ff-adbd9e01b920",
+                "mediaItems": [
+                  {
+                    "localMediaId": "8",
+                    "mediaCategory": "DraftTweetImage",
+                    "mediaId": "2055978913961254912"
+                  }
+                ]
+              },
+              "mutability": "Immutable",
+              "type": "MEDIA"
+            }
+          },
+          {
+            "key": "1",
+            "value": {
+              "data": {
+                "url": "https://github.com/mate-matt/matt-skills"
+              },
+              "mutability": "Mutable",
+              "type": "LINK"
+            }
+          },
+          {
+            "key": "0",
+            "value": {
+              "data": {
+                "entityKey": "68b52654-f7cb-4011-834d-ba232022054a",
+                "mediaItems": [
+                  {
+                    "localMediaId": "4",
+                    "mediaCategory": "DraftTweetImage",
+                    "mediaId": "2055973247318188032"
+                  }
+                ]
+              },
+              "mutability": "Immutable",
+              "type": "MEDIA"
+            }
+          },
+          {
+            "key": "2",
+            "value": {
+              "data": {
+                "entityKey": "4561e38e-74ca-4abf-913f-16bb37972e68",
+                "mediaItems": [
+                  {
+                    "localMediaId": "6",
+                    "mediaCategory": "DraftTweetImage",
+                    "mediaId": "2055975800877514752"
+                  }
+                ]
+              },
+              "mutability": "Immutable",
+              "type": "MEDIA"
+            }
+          },
+          {
+            "key": "7",
+            "value": {
+              "data": {
+                "url": "https://github.com/mate-matt/matt-skills"
+              },
+              "mutability": "Mutable",
+              "type": "LINK"
+            }
+          },
+          {
+            "key": "3",
+            "value": {
+              "data": {
+                "markdown": "```shell\n$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image\n```"
+              },
+              "mutability": "Mutable",
+              "type": "MARKDOWN"
+            }
+          }
+        ]
+      },
+      "media_entities": [
+        {
+          "id": "QXBpTWVkaWE6DAAFCgABHIhIxoIbYAAKAAIAAAAA0CVXpgAA",
+          "media_id": "2055973247318188032",
+          "media_info": {
+            "__typename": "ApiImage",
+            "color_info": {
+              "palette": [
+                {
+                  "percentage": 91.15,
+                  "rgb": {
+                    "blue": 255,
+                    "green": 255,
+                    "red": 255
+                  }
+                },
+                {
+                  "percentage": 6.02,
+                  "rgb": {
+                    "blue": 85,
+                    "green": 123,
+                    "red": 161
+                  }
+                },
+                {
+                  "percentage": 1.82,
+                  "rgb": {
+                    "blue": 239,
+                    "green": 213,
+                    "red": 192
+                  }
+                },
+                {
+                  "percentage": 0.68,
+                  "rgb": {
+                    "blue": 135,
+                    "green": 133,
+                    "red": 132
+                  }
+                },
+                {
+                  "percentage": 0.28,
+                  "rgb": {
+                    "blue": 151,
+                    "green": 184,
+                    "red": 216
+                  }
+                }
+              ]
+            },
+            "original_img_height": 1138,
+            "original_img_url": "https://pbs.twimg.com/media/HIhIxoIbYAA_a71.jpg",
+            "original_img_width": 1620
+          },
+          "media_key": "3_2055973247318188032"
+        },
+        {
+          "id": "QXBpTWVkaWE6DAAFCgABHIhLGQ4agAAKAAIAAAAA0CVXpgAA",
+          "media_id": "2055975800877514752",
+          "media_info": {
+            "__typename": "ApiImage",
+            "color_info": {
+              "palette": [
+                {
+                  "percentage": 91.48,
+                  "rgb": {
+                    "blue": 255,
+                    "green": 255,
+                    "red": 255
+                  }
+                },
+                {
+                  "percentage": 5.77,
+                  "rgb": {
+                    "blue": 20,
+                    "green": 26,
+                    "red": 33
+                  }
+                },
+                {
+                  "percentage": 0.97,
+                  "rgb": {
+                    "blue": 31,
+                    "green": 56,
+                    "red": 92
+                  }
+                },
+                {
+                  "percentage": 0.69,
+                  "rgb": {
+                    "blue": 142,
+                    "green": 140,
+                    "red": 139
+                  }
+                },
+                {
+                  "percentage": 0.63,
+                  "rgb": {
+                    "blue": 141,
+                    "green": 145,
+                    "red": 147
+                  }
+                }
+              ]
+            },
+            "original_img_height": 1208,
+            "original_img_url": "https://pbs.twimg.com/media/HIhLGQ4agAAqMLe.jpg",
+            "original_img_width": 1632
+          },
+          "media_key": "3_2055975800877514752"
+        },
+        {
+          "id": "QXBpTWVkaWE6DAAFCgABHIhN7eBaoAAKAAIAAAAA0CVXpgAA",
+          "media_id": "2055978913961254912",
+          "media_info": {
+            "__typename": "ApiImage",
+            "color_info": {
+              "palette": [
+                {
+                  "percentage": 94.53,
+                  "rgb": {
+                    "blue": 251,
+                    "green": 251,
+                    "red": 251
+                  }
+                },
+                {
+                  "percentage": 3.01,
+                  "rgb": {
+                    "blue": 26,
+                    "green": 30,
+                    "red": 34
+                  }
+                },
+                {
+                  "percentage": 0.85,
+                  "rgb": {
+                    "blue": 90,
+                    "green": 131,
+                    "red": 168
+                  }
+                },
+                {
+                  "percentage": 0.73,
+                  "rgb": {
+                    "blue": 25,
+                    "green": 40,
+                    "red": 62
+                  }
+                },
+                {
+                  "percentage": 0.11,
+                  "rgb": {
+                    "blue": 92,
+                    "green": 70,
+                    "red": 53
+                  }
+                }
+              ]
+            },
+            "original_img_height": 732,
+            "original_img_url": "https://pbs.twimg.com/media/HIhN7eBaoAATrTR.jpg",
+            "original_img_width": 1956
+          },
+          "media_key": "3_2055978913961254912"
+        }
+      ]
+    },
+    "provider": "twitter",
+    "reposted_by": null
+  },
+  "thread": null,
+  "author": {
+    "screen_name": "mate_mattt",
+    "url": "https://x.com/mate_mattt",
+    "id": "3492108198",
+    "followers": 183,
+    "following": 253,
+    "likes": 158,
+    "media_count": 42,
+    "statuses": 1083,
+    "name": "马特Matt",
+    "description": "👷🏻‍♂️ 疯狂的 AI builder\n🚀 AI 爱好者 | 持续打造自己的 agent 军团\n☕️ 星巴克网络质检员",
+    "raw_description": {
+      "text": "👷🏻‍♂️ 疯狂的 AI builder\n🚀 AI 爱好者 | 持续打造自己的 agent 军团\n☕️ 星巴克网络质检员",
+      "facets": []
+    },
+    "location": "San Francisco, CA",
+    "banner_url": "https://pbs.twimg.com/profile_banners/3492108198/1441709691",
+    "avatar_url": "https://pbs.twimg.com/profile_images/2034469128036356097/V5W1fHUo_200x200.jpg",
+    "joined": "Tue Sep 08 10:51:17 +0000 2015",
+    "protected": false,
+    "website": null,
+    "verification": {
+      "verified": true,
+      "verified_at": null,
+      "type": "individual"
+    },
+    "type": "profile",
+    "about_account": {
+      "based_in": "United States",
+      "created_country_accurate": true,
+      "source": "United States App Store",
+      "username_changes": {
+        "count": 3,
+        "last_changed_at": "2026-03-04T08:12:10.327Z"
+      }
+    }
+  },
+  "code": 200
+}
