@@ -1,0 +1,68 @@
+{
+  "name": "@mate-matt/fxbrief",
+  "version": "0.1.0",
+  "description": "Local X/Twitter editorial asset renderer powered by FxEmbed data and Playwright screenshots.",
+  "type": "module",
+  "homepage": "https://github.com/mate-matt/matt-skills/tree/main/packages/fxbrief#readme",
+  "bugs": {
+    "url": "https://github.com/mate-matt/matt-skills/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mate-matt/matt-skills.git",
+    "directory": "packages/fxbrief"
+  },
+  "bin": {
+    "fxbrief": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "docs",
+    "fixtures",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/cli/index.ts --format esm --dts --clean --sourcemap --out-dir dist",
+    "dev": "tsx src/cli/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "render:fixture": "tsx src/dev/renderFixture.ts",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "keywords": [
+    "fxembed",
+    "twitter",
+    "x",
+    "screenshot",
+    "playwright",
+    "news"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "playwright": "^1.57.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "sharp": "^0.34.5",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
+  }
+}

@@ -1,6 +1,8 @@
 .DS_Store
 node_modules/
 dist/
+!packages/fxbrief/dist/
+!packages/fxbrief/dist/**
 coverage/
 *.log
 

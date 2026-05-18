@@ -1,0 +1,207 @@
+{
+  "code": 200,
+  "status": {
+    "type": "status",
+    "id": "3333333333333333333",
+    "url": "https://x.com/example/status/3333333333333333333",
+    "text": "",
+    "created_at": "2026-05-17T08:00:00.000Z",
+    "created_timestamp": 1779004800,
+    "likes": 12,
+    "reposts": 3,
+    "quotes": 1,
+    "replies": 2,
+    "lang": "en",
+    "source": "Twitter Web App",
+    "provider": "twitter",
+    "is_note_tweet": false,
+    "community_note": null,
+    "reposted_by": null,
+    "replying_to": null,
+    "author": {
+      "id": "42",
+      "name": "Example Author",
+      "screen_name": "example",
+      "avatar_url": null,
+      "verification": {
+        "verified": true,
+        "type": "individual"
+      }
+    },
+    "media": {},
+    "raw_text": {
+      "text": "Synthetic article fixture",
+      "display_text_range": [0, 25],
+      "facets": []
+    },
+    "article": {
+      "created_at": "2026-05-17T08:00:00.000Z",
+      "modified_at": "2026-05-17T08:10:00.000Z",
+      "id": "article-1",
+      "title": "Synthetic X Article",
+      "preview_text": "A short fixture for Markdown export.",
+      "cover_media": {
+        "id": "cover-id",
+        "media_key": "3_cover",
+        "media_id": "cover-media",
+        "media_info": {
+          "__typename": "ApiImage",
+          "original_img_height": 180,
+          "original_img_width": 320,
+          "original_img_url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22180%22%3E%3Crect%20width%3D%22320%22%20height%3D%22180%22%20fill%3D%22%231d9bf0%22%2F%3E%3C%2Fsvg%3E",
+          "color_info": {
+            "palette": []
+          }
+        }
+      },
+      "content": {
+        "blocks": [
+          {
+            "key": "a",
+            "type": "unstyled",
+            "text": "This paragraph keeps original text and bold words.",
+            "inlineStyleRanges": [
+              {
+                "offset": 39,
+                "length": 10,
+                "style": "Bold"
+              }
+            ],
+            "entityRanges": [],
+            "data": {}
+          },
+          {
+            "key": "b",
+            "type": "unordered-list-item",
+            "text": "First item",
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          },
+          {
+            "key": "c",
+            "type": "unordered-list-item",
+            "text": "Second item",
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          },
+          {
+            "key": "d",
+            "type": "header-two",
+            "text": "Details",
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          },
+          {
+            "key": "e",
+            "type": "unstyled",
+            "text": "Visit the project repository.",
+            "inlineStyleRanges": [],
+            "entityRanges": [
+              {
+                "offset": 10,
+                "length": 18,
+                "key": 1
+              }
+            ],
+            "data": {}
+          },
+          {
+            "key": "f",
+            "type": "atomic",
+            "text": " ",
+            "inlineStyleRanges": [],
+            "entityRanges": [
+              {
+                "offset": 0,
+                "length": 1,
+                "key": 0
+              }
+            ],
+            "data": {}
+          },
+          {
+            "key": "g",
+            "type": "atomic",
+            "text": " ",
+            "inlineStyleRanges": [],
+            "entityRanges": [
+              {
+                "offset": 0,
+                "length": 1,
+                "key": 2
+              }
+            ],
+            "data": {}
+          },
+          {
+            "key": "h",
+            "type": "blockquote",
+            "text": "Do not rewrite source text.",
+            "inlineStyleRanges": [],
+            "entityRanges": [],
+            "data": {}
+          }
+        ],
+        "entityMap": [
+          {
+            "key": "0",
+            "value": {
+              "type": "MEDIA",
+              "mutability": "Immutable",
+              "data": {
+                "entityKey": "media-entity",
+                "mediaItems": [
+                  {
+                    "localMediaId": "local-1",
+                    "mediaCategory": "DraftTweetImage",
+                    "mediaId": "inline-media"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "key": "1",
+            "value": {
+              "type": "LINK",
+              "mutability": "Mutable",
+              "data": {
+                "url": "https://github.com/example/repo"
+              }
+            }
+          },
+          {
+            "key": "2",
+            "value": {
+              "type": "MARKDOWN",
+              "mutability": "Mutable",
+              "data": {
+                "markdown": "```shell\necho hello\n```"
+              }
+            }
+          }
+        ]
+      },
+      "media_entities": [
+        {
+          "id": "inline-id",
+          "media_key": "3_inline",
+          "media_id": "inline-media",
+          "media_info": {
+            "__typename": "ApiImage",
+            "original_img_height": 180,
+            "original_img_width": 320,
+            "original_img_url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22320%22%20height%3D%22180%22%3E%3Crect%20width%3D%22320%22%20height%3D%22180%22%20fill%3D%22%23ffcc00%22%2F%3E%3C%2Fsvg%3E",
+            "ext_alt_text": "Inline fixture image",
+            "color_info": {
+              "palette": []
+            }
+          }
+        }
+      ]
+    }
+  }
+}

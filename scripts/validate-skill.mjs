@@ -55,14 +55,25 @@ if (description.length < 40) {
   fail("Description should be descriptive enough to trigger the skill.");
 }
 
-const scriptPath = join(skillPath, "scripts", "grab-image.ts");
-if (!existsSync(scriptPath)) {
-  fail(`Expected bundled script not found: ${scriptPath}`);
+if (name === "matt-pic-grab-image") {
+  const scriptPath = join(skillPath, "scripts", "grab-image.ts");
+  if (!existsSync(scriptPath)) {
+    fail(`Expected bundled script not found: ${scriptPath}`);
+  }
+
+  const policyPath = join(skillPath, "references", "source-policy.md");
+  if (!existsSync(policyPath)) {
+    fail(`Expected source policy not found: ${policyPath}`);
+  }
 }
 
-const policyPath = join(skillPath, "references", "source-policy.md");
-if (!existsSync(policyPath)) {
-  fail(`Expected source policy not found: ${policyPath}`);
+if (name === "fx-brief-material-renderer") {
+  if (!content.includes("@mate-matt/fxbrief")) {
+    fail("fx-brief-material-renderer should document the @mate-matt/fxbrief CLI fallback.");
+  }
+  if (!content.includes("npx playwright install chromium")) {
+    fail("fx-brief-material-renderer should document Chromium installation for Playwright.");
+  }
 }
 
 console.log(`Skill is valid: ${name}`);

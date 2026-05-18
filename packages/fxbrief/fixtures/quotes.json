@@ -1,0 +1,67 @@
+{
+  "code": 200,
+  "results": [
+    {
+      "type": "status",
+      "id": "2234567890123456789",
+      "url": "https://x.com/reporter/status/2234567890123456789",
+      "text": "This is exactly the kind of source-preserving visual workflow newsrooms need.",
+      "created_at": "2026-05-17T08:10:00.000Z",
+      "created_timestamp": 1779005400,
+      "likes": 1230,
+      "reposts": 88,
+      "quotes": 19,
+      "replies": 20,
+      "author": {
+        "name": "Reporter One",
+        "screen_name": "reporter",
+        "avatar_url": null,
+        "verification": {
+          "verified": false,
+          "type": null
+        }
+      },
+      "media": {
+        "all": []
+      },
+      "raw_text": {
+        "text": "This is exactly the kind of source-preserving visual workflow newsrooms need.",
+        "display_text_range": [0, 74],
+        "facets": []
+      }
+    },
+    {
+      "type": "status",
+      "id": "2234567890123456790",
+      "url": "https://x.com/editor/status/2234567890123456790",
+      "text": "The important bit is provenance: keep the original URL and timestamp visible.",
+      "created_at": "2026-05-17T08:12:00.000Z",
+      "created_timestamp": 1779005520,
+      "likes": 840,
+      "reposts": 32,
+      "quotes": 7,
+      "replies": 13,
+      "author": {
+        "name": "Desk Editor",
+        "screen_name": "editor",
+        "avatar_url": null,
+        "verification": {
+          "verified": true,
+          "type": "individual"
+        }
+      },
+      "media": {
+        "all": []
+      },
+      "raw_text": {
+        "text": "The important bit is provenance: keep the original URL and timestamp visible.",
+        "display_text_range": [0, 74],
+        "facets": []
+      }
+    }
+  ],
+  "cursor": {
+    "top": "top",
+    "bottom": "bottom"
+  }
+}
