@@ -1,15 +1,15 @@
 # fxbrief
 
-`fxbrief` is a local CLI for turning FxEmbed-powered X/Twitter data into clean editorial image assets and Markdown archives. It fetches post data from the public FxTwitter API, normalizes the response into local models, renders static React templates to HTML, captures the result with Playwright, and exports X Articles to Markdown with local media assets.
+`fxbrief` is a local CLI for turning FxEmbed-powered X/Twitter data into clean editorial assets. It fetches post data from the public FxTwitter/FxEmbed API, normalizes the response into local models, renders static React templates to HTML, captures screenshots with Playwright, and exports X Articles to Markdown with local media assets.
 
-The first version includes six production paths:
+The recommended production paths are:
 
-- `post-mobile`: 430px mobile-style X post card for close-to-source quotation.
-- `post-clean`: editorial quote card that keeps provenance without imitating an official screenshot too closely.
-- `thread-vertical`: long vertical image for an unrolled thread.
-- `quote-wall`: reaction wall built from quote posts.
-- `article-md`: Markdown export for X Articles, including cover and inline media.
+- `post-mobile`: 430px mobile-style X post screenshot for close-to-source quotation.
+- `post-clean`: editorial quote card that keeps provenance without imitating an official X screenshot too closely.
+- `article-md`: Markdown export for X Articles, including cover, inline media, metadata, and optional raw FxEmbed payload.
 - `article-shot`: local long screenshot for X Articles, with optional platform-friendly slices.
+
+`thread-vertical` and `quote-wall` are still available as auxiliary commands, but they are not the primary public workflows.
 
 ## Install From npm
 
@@ -43,7 +43,7 @@ npm run build
 npm run dev -- post-mobile "https://x.com/user/status/123"
 ```
 
-## Commands
+## Core Commands
 
 Render a mobile-style post card:
 
@@ -55,24 +55,6 @@ Render an editorial quote card:
 
 ```bash
 fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
-```
-
-Render a thread long image:
-
-```bash
-fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
-```
-
-Render a quote/reaction wall:
-
-```bash
-fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
-```
-
-Generic post command:
-
-```bash
-fxbrief post "https://x.com/user/status/123" --template post-clean
 ```
 
 Export an X Article to Markdown:
@@ -102,7 +84,9 @@ Render the post body translated into Chinese while keeping the surrounding UI un
 fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
 ```
 
-By default, this creates:
+## Article Markdown Output
+
+By default, `article-md` creates:
 
 ```text
 output/articles/<status-id>/
@@ -113,6 +97,8 @@ output/articles/<status-id>/
     cover.jpg
     image-01.jpg
 ```
+
+Article Markdown exports do not use Playwright. They convert FxEmbed's X Article blocks directly into Markdown so the original text order and content are preserved. Local article assets are written beside `article.md`.
 
 ## Common Options
 
@@ -155,6 +141,16 @@ output/articles/<status-id>/
 - `--no-cover`: omit the cover image.
 - `--fixture <path>`: read a saved FxEmbed article payload for testing.
 
+## Auxiliary Commands
+
+These commands remain available for experiments and backward compatibility:
+
+```bash
+fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
+fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
+fxbrief post "https://x.com/user/status/123" --template post-clean
+```
+
 ## Output Model
 
 The CLI always prints the final image path to stdout. If `--out` is not provided, images go to `output/` using:
@@ -164,8 +160,6 @@ The CLI always prints the final image path to stdout. If `--out` is not provided
 ```
 
 Remote avatars and media are cached under `cache/assets/` and embedded into the rendered HTML as data URLs before screenshot capture. This makes the final Playwright render local and stable.
-
-Article Markdown exports do not use Playwright. They convert FxEmbed's X Article blocks directly into Markdown so the original text order and content are preserved. Local article assets are written beside `article.md`.
 
 Article screenshots use the same local-rendering model as post images: FxEmbed data is normalized, remote article images and avatars are hydrated into data URLs, React renders a static HTML document, and Playwright captures the local article. When the article is too tall for a single practical browser capture, `fxbrief` captures chunks and stitches them with `sharp`. If `--slice-height` is provided, it also writes numbered slice images next to the long screenshot.
 

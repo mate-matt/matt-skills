@@ -67,12 +67,12 @@ if (name === "matt-pic-grab-image") {
   }
 }
 
-if (name === "fx-brief-material-renderer") {
+if (name === "matt-fx-brief-material-renderer") {
   if (!content.includes("@mate-matt/fxbrief")) {
-    fail("fx-brief-material-renderer should document the @mate-matt/fxbrief CLI fallback.");
+    fail("matt-fx-brief-material-renderer should document the @mate-matt/fxbrief CLI fallback.");
   }
   if (!content.includes("npx playwright install chromium")) {
-    fail("fx-brief-material-renderer should document Chromium installation for Playwright.");
+    fail("matt-fx-brief-material-renderer should document Chromium installation for Playwright.");
   }
 }
 

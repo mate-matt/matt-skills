@@ -4,17 +4,28 @@
 
 面向创作者发布工作流的 Codex skills 和配套 CLI。
 
-目前包含：
+当前仓库分成两个清晰模块：
 
-| 名称 | 类型 | 用途 |
-| --- | --- | --- |
-| `fxbrief` | npm CLI | 基于 FxEmbed 数据，把 X/Twitter 推文、线程、引用墙和 X 长文渲染成本地新闻素材。 |
-| `fx-brief-material-renderer` | Codex skill | 在 Codex 里调用 `fxbrief`，生成推文卡片、线程长图、引用墙、X 长文 Markdown 和 X 长文长截图。 |
-| `matt-pic-grab-image` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、授权和风险元数据。 |
+| 模块 | 入口 | 类型 | 用途 |
+| --- | --- | --- | --- |
+| X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据，把 X/Twitter 推文和 X 长文渲染成本地新闻素材。 |
+| X / FxBrief | `matt-fx-brief-material-renderer` | Codex skill | 在 Codex 里调用 `fxbrief`，生成推文卡片、媒体引用卡、X 长文 Markdown 和 X 长文长截图。 |
+| Image Grab | `matt-pic-grab-image` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、授权和风险元数据。 |
 
-## fxbrief CLI
+## X / FxBrief 模块
 
-npm 包发布后安装：
+`fxbrief` 是 X/Twitter 素材渲染 CLI。它通过 FxEmbed 获取数据，用 React 模板生成本地 HTML，再通过 Playwright 截图；X 长文也可以导出 Markdown、本地图片资源和元数据。
+
+当前推荐公开使用的四个工作流：
+
+| 命令 | 输出 |
+| --- | --- |
+| `post-mobile` | 430px 移动端 X 风格截图，适合新闻引用源。 |
+| `post-clean` | 媒体报道引用卡，保留来源信息，同时降低“官方截图”的观感。 |
+| `article-md` | X 长文导出：`article.md`、`assets/`、`metadata.json`，以及可选 raw FxEmbed 数据。 |
+| `article-shot` | X 长文长截图，可输出适合社交平台的编号切片。 |
+
+安装 CLI：
 
 ```bash
 npm install -g @mate-matt/fxbrief
@@ -37,16 +48,27 @@ npx playwright install chromium
 ```bash
 fxbrief post-mobile "https://x.com/user/status/123" --scale 2
 fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
-fxbrief thread-vertical "https://x.com/user/status/123" --max-posts 6
-fxbrief quote-wall "https://x.com/user/status/123" --count 12 --width 920 --columns 2
 fxbrief article-md "https://x.com/user/status/123"
-fxbrief article-shot "https://x.com/user/status/123" --style article-x --slice-height 1800
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --width 540 --scale 2
+fxbrief article-shot "https://x.com/user/status/123" --style article-x --slice-height 1800 --out output/my-article
 ```
 
 只翻译推文正文，保留其它 UI：
 
 ```bash
 fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
+```
+
+安装 Codex skill：
+
+```text
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
+```
+
+示例请求：
+
+```text
+使用 $matt-fx-brief-material-renderer 将这篇 X 长文生成完整长截图和 3 张切片：https://x.com/user/status/123
 ```
 
 源码位置：
@@ -61,37 +83,17 @@ packages/fxbrief
 examples/fxbrief
 ```
 
-示例目录把 X 长文 Markdown、长文本地图片资源，以及对应的 `article-shot` 长截图输出放在 CLI 源码旁边，方便统一查看。
+## Image Grab 模块
 
-## Codex Skills
+这个模块和 X/FxBrief 是两条独立能力线。`matt-pic-grab-image` 按关键词或随机获取可商用、可二改、无需署名的图片，并自动保存本地文件、来源页、授权信息和风险提示。
 
-安装 X/FxEmbed 渲染 skill：
-
-```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/fx-brief-material-renderer
-```
-
-安装图片查找 skill：
+安装 Codex skill：
 
 ```text
 $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
 ```
 
-安装后重启 Codex，让它发现新 skill。
-
-如果已经 clone 到本地，也可以手动安装：
-
-```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s "$PWD/skills/fx-brief-material-renderer" "${CODEX_HOME:-$HOME/.codex}/skills/fx-brief-material-renderer"
-ln -s "$PWD/skills/matt-pic-grab-image" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image"
-```
-
-## matt-pic-grab-image
-
-按关键词或随机获取一张可商用、可二改、无需署名的图片，并自动保存本地文件、来源页、授权信息和风险提示。
-
-示例：
+示例请求：
 
 ```text
 使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
@@ -108,6 +110,18 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 ```
 
 默认 `strict_cc0` 模式会优先从 CC0 / Public Domain 来源拿图，不把 Pexels、Pixabay、Unsplash 这类平台授权误写成 CC0。
+
+## 手动安装 Skill
+
+安装后重启 Codex，让它发现新 skill。
+
+如果已经 clone 到本地，也可以手动安装：
+
+```bash
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+ln -s "$PWD/skills/matt-fx-brief-material-renderer" "${CODEX_HOME:-$HOME/.codex}/skills/matt-fx-brief-material-renderer"
+ln -s "$PWD/skills/matt-pic-grab-image" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image"
+```
 
 ## 开发
 
@@ -133,7 +147,7 @@ bun run fxbrief:pack
 
 ## 发布说明
 
-如果要发布 `@mate-matt/fxbrief`，你需要拥有能控制 `@mate-matt` 这个 user scope 或 organization scope 的 npm 账号。公开 scoped package 发布命令是：
+如果要发布 `@mate-matt/fxbrief`，你需要拥有能控制 `@mate-matt` organization scope 的 npm 账号。公开 scoped package 发布命令是：
 
 ```bash
 cd packages/fxbrief
