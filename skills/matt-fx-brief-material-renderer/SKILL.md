@@ -11,16 +11,22 @@ Do not hand-build screenshots or reconstruct article Markdown manually when `fxb
 
 ## CLI Requirement
 
-Use the command from `PATH`:
+Use `fxbrief` `0.2.1` or newer. Check the command from `PATH`:
+
+```bash
+fxbrief --version
+```
+
+If it is missing or older than `0.2.1`:
+
+```bash
+npm install -g @mate-matt/fxbrief@latest
+```
+
+Then confirm the expected commands exist:
 
 ```bash
 fxbrief --help
-```
-
-If it is missing:
-
-```bash
-npm install -g @mate-matt/fxbrief
 ```
 
 Screenshot commands use Playwright. If Chromium is missing:

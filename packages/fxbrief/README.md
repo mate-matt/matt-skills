@@ -14,8 +14,11 @@ The recommended production paths are:
 ## Install From npm
 
 ```bash
-npm install -g @mate-matt/fxbrief
+npm install -g @mate-matt/fxbrief@latest
+fxbrief --version
 ```
+
+Use `0.2.1` or newer for the Matt skill integration and the `article-md` / `article-shot` workflows.
 
 Then run:
 

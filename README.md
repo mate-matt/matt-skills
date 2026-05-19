@@ -25,10 +25,11 @@ The recommended public workflows are:
 | `article-md` | X Article export: `article.md`, `assets/`, `metadata.json`, and optional raw FxEmbed payload. |
 | `article-shot` | X Article long screenshot, with optional numbered slices for social platforms. |
 
-Install the CLI:
+Install the CLI. The X/FxBrief skill expects `fxbrief` `0.2.1` or newer, because that version includes `post-mobile`, `post-clean`, `article-md`, and `article-shot`:
 
 ```bash
-npm install -g @mate-matt/fxbrief
+npm install -g @mate-matt/fxbrief@latest
+fxbrief --version
 ```
 
 Use without a global install:

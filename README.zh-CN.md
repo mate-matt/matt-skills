@@ -25,10 +25,11 @@
 | `article-md` | X 长文导出：`article.md`、`assets/`、`metadata.json`，以及可选 raw FxEmbed 数据。 |
 | `article-shot` | X 长文长截图，可输出适合社交平台的编号切片。 |
 
-安装 CLI：
+安装 CLI。X/FxBrief skill 需要 `fxbrief` `0.2.1` 或更新版本，因为这个版本包含 `post-mobile`、`post-clean`、`article-md`、`article-shot` 四个核心命令：
 
 ```bash
-npm install -g @mate-matt/fxbrief
+npm install -g @mate-matt/fxbrief@latest
+fxbrief --version
 ```
 
 也可以不全局安装，直接使用：
