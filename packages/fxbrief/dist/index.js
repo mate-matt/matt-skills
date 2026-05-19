@@ -2678,13 +2678,17 @@ var AssetCache = class {
     this.cacheDir = options.cacheDir;
     this.userAgent = options.userAgent ?? "fx-brief/0.1";
   }
-  async resolveImage(url, fallbackLabel = "media") {
+  async resolveImage(url, fallbackLabel = "media", options = {}) {
     if (url.startsWith("data:")) return url;
     if (url.startsWith("file:")) return fileUrlToDataUrl(url);
     try {
       const cached = await this.getOrFetch(url);
       return `data:${cached.contentType};base64,${cached.bytes.toString("base64")}`;
-    } catch {
+    } catch (error) {
+      if (options.strict) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Could not resolve image asset ${url}: ${message}`);
+      }
       return placeholderDataUrl(fallbackLabel);
     }
   }
@@ -2700,17 +2704,7 @@ var AssetCache = class {
       return { bytes: bytes2, contentType: meta.contentType ?? mimeFromExtension(ext) };
     } catch {
     }
-    const response = await fetch(url, {
-      headers: {
-        accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-        "user-agent": this.userAgent
-      }
-    });
-    if (!response.ok) {
-      throw new Error(`Could not fetch asset ${url}: ${response.status}`);
-    }
-    const contentType = response.headers.get("content-type")?.split(";")[0]?.trim() || mimeFromExtension(ext);
-    const bytes = Buffer.from(await response.arrayBuffer());
+    const { bytes, contentType } = await fetchImageWithRetry(url, this.userAgent, ext);
     await Promise.all([
       writeFile3(dataPath, bytes),
       writeFile3(metaPath, JSON.stringify({ url, contentType }, null, 2))
@@ -2718,6 +2712,58 @@ var AssetCache = class {
     return { bytes, contentType };
   }
 };
+async function fetchImageWithRetry(url, userAgent, ext) {
+  const candidates = imageUrlCandidates(url);
+  let lastError;
+  for (const candidate of candidates) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const response = await fetch(candidate, {
+          headers: {
+            accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "user-agent": userAgent
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type")?.split(";")[0]?.trim() || mimeFromExtension(ext);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (bytes.length === 0) {
+          throw new Error("empty response body");
+        }
+        return { bytes, contentType };
+      } catch (error) {
+        lastError = error;
+        await delay(150 * (attempt + 1));
+      }
+    }
+  }
+  const message = lastError instanceof Error ? lastError.message : String(lastError ?? "unknown error");
+  throw new Error(`Could not fetch asset ${url}: ${message}`);
+}
+function imageUrlCandidates(url) {
+  const candidates = [url];
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === "pbs.twimg.com" && parsed.pathname.startsWith("/media/") && !parsed.searchParams.has("name")) {
+      for (const name of ["large", "orig"]) {
+        const candidate = new URL(url);
+        const ext = extensionFromUrl2(url).replace(/^\./, "");
+        if (ext && ext !== "bin") candidate.searchParams.set("format", ext === "jpeg" ? "jpg" : ext);
+        candidate.searchParams.set("name", name);
+        candidates.push(candidate.toString());
+      }
+    }
+  } catch {
+  }
+  return [...new Set(candidates)];
+}
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 async function fileUrlToDataUrl(url) {
   const parsed = new URL(url);
   const filePath = decodeURIComponent(parsed.pathname);
@@ -2845,7 +2891,7 @@ async function hydrateMedia(media, cache) {
 async function hydrateArticleMedia(media, cache) {
   return {
     ...media,
-    assetUrl: await cache.resolveImage(media.url, media.type)
+    assetUrl: await cache.resolveImage(media.url, media.type, { strict: true })
   };
 }
 function placeholderImageDataUrl(label) {
@@ -3528,7 +3574,7 @@ async function renderThreadCommand(input, rawOptions) {
 
 // src/cli/index.ts
 var program = new Command();
-program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.0");
+program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.1");
 addPostCommand(program);
 addShortcutPostCommand(program, "post-mobile", "Render a 430px mobile-style X post card.", "post-mobile");
 addShortcutPostCommand(program, "post-clean", "Render an editorial source quotation card.", "post-clean");

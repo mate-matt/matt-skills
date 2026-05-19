@@ -76,7 +76,7 @@ async function hydrateMedia(media: SocialMedia, cache: AssetCache): Promise<Soci
 async function hydrateArticleMedia(media: ArticleMedia, cache: AssetCache): Promise<ArticleMedia> {
   return {
     ...media,
-    assetUrl: await cache.resolveImage(media.url, media.type),
+    assetUrl: await cache.resolveImage(media.url, media.type, { strict: true }),
   };
 }
 

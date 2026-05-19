@@ -8,6 +8,10 @@ export interface AssetCacheOptions {
   userAgent?: string;
 }
 
+export interface ResolveImageOptions {
+  strict?: boolean;
+}
+
 export class AssetCache {
   private readonly cacheDir: string;
   private readonly userAgent: string;
@@ -17,14 +21,18 @@ export class AssetCache {
     this.userAgent = options.userAgent ?? 'fx-brief/0.1';
   }
 
-  async resolveImage(url: string, fallbackLabel = 'media'): Promise<string> {
+  async resolveImage(url: string, fallbackLabel = 'media', options: ResolveImageOptions = {}): Promise<string> {
     if (url.startsWith('data:')) return url;
     if (url.startsWith('file:')) return fileUrlToDataUrl(url);
 
     try {
       const cached = await this.getOrFetch(url);
       return `data:${cached.contentType};base64,${cached.bytes.toString('base64')}`;
-    } catch {
+    } catch (error) {
+      if (options.strict) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Could not resolve image asset ${url}: ${message}`);
+      }
       return placeholderDataUrl(fallbackLabel);
     }
   }
@@ -44,25 +52,75 @@ export class AssetCache {
       // Cache miss.
     }
 
-    const response = await fetch(url, {
-      headers: {
-        accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        'user-agent': this.userAgent,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Could not fetch asset ${url}: ${response.status}`);
-    }
-
-    const contentType = response.headers.get('content-type')?.split(';')[0]?.trim() || mimeFromExtension(ext);
-    const bytes = Buffer.from(await response.arrayBuffer());
+    const { bytes, contentType } = await fetchImageWithRetry(url, this.userAgent, ext);
     await Promise.all([
       writeFile(dataPath, bytes),
       writeFile(metaPath, JSON.stringify({ url, contentType }, null, 2)),
     ]);
     return { bytes, contentType };
   }
+}
+
+async function fetchImageWithRetry(url: string, userAgent: string, ext: string): Promise<{ bytes: Buffer; contentType: string }> {
+  const candidates = imageUrlCandidates(url);
+  let lastError: unknown;
+
+  for (const candidate of candidates) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const response = await fetch(candidate, {
+          headers: {
+            accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+            'user-agent': userAgent,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type')?.split(';')[0]?.trim() || mimeFromExtension(ext);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (bytes.length === 0) {
+          throw new Error('empty response body');
+        }
+
+        return { bytes, contentType };
+      } catch (error) {
+        lastError = error;
+        await delay(150 * (attempt + 1));
+      }
+    }
+  }
+
+  const message = lastError instanceof Error ? lastError.message : String(lastError ?? 'unknown error');
+  throw new Error(`Could not fetch asset ${url}: ${message}`);
+}
+
+function imageUrlCandidates(url: string): string[] {
+  const candidates = [url];
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'pbs.twimg.com' && parsed.pathname.startsWith('/media/') && !parsed.searchParams.has('name')) {
+      for (const name of ['large', 'orig']) {
+        const candidate = new URL(url);
+        const ext = extensionFromUrl(url).replace(/^\./, '');
+        if (ext && ext !== 'bin') candidate.searchParams.set('format', ext === 'jpeg' ? 'jpg' : ext);
+        candidate.searchParams.set('name', name);
+        candidates.push(candidate.toString());
+      }
+    }
+  } catch {
+    // Keep the original URL only.
+  }
+
+  return [...new Set(candidates)];
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 async function fileUrlToDataUrl(url: string): Promise<string> {
