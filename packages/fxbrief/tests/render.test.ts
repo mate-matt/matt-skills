@@ -13,6 +13,7 @@ const baseOptions: RenderOptions = {
   mediaMode: 'grid',
   showStats: true,
   showSourceFooter: true,
+  showSubscribeButton: false,
   showTimestamp: true,
   showTranslation: false,
   translatedText: false,
@@ -36,6 +37,14 @@ describe('rendering', () => {
     expect(html).toContain('data-capture');
     expect(html).toContain('Example News Lab');
     expect(html).toContain('Source: X');
+    expect(html).not.toContain('Subscribe');
+  });
+
+  it('renders the post-mobile Subscribe button only when explicitly requested', async () => {
+    const raw = JSON.parse(await readFile('fixtures/post.json', 'utf8')) as unknown;
+    const post = normalizePostResponse(raw, 'x');
+    const html = renderPostHtml(post, { ...baseOptions, showSubscribeButton: true });
+    expect(html).toContain('Subscribe');
   });
 
   it('can render translated body text in place of the original', async () => {

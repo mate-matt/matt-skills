@@ -2335,7 +2335,15 @@ function Poll({ poll }) {
 import { Fragment as Fragment3, jsx as jsx10, jsxs as jsxs10 } from "react/jsx-runtime";
 function PostMobile({ post, options }) {
   return /* @__PURE__ */ jsxs10("article", { className: "capture post-mobile", "data-capture": true, children: [
-    /* @__PURE__ */ jsx10(PostHeader, { post, timezone: options.timezone, showTimestamp: false, actions: /* @__PURE__ */ jsx10(MobileHeaderActions, {}) }),
+    /* @__PURE__ */ jsx10(
+      PostHeader,
+      {
+        post,
+        timezone: options.timezone,
+        showTimestamp: false,
+        actions: /* @__PURE__ */ jsx10(MobileHeaderActions, { showSubscribeButton: options.showSubscribeButton })
+      }
+    ),
     /* @__PURE__ */ jsx10(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
     /* @__PURE__ */ jsx10(MediaGrid, { media: post.media, mode: options.mediaMode }),
     /* @__PURE__ */ jsx10(Poll, { poll: post.poll }),
@@ -2345,9 +2353,9 @@ function PostMobile({ post, options }) {
     options.showSourceFooter ? /* @__PURE__ */ jsx10(SourceFooter, { post }) : null
   ] });
 }
-function MobileHeaderActions() {
+function MobileHeaderActions({ showSubscribeButton }) {
   return /* @__PURE__ */ jsxs10("div", { className: "mobile-header-actions", children: [
-    /* @__PURE__ */ jsx10("button", { className: "subscribe-button", type: "button", children: "Subscribe" }),
+    showSubscribeButton ? /* @__PURE__ */ jsx10("button", { className: "subscribe-button", type: "button", children: "Subscribe" }) : null,
     /* @__PURE__ */ jsx10("button", { className: "icon-button", type: "button", "aria-label": "Grok", children: /* @__PURE__ */ jsx10(GrokIcon2, {}) }),
     /* @__PURE__ */ jsxs10("button", { className: "icon-button more-button", type: "button", "aria-label": "More", children: [
       /* @__PURE__ */ jsx10("span", {}),
@@ -2536,6 +2544,7 @@ function resolveCliOptions(template, id, raw, defaults = {}) {
   const mediaMode = parseEnum(raw.media, ["none", "first", "grid", "mosaic", "full"], defaults.mediaMode ?? "grid");
   const showStats = raw.hideStats ? false : raw.stats ?? defaults.showStats ?? template !== "post-clean";
   const showSourceFooter = raw.hideSourceFooter ? false : defaults.showSourceFooter ?? true;
+  const showSubscribeButton = Boolean(raw.showSubscribe ?? defaults.showSubscribeButton ?? false);
   const showTimestamp = defaults.showTimestamp ?? true;
   const translatedText = Boolean(raw.translatedText ?? defaults.translatedText ?? false);
   const showTranslation = translatedText ? false : Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
@@ -2550,6 +2559,7 @@ function resolveCliOptions(template, id, raw, defaults = {}) {
     mediaMode,
     showStats,
     showSourceFooter,
+    showSubscribeButton,
     showTimestamp,
     showTranslation,
     translatedText,
@@ -3574,7 +3584,7 @@ async function renderThreadCommand(input, rawOptions) {
 
 // src/cli/index.ts
 var program = new Command();
-program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.1");
+program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.2");
 addPostCommand(program);
 addShortcutPostCommand(program, "post-mobile", "Render a 430px mobile-style X post card.", "post-mobile");
 addShortcutPostCommand(program, "post-clean", "Render an editorial source quotation card.", "post-clean");
@@ -3588,7 +3598,7 @@ program.parseAsync(process.argv).catch((error) => {
   process.exitCode = 1;
 });
 function addCommonOptions(command) {
-  return command.option("-o, --out <path>", "Output file path, or output directory when no extension is provided.").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed translation for the target language, e.g. zh-cn or en.").option("--translated-text", "Render translated post body text instead of the original when --lang returns a translation.").option("--media <none|first|grid|mosaic|full>", "Media rendering mode.").option("--stats", "Show engagement metrics.").option("--hide-stats", "Hide engagement metrics.").option("--hide-source-footer", "Hide provenance footer.").option("--show-translation", "Show translation block when FxEmbed returns one.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
+  return command.option("-o, --out <path>", "Output file path, or output directory when no extension is provided.").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed translation for the target language, e.g. zh-cn or en.").option("--translated-text", "Render translated post body text instead of the original when --lang returns a translation.").option("--media <none|first|grid|mosaic|full>", "Media rendering mode.").option("--stats", "Show engagement metrics.").option("--hide-stats", "Hide engagement metrics.").option("--show-subscribe", "Show the post-mobile Subscribe button when you know the account offers subscriptions.").option("--hide-source-footer", "Hide provenance footer.").option("--show-translation", "Show translation block when FxEmbed returns one.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
 }
 function addPostCommand(parent) {
   const command = addCommonOptions(

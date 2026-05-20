@@ -15,7 +15,12 @@ interface PostMobileProps {
 export function PostMobile({ post, options }: PostMobileProps) {
   return (
     <article className="capture post-mobile" data-capture>
-      <PostHeader post={post} timezone={options.timezone} showTimestamp={false} actions={<MobileHeaderActions />} />
+      <PostHeader
+        post={post}
+        timezone={options.timezone}
+        showTimestamp={false}
+        actions={<MobileHeaderActions showSubscribeButton={options.showSubscribeButton} />}
+      />
       <PostText post={post} showTranslation={options.showTranslation} translatedText={options.translatedText} />
       <MediaGrid media={post.media} mode={options.mediaMode} />
       <Poll poll={post.poll} />
@@ -27,12 +32,14 @@ export function PostMobile({ post, options }: PostMobileProps) {
   );
 }
 
-function MobileHeaderActions() {
+function MobileHeaderActions({ showSubscribeButton }: { showSubscribeButton: boolean }) {
   return (
     <div className="mobile-header-actions">
-      <button className="subscribe-button" type="button">
-        Subscribe
-      </button>
+      {showSubscribeButton ? (
+        <button className="subscribe-button" type="button">
+          Subscribe
+        </button>
+      ) : null}
       <button className="icon-button" type="button" aria-label="Grok">
         <GrokIcon />
       </button>

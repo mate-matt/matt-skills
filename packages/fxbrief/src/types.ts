@@ -163,6 +163,7 @@ export interface RenderOptions {
   mediaMode: MediaMode;
   showStats: boolean;
   showSourceFooter: boolean;
+  showSubscribeButton: boolean;
   showTimestamp: boolean;
   showTranslation: boolean;
   translatedText: boolean;
@@ -217,6 +218,7 @@ export interface CommonCliOptions {
   hideSourceFooter?: boolean;
   hideStats?: boolean;
   stats?: boolean;
+  showSubscribe?: boolean;
   media?: MediaMode;
   showTranslation?: boolean;
   translatedText?: boolean;

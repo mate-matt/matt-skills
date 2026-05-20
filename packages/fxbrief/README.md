@@ -20,7 +20,7 @@ npm install -g @mate-matt/fxbrief@latest
 fxbrief --version
 ```
 
-Use `0.2.1` or newer for the Matt skill integration and the `article-md` / `article-shot` workflows.
+Use `0.2.2` or newer for the Matt skill integration, the `article-md` / `article-shot` workflows, and the safer post-mobile Subscribe-button behavior.
 
 Then run:
 
@@ -119,6 +119,7 @@ Article Markdown exports do not use Playwright. They convert FxEmbed's X Article
 - `--show-translation`: display translation if FxEmbed returns one.
 - `--media <none|first|grid|mosaic|full>`: media rendering mode.
 - `--stats` / `--hide-stats`: show or hide engagement metrics.
+- `--show-subscribe`: show the `post-mobile` Subscribe button when you know the account offers subscriptions. FxEmbed does not currently expose a reliable subscription-availability field, so this button is hidden by default.
 - `--hide-source-footer`: remove the provenance footer.
 - `--transparent`: render with transparent background.
 - `--cache-dir <path>`: image cache directory.

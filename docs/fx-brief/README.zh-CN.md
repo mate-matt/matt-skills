@@ -22,7 +22,7 @@ npm install -g @mate-matt/fxbrief@latest
 fxbrief --version
 ```
 
-请使用 `fxbrief` `0.2.1` 或更新版本。这个版本包含 skill 需要的四个核心工作流。
+请使用 `fxbrief` `0.2.2` 或更新版本。这个版本包含 skill 需要的四个核心工作流，并且默认隐藏 post-mobile 的 Subscribe 按钮，除非显式要求显示。
 
 截图渲染使用 Playwright。如果本机还没有 Chromium，先安装一次：
 
@@ -44,6 +44,12 @@ $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skil
 
 ```bash
 fxbrief post-mobile "https://x.com/user/status/123" --scale 2
+```
+
+只有在你已经确认账号提供订阅入口时，才显示移动端 Subscribe 按钮：
+
+```bash
+fxbrief post-mobile "https://x.com/user/status/123" --scale 2 --show-subscribe
 ```
 
 只把推文正文翻译成中文，名称、数据、时间和 UI 保持原样：

@@ -12,6 +12,7 @@ coverage/
 
 .cache/
 /cache/
+output/
 tmp/
 
 # Private creator drafts. Keep this local; do not publish.

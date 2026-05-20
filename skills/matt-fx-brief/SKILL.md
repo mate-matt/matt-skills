@@ -11,13 +11,13 @@ Do not hand-build screenshots or reconstruct article Markdown manually when `fxb
 
 ## CLI Requirement
 
-Use `fxbrief` `0.2.1` or newer. Check the command from `PATH`:
+Use `fxbrief` `0.2.2` or newer. Check the command from `PATH`:
 
 ```bash
 fxbrief --version
 ```
 
-If it is missing or older than `0.2.1`:
+If it is missing or older than `0.2.2`:
 
 ```bash
 npm install -g @mate-matt/fxbrief@latest
@@ -64,6 +64,7 @@ If the user explicitly asks to keep the original language, do not pass `--lang` 
 
 ```bash
 fxbrief post-mobile "https://x.com/user/status/123" --scale 2
+fxbrief post-mobile "https://x.com/user/status/123" --scale 2 --show-subscribe
 fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 fxbrief article-md "https://x.com/user/status/123"
 fxbrief article-shot "https://x.com/user/status/123" --style article-x --width 540 --scale 2
@@ -77,6 +78,7 @@ fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-te
 - Use PNG and `--scale 2` for screenshot assets.
 - Keep the source footer by default for editorial provenance.
 - `post-mobile` already defaults to 430px width.
+- The `post-mobile` Subscribe button is hidden by default because FxEmbed does not currently expose a reliable subscription-availability field. Use `--show-subscribe` only when the user explicitly wants it or has verified the account offers subscriptions.
 - For `article-md`, keep local assets, `metadata.json`, and `raw.fxembed.json` unless the user asks otherwise.
 - For `article-shot`, default to `--style article-x --width 540 --scale 2`.
 - Add `--slice-height 1800` when the user wants platform-ready split images. Report both the full long screenshot and all numbered slices.

@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name('fxbrief')
   .description('Render clean local news materials from FxEmbed-powered X/Twitter data.')
-  .version('0.2.1');
+  .version('0.2.2');
 
 addPostCommand(program);
 addShortcutPostCommand(program, 'post-mobile', 'Render a 430px mobile-style X post card.', 'post-mobile');
@@ -41,6 +41,7 @@ function addCommonOptions(command: Command): Command {
     .option('--media <none|first|grid|mosaic|full>', 'Media rendering mode.')
     .option('--stats', 'Show engagement metrics.')
     .option('--hide-stats', 'Hide engagement metrics.')
+    .option('--show-subscribe', 'Show the post-mobile Subscribe button when you know the account offers subscriptions.')
     .option('--hide-source-footer', 'Hide provenance footer.')
     .option('--show-translation', 'Show translation block when FxEmbed returns one.')
     .option('--transparent', 'Capture with transparent background.')

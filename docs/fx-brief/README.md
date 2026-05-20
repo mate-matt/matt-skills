@@ -22,7 +22,7 @@ npm install -g @mate-matt/fxbrief@latest
 fxbrief --version
 ```
 
-Use `fxbrief` `0.2.1` or newer. That version contains the four workflows used by the skill.
+Use `fxbrief` `0.2.2` or newer. That version contains the four workflows used by the skill and hides the post-mobile Subscribe button unless explicitly requested.
 
 Screenshot rendering uses Playwright. Install Chromium once if needed:
 
@@ -44,6 +44,12 @@ Render a mobile post card:
 
 ```bash
 fxbrief post-mobile "https://x.com/user/status/123" --scale 2
+```
+
+Show the mobile Subscribe button only when you have verified the account offers subscriptions:
+
+```bash
+fxbrief post-mobile "https://x.com/user/status/123" --scale 2 --show-subscribe
 ```
 
 Render a translated Chinese post body while keeping names, metrics, timestamps, and UI labels unchanged:

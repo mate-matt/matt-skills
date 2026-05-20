@@ -180,7 +180,7 @@ Long article screenshots use `captureHtmlLong()`. It first measures `[data-captu
 
 | Template | Width | Media | Stats | Source footer |
 | --- | ---: | --- | --- | --- |
-| `post-mobile` | 430 | `grid` | on | on |
+| `post-mobile` | 430 | `grid` | on | on; Subscribe hidden unless `--show-subscribe` is passed |
 | `post-clean` | 390 | `first` | off | on |
 | `thread-vertical` | 390 | `grid` | off | on |
 | `quote-wall` | 920 | `none` | on | on |

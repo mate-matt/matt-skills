@@ -14,6 +14,7 @@ const baseOptions: RenderOptions = {
   mediaMode: 'grid',
   showStats: true,
   showSourceFooter: true,
+  showSubscribeButton: false,
   showTimestamp: true,
   showTranslation: false,
   translatedText: false,

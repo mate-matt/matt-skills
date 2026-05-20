@@ -31,6 +31,7 @@ export function resolveCliOptions(
   const mediaMode = parseEnum<MediaMode>(raw.media, ['none', 'first', 'grid', 'mosaic', 'full'], defaults.mediaMode ?? 'grid');
   const showStats = raw.hideStats ? false : raw.stats ?? defaults.showStats ?? template !== 'post-clean';
   const showSourceFooter = raw.hideSourceFooter ? false : defaults.showSourceFooter ?? true;
+  const showSubscribeButton = Boolean(raw.showSubscribe ?? defaults.showSubscribeButton ?? false);
   const showTimestamp = defaults.showTimestamp ?? true;
   const translatedText = Boolean(raw.translatedText ?? defaults.translatedText ?? false);
   const showTranslation = translatedText ? false : Boolean(raw.showTranslation ?? defaults.showTranslation ?? false);
@@ -46,6 +47,7 @@ export function resolveCliOptions(
     mediaMode,
     showStats,
     showSourceFooter,
+    showSubscribeButton,
     showTimestamp,
     showTranslation,
     translatedText,
