@@ -2,6 +2,8 @@
 
 `fxbrief` is a local CLI for turning FxEmbed-powered X/Twitter data into clean editorial assets. It fetches post data from the public FxTwitter/FxEmbed API, normalizes the response into local models, renders static React templates to HTML, captures screenshots with Playwright, and exports X Articles to Markdown with local media assets.
 
+For the Codex skill workflow and publishing examples, see the repository guides: [English](../../docs/fx-brief/README.md) / [简体中文](../../docs/fx-brief/README.zh-CN.md).
+
 The recommended production paths are:
 
 - `post-mobile`: 430px mobile-style X post screenshot for close-to-source quotation.

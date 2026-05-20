@@ -2,105 +2,50 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-Codex skills and companion CLIs for creator publishing workflows.
+`matt-skills` is a monorepo for creator-facing Codex skills and companion CLIs. The repository keeps the AI-facing skill instructions, deterministic helper scripts, npm packages, examples, and documentation in one place.
 
-This repository currently has two clearly separated modules:
+## Modules
 
-| Module | Entry | Type | Use Case |
-| --- | --- | --- | --- |
-| X / FxBrief | `fxbrief` | npm CLI | Render X/Twitter posts and X Articles into local editorial assets with FxEmbed data. |
-| X / FxBrief | `matt-fx-brief-material-renderer` | Codex skill | Drive `fxbrief` from Codex for post cards, clean quote cards, X Article Markdown exports, and long screenshots. |
-| Image Grab | `matt-pic-grab-image` | Codex skill + Bun script | Find and cache license-safe images with source, license, and risk metadata. |
+| Module | Entry | Type | What It Does | Docs |
+| --- | --- | --- | --- | --- |
+| X / FxBrief | `matt-fx-brief-material-renderer` | Codex skill | Turns X/Twitter posts and X Articles into local editorial assets. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / FxBrief | `fxbrief` | npm CLI | Fetches FxEmbed data and renders post screenshots, clean quote cards, article Markdown, and long screenshots. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| Image Grab | `matt-pic-grab-image` | Codex skill + Bun script | Finds and caches license-safe images with source, creator, license, and risk metadata. | [EN](docs/pic-grab-image/README.md) / [中文](docs/pic-grab-image/README.zh-CN.md) |
 
-## X / FxBrief Module
+## X / FxBrief
 
-`fxbrief` is the X/Twitter material renderer. It fetches FxEmbed data, renders local HTML with React templates, captures screenshots with Playwright, and exports X Articles with local assets and metadata.
+Use `matt-fx-brief-material-renderer` when you need publishable material from X/Twitter without depending on third-party screenshot pages. It uses the published `fxbrief` CLI, FxEmbed data, local React/HTML templates, and Playwright screenshots.
 
-The recommended public workflows are:
+Core workflows:
 
 | Command | Output |
 | --- | --- |
-| `post-mobile` | 430px mobile X-style screenshot for source-adjacent news quotation. |
-| `post-clean` | Media quote card with provenance, but less official-screenshot feel. |
-| `article-md` | X Article export: `article.md`, `assets/`, `metadata.json`, and optional raw FxEmbed payload. |
+| `post-mobile` | 430px mobile X-style screenshot for source-adjacent quotation. |
+| `post-clean` | Media quote card that keeps provenance while reducing the official-screenshot feel. |
+| `article-md` | X Article export with `article.md`, `assets/`, `metadata.json`, and optional raw FxEmbed data. |
 | `article-shot` | X Article long screenshot, with optional numbered slices for social platforms. |
 
-Install the CLI. The X/FxBrief skill expects `fxbrief` `0.2.1` or newer, because that version includes `post-mobile`, `post-clean`, `article-md`, and `article-shot`:
+| Example |
+| --- |
+| Use `$matt-fx-brief-material-renderer` to render `https://x.com/Google/status/2054285931260334181` as a screenshot, with the post body in Chinese. |
+| <img src="docs/fx-brief/assets/google-android-prompt.jpeg" alt="FxBrief prompt in Codex" width="520"> |
+| <img src="docs/fx-brief/assets/google-android-output.jpeg" alt="FxBrief generated Chinese post screenshot" width="420"> |
 
-```bash
-npm install -g @mate-matt/fxbrief@latest
-fxbrief --version
-```
+Detailed setup, examples, command options, output structure, and screenshots:
 
-Use without a global install:
+- [FxBrief guide in English](docs/fx-brief/README.md)
+- [FxBrief 中文教程](docs/fx-brief/README.zh-CN.md)
 
-```bash
-npx -y @mate-matt/fxbrief post-mobile "https://x.com/user/status/123" -o out.png
-```
+## Image Grab
 
-`fxbrief` uses Playwright for local screenshot rendering. If Chromium is missing:
+Use `matt-pic-grab-image` when you need an image for a cover, article illustration, deck, social post, or background and you want the source trail preserved. The default mode prioritizes CC0 / Public Domain sources and avoids mislabeling stock-platform licenses as CC0.
 
-```bash
-npx playwright install chromium
-```
+| Example |
+| --- |
+| Use `$matt-pic-grab-image` to find a CC0 history painting for an article cover. |
+| <img src="docs/assets/example-history-socrates.webp" alt="Public-domain history painting example" width="420"> |
 
-Common commands:
-
-```bash
-fxbrief post-mobile "https://x.com/user/status/123" --scale 2
-fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
-fxbrief article-md "https://x.com/user/status/123"
-fxbrief article-shot "https://x.com/user/status/123" --style article-x --width 540 --scale 2
-fxbrief article-shot "https://x.com/user/status/123" --style article-x --slice-height 1800 --out output/my-article
-```
-
-Translate only the post body:
-
-```bash
-fxbrief post-mobile "https://x.com/user/status/123" --lang zh-cn --translated-text
-```
-
-Install the Codex skill:
-
-```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
-```
-
-Example prompt:
-
-```text
-Use $matt-fx-brief-material-renderer to turn this X Article into a long screenshot and 3 slices: https://x.com/user/status/123
-```
-
-Package source:
-
-```text
-packages/fxbrief
-```
-
-Generated examples:
-
-```text
-examples/fxbrief
-```
-
-## Image Grab Module
-
-This module is separate from X/FxBrief. `matt-pic-grab-image` finds commercial-use, editable, no-attribution-required images by keyword or at random, then saves the image locally with its source page, license metadata, and risk notes.
-
-Install the Codex skill:
-
-```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
-```
-
-Example prompt:
-
-```text
-Use $matt-pic-grab-image to find a CC0 history painting for an article cover.
-```
-
-Direct command:
+Direct script example:
 
 ```bash
 bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
@@ -110,11 +55,21 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
   --count 1
 ```
 
-The default `strict_cc0` mode prioritizes CC0 / Public Domain sources and does not mislabel Pexels, Pixabay, or Unsplash platform licenses as CC0.
+Detailed setup, examples, source policy, script options, and output fields:
+
+- [Pic Grab Image guide in English](docs/pic-grab-image/README.md)
+- [Pic Grab Image 中文教程](docs/pic-grab-image/README.zh-CN.md)
 
 ## Manual Skill Install
 
-After installation, restart Codex so it can discover the new skills.
+Restart Codex after installation so it can discover the new skills.
+
+Install from GitHub:
+
+```text
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+```
 
 Manual install from a local clone:
 
