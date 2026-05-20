@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`matt-fx-brief-material-renderer` 是把 X/Twitter 推文和 X 长文转换为本地编辑素材的 Codex skill。真正可重复执行的工作由已发布的 `fxbrief` CLI 完成。
+`matt-fx-brief` 是把 X/Twitter 推文和 X 长文转换为本地编辑素材的 Codex skill。真正可重复执行的工作由已发布的 `fxbrief` CLI 完成。
 
 ## 可以生成什么
 
@@ -33,7 +33,7 @@ npx playwright install chromium
 安装 Codex skill：
 
 ```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief
 ```
 
 安装 skill 后重启 Codex。
@@ -82,15 +82,15 @@ fxbrief article-shot "https://x.com/user/status/123" \
 
 | 案例 |
 | --- |
-| 使用 `$matt-fx-brief-material-renderer` 把 `https://x.com/Google/status/2054285931260334181` 生成截图，要求截图正文是中文的。 |
+| 使用 `$matt-fx-brief` 把 `https://x.com/Google/status/2054285931260334181` 生成截图，要求截图正文是中文的。 |
 | <img src="assets/google-android-prompt.jpeg" alt="在 Codex 中请求 FxBrief skill 生成中文正文截图" width="560"> |
 | <img src="assets/google-android-output.jpeg" alt="生成后的 Google Android 中文正文推文截图" width="430"> |
 
 其他常用请求：
 
 ```text
-使用 $matt-fx-brief-material-renderer 将这篇 X 长文导出为 Markdown，并把图片资源保存到本地：https://x.com/user/status/123
-使用 $matt-fx-brief-material-renderer 将这篇 X 长文生成完整长截图和至少 3 张切分图：https://x.com/user/status/123
+使用 $matt-fx-brief 将这篇 X 长文导出为 Markdown，并把图片资源保存到本地：https://x.com/user/status/123
+使用 $matt-fx-brief 将这篇 X 长文生成完整长截图和至少 3 张切分图：https://x.com/user/status/123
 ```
 
 ## 输出位置

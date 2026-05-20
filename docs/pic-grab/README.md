@@ -1,8 +1,8 @@
-# Pic Grab Image Guide
+# Pic Grab Guide
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`matt-pic-grab-image` helps Codex find and cache images with a clear source trail. It is useful for covers, article illustrations, social posts, screenshots, backgrounds, and design references.
+`matt-pic-grab` helps Codex find and cache images with a clear source trail. It is useful for covers, article illustrations, social posts, screenshots, backgrounds, and design references.
 
 The default mode is conservative: prefer CC0 / Public Domain sources and preserve source, creator, license, local path, metadata path, and risk flags.
 
@@ -17,7 +17,7 @@ bun --version
 Install the Codex skill:
 
 ```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
 ```
 
 Restart Codex after installing a skill.
@@ -35,13 +35,13 @@ The skill does not describe Pexels, Pixabay, or Unsplash as CC0.
 
 | Example |
 | --- |
-| Use `$matt-pic-grab-image` to find a CC0 history painting for an article cover. |
+| Use `$matt-pic-grab` to find a CC0 history painting for an article cover. |
 | <img src="../assets/example-history-socrates.webp" alt="Public-domain history painting example" width="420"> |
 
 Direct script command:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "history painting" \
   --mode strict_cc0 \
   --orientation landscape \
@@ -51,7 +51,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 Chinese query with fallback:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "山水" \
   --fallback-query "Chinese landscape painting" \
   --mode strict_cc0 \
@@ -61,13 +61,13 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 
 | Example |
 | --- |
-| Use `$matt-pic-grab-image` to find a commercial-safe shanshui image that can be reused and edited. |
+| Use `$matt-pic-grab` to find a commercial-safe shanshui image that can be reused and edited. |
 | <img src="../assets/example-shanshui-landscape.jpg" alt="Public-domain shanshui landscape example" width="420"> |
 
 Random safe image:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --random \
   --mode strict_cc0 \
   --orientation landscape
@@ -88,8 +88,8 @@ The script writes JSON to stdout:
       "source_url": "https://...",
       "license": "CC0",
       "creator": "Unknown",
-      "local_path": "/Users/.../.cache/matt-pic-grab-image/images/openverse/...",
-      "metadata_path": "/Users/.../.cache/matt-pic-grab-image/meta/openverse-id.json",
+      "local_path": "/Users/.../.cache/matt-pic-grab/images/openverse/...",
+      "metadata_path": "/Users/.../.cache/matt-pic-grab/meta/openverse-id.json",
       "risk_flags": []
     }
   ]
@@ -107,7 +107,7 @@ When reporting results, include the local file path, source URL, license, creato
 - `--provider openverse,met,smithsonian,pexels,pixabay`: override provider order.
 - `--orientation landscape|portrait|square|any`: default `landscape`.
 - `--count 1..10`: default `1`.
-- `--cache-dir PATH`: default `$MATT_PIC_GRAB_CACHE_DIR`, `$PIC_GRAB_CACHE_DIR`, or `~/.cache/matt-pic-grab-image`.
+- `--cache-dir PATH`: default `$MATT_PIC_GRAB_CACHE_DIR`, `$PIC_GRAB_CACHE_DIR`, or `~/.cache/matt-pic-grab`.
 - `--no-download`: return URLs and metadata without saving the image.
 - `--seed VALUE`: make random choices repeatable.
 
@@ -120,6 +120,6 @@ When reporting results, include the local file path, source URL, license, creato
 
 ## Source Policy
 
-Read [`source-policy.md`](../../skills/matt-pic-grab-image/references/source-policy.md) for provider-specific details and risk handling.
+Read [`source-policy.md`](../../skills/matt-pic-grab/references/source-policy.md) for provider-specific details and risk handling.
 
 For high-stakes commercial usage, review the preserved source page even when the returned license looks permissive.

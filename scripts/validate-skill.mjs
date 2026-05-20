@@ -55,7 +55,7 @@ if (description.length < 40) {
   fail("Description should be descriptive enough to trigger the skill.");
 }
 
-if (name === "matt-pic-grab-image") {
+if (name === "matt-pic-grab") {
   const scriptPath = join(skillPath, "scripts", "grab-image.ts");
   if (!existsSync(scriptPath)) {
     fail(`Expected bundled script not found: ${scriptPath}`);
@@ -67,12 +67,12 @@ if (name === "matt-pic-grab-image") {
   }
 }
 
-if (name === "matt-fx-brief-material-renderer") {
+if (name === "matt-fx-brief") {
   if (!content.includes("@mate-matt/fxbrief")) {
-    fail("matt-fx-brief-material-renderer should document the @mate-matt/fxbrief CLI fallback.");
+    fail("matt-fx-brief should document the @mate-matt/fxbrief CLI fallback.");
   }
   if (!content.includes("npx playwright install chromium")) {
-    fail("matt-fx-brief-material-renderer should document Chromium installation for Playwright.");
+    fail("matt-fx-brief should document Chromium installation for Playwright.");
   }
 }
 

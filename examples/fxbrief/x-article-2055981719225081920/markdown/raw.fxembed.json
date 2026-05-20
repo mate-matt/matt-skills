@@ -227,7 +227,7 @@
             "entityRanges": [],
             "inlineStyleRanges": [],
             "key": "5nf2r",
-            "text": "matt-pic-grab-image skill 帮你自动实现",
+            "text": "matt-pic-grab skill 帮你自动实现",
             "type": "header-two"
           },
           {
@@ -487,7 +487,7 @@
             "entityRanges": [],
             "inlineStyleRanges": [],
             "key": "20jth",
-            "text": "使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改",
+            "text": "使用 $matt-pic-grab 给我一张“山水”主题图片，要求免费商用、无需署名、可二改",
             "type": "blockquote"
           },
           {
@@ -503,7 +503,7 @@
             "entityRanges": [],
             "inlineStyleRanges": [],
             "key": "7g1a4",
-            "text": "Use $matt-pic-grab-image to find a CC0 history painting for an article cover.",
+            "text": "Use $matt-pic-grab to find a CC0 history painting for an article cover.",
             "type": "blockquote"
           },
           {
@@ -519,7 +519,7 @@
             "entityRanges": [],
             "inlineStyleRanges": [],
             "key": "7i9c",
-            "text": "使用 $matt-pic-grab-image 随机找一张可商用的自然风景背景图，并保存本地",
+            "text": "使用 $matt-pic-grab 随机找一张可商用的自然风景背景图，并保存本地",
             "type": "blockquote"
           },
           {
@@ -608,7 +608,7 @@
             "key": "4",
             "value": {
               "data": {
-                "markdown": "```shell\nmkdir -p \"${CODEX_HOME:-$HOME/.codex}/skills\"\nln -s \"$PWD/skills/matt-pic-grab-image\" \"${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image\"\n\n```"
+                "markdown": "```shell\nmkdir -p \"${CODEX_HOME:-$HOME/.codex}/skills\"\nln -s \"$PWD/skills/matt-pic-grab\" \"${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab\"\n\n```"
               },
               "mutability": "Mutable",
               "type": "MARKDOWN"
@@ -618,7 +618,7 @@
             "key": "5",
             "value": {
               "data": {
-                "markdown": "```shell\nbun run skills/matt-pic-grab-image/scripts/grab-image.ts \\\n  --query \"山水\" \\\n  --fallback-query \"Chinese landscape painting\" \\\n  --mode strict_cc0 \\\n  --provider met,openverse \\\n  --orientation landscape \\\n  --count 1 \\\n  --seed shanshui-commercial-safe\n```"
+                "markdown": "```shell\nbun run skills/matt-pic-grab/scripts/grab-image.ts \\\n  --query \"山水\" \\\n  --fallback-query \"Chinese landscape painting\" \\\n  --mode strict_cc0 \\\n  --provider met,openverse \\\n  --orientation landscape \\\n  --count 1 \\\n  --seed shanshui-commercial-safe\n```"
               },
               "mutability": "Mutable",
               "type": "MARKDOWN"
@@ -699,7 +699,7 @@
             "key": "3",
             "value": {
               "data": {
-                "markdown": "```shell\n$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image\n```"
+                "markdown": "```shell\n$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab\n```"
               },
               "mutability": "Mutable",
               "type": "MARKDOWN"

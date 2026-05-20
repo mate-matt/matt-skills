@@ -1,4 +1,0 @@
-interface:
-  display_name: "Matt Pic Grab Image"
-  short_description: "Find cached, license-safe images"
-  default_prompt: "Use $matt-pic-grab-image to find a license-safe image for a social cover."

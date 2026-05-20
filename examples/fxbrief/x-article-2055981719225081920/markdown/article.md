@@ -18,7 +18,7 @@ GPT Image 2 让大家文生图成瘾，其实**不是所有图片都需要文生
 
 但是自己手动筛选搜图很麻烦，所以我构建一个 skill，让你一句话搞定精准搜图，并自动下载，结果还带元数据，并且免费，可商用，可二改。
 
-## matt-pic-grab-image skill 帮你自动实现
+## matt-pic-grab skill 帮你自动实现
 
 直接上使用案例，保证看完后你就迫不及待的去 github 点 start 去了：
 
@@ -57,31 +57,31 @@ GPT Image 2 让大家文生图成瘾，其实**不是所有图片都需要文生
 **Codex 推荐安装方式：**
 
 ```shell
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
 ```
 
 安装后重启 Codex，让它发现新 Skill。如果你已经把仓库 clone 到本地，也可以手动安装(需要本机安装 Bun)：
 
 ```shell
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s "$PWD/skills/matt-pic-grab-image" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image"
+ln -s "$PWD/skills/matt-pic-grab" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab"
 
 ```
 
 **用 Codex 调用**
 
-> 使用 $matt-pic-grab-image 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
+> 使用 $matt-pic-grab 给我一张“山水”主题图片，要求免费商用、无需署名、可二改
 
-> Use $matt-pic-grab-image to find a CC0 history painting for an article cover.
+> Use $matt-pic-grab to find a CC0 history painting for an article cover.
 
-> 使用 $matt-pic-grab-image 随机找一张可商用的自然风景背景图，并保存本地
+> 使用 $matt-pic-grab 随机找一张可商用的自然风景背景图，并保存本地
 
 Codex 会自动决定关键词 fallback、数据源顺序和返回说明。中文关键词会保留原文，同时补一个英文 fallback，提高命中率。
 
 **也可以直接命令行使用**
 
 ```shell
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "山水" \
   --fallback-query "Chinese landscape painting" \
   --mode strict_cc0 \

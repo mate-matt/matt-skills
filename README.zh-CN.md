@@ -8,13 +8,13 @@
 
 | 模块 | 入口 | 类型 | 能做什么 | 文档 |
 | --- | --- | --- | --- | --- |
-| X / FxBrief | `matt-fx-brief-material-renderer` | Codex skill | 把 X/Twitter 推文和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / FxBrief | `matt-fx-brief` | Codex skill | 把 X/Twitter 推文和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据生成推文截图、媒体引用卡、长文 Markdown 和长截图。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
-| Image Grab | `matt-pic-grab-image` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、作者、授权和风险元数据。 | [EN](docs/pic-grab-image/README.md) / [中文](docs/pic-grab-image/README.zh-CN.md) |
+| Image Grab | `matt-pic-grab` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、作者、授权和风险元数据。 | [EN](docs/pic-grab/README.md) / [中文](docs/pic-grab/README.zh-CN.md) |
 
 ## X / FxBrief
 
-当你需要从 X/Twitter 生成可发布素材，同时不想依赖第三方截图页面时，使用 `matt-fx-brief-material-renderer`。它会调用已发布的 `fxbrief` CLI，通过 FxEmbed 获取数据，用本地 React/HTML 模板和 Playwright 完成渲染截图。
+当你需要从 X/Twitter 生成可发布素材，同时不想依赖第三方截图页面时，使用 `matt-fx-brief`。它会调用已发布的 `fxbrief` CLI，通过 FxEmbed 获取数据，用本地 React/HTML 模板和 Playwright 完成渲染截图。
 
 核心工作流：
 
@@ -27,7 +27,7 @@
 
 | 案例 |
 | --- |
-| 使用 `$matt-fx-brief-material-renderer` 把 `https://x.com/Google/status/2054285931260334181` 生成截图，要求截图正文是中文的。 |
+| 使用 `$matt-fx-brief` 把 `https://x.com/Google/status/2054285931260334181` 生成截图，要求截图正文是中文的。 |
 | <img src="docs/fx-brief/assets/google-android-prompt.jpeg" alt="在 Codex 中请求 FxBrief 生成中文正文截图" width="520"> |
 | <img src="docs/fx-brief/assets/google-android-output.jpeg" alt="FxBrief 生成后的中文正文推文截图" width="420"> |
 
@@ -38,17 +38,17 @@
 
 ## Image Grab
 
-当你需要给封面、文章配图、演示稿、社交媒体或背景图找素材，并希望保留清晰的来源链路时，使用 `matt-pic-grab-image`。默认模式优先选择 CC0 / Public Domain 来源，不会把 Pexels、Pixabay、Unsplash 这类平台授权误写成 CC0。
+当你需要给封面、文章配图、演示稿、社交媒体或背景图找素材，并希望保留清晰的来源链路时，使用 `matt-pic-grab`。默认模式优先选择 CC0 / Public Domain 来源，不会把 Pexels、Pixabay、Unsplash 这类平台授权误写成 CC0。
 
 | 案例 |
 | --- |
-| 使用 `$matt-pic-grab-image` 给我一张“山水”主题图片，要求免费商用、无需署名、可二改。 |
+| 使用 `$matt-pic-grab` 给我一张“山水”主题图片，要求免费商用、无需署名、可二改。 |
 | <img src="docs/assets/example-shanshui-landscape.jpg" alt="Public-domain 山水图片示例" width="420"> |
 
 直接脚本示例：
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "山水" \
   --fallback-query "Chinese landscape painting" \
   --mode strict_cc0 \
@@ -58,8 +58,8 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 
 详细安装、案例、来源策略、脚本参数和输出字段：
 
-- [Pic Grab Image guide in English](docs/pic-grab-image/README.md)
-- [Pic Grab Image 中文教程](docs/pic-grab-image/README.zh-CN.md)
+- [Pic Grab guide in English](docs/pic-grab/README.md)
+- [Pic Grab 中文教程](docs/pic-grab/README.zh-CN.md)
 
 ## 手动安装 Skill
 
@@ -68,16 +68,16 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 从 GitHub 安装：
 
 ```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
 ```
 
 如果已经 clone 到本地，也可以手动安装：
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s "$PWD/skills/matt-fx-brief-material-renderer" "${CODEX_HOME:-$HOME/.codex}/skills/matt-fx-brief-material-renderer"
-ln -s "$PWD/skills/matt-pic-grab-image" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab-image"
+ln -s "$PWD/skills/matt-fx-brief" "${CODEX_HOME:-$HOME/.codex}/skills/matt-fx-brief"
+ln -s "$PWD/skills/matt-pic-grab" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab"
 ```
 
 ## 开发

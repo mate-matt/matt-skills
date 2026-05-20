@@ -116,7 +116,7 @@ function parseArgs(argv: string[]): Args {
     providers: [],
     orientation: "landscape",
     count: 1,
-    cacheDir: process.env.MATT_PIC_GRAB_CACHE_DIR || process.env.PIC_GRAB_CACHE_DIR || `${home}/.cache/matt-pic-grab-image`,
+    cacheDir: process.env.MATT_PIC_GRAB_CACHE_DIR || process.env.PIC_GRAB_CACHE_DIR || `${home}/.cache/matt-pic-grab`,
     download: true,
     minWidth: 900,
     minHeight: 600,
@@ -332,7 +332,7 @@ async function searchOpenverse(query: string, args: Args): Promise<ImageCandidat
     page: String(page),
   });
   if (args.orientation !== "any") params.set("aspect_ratio", args.orientation === "landscape" ? "wide" : args.orientation === "portrait" ? "tall" : "square");
-  const headers: Record<string, string> = { "User-Agent": "matt-pic-grab-image-skill/1.0" };
+  const headers: Record<string, string> = { "User-Agent": "matt-pic-grab/1.0" };
   if (token) headers.Authorization = `Bearer ${token}`;
   const json = await fetchJson(`https://api.openverse.org/v1/images/?${params}`, headers);
   const rows = Array.isArray(json.results) ? json.results : [];
@@ -543,7 +543,7 @@ async function fetchJson(url: string, headers: Record<string, string> = {}): Pro
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "matt-pic-grab-image-skill/1.0",
+      "User-Agent": "matt-pic-grab/1.0",
       ...headers,
     },
   });
@@ -607,7 +607,7 @@ async function downloadCandidate(candidate: ImageCandidate, args: Args): Promise
   if (await exists(path)) return { path, cached: true };
 
   const response = await fetch(candidate.image_url, {
-    headers: { "User-Agent": "matt-pic-grab-image-skill/1.0" },
+    headers: { "User-Agent": "matt-pic-grab/1.0" },
   });
   if (!response.ok) throw new Error(`Image download failed: ${response.status} ${response.statusText}`);
   const contentType = response.headers.get("content-type") || "";

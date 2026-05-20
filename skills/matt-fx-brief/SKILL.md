@@ -1,9 +1,9 @@
 ---
-name: matt-fx-brief-material-renderer
+name: matt-fx-brief
 description: Use this skill when asked to render X/Twitter posts or X Articles into local editorial assets with the fxbrief CLI and FxEmbed data. Covers post-mobile, post-clean, article-md, article-shot, translated post body screenshots, Markdown article exports with assets and metadata, and X Article long screenshots with optional slices.
 ---
 
-# Matt Fx Brief Material Renderer
+# Matt Fx Brief
 
 Use the globally installed `fxbrief` CLI to create deterministic local assets from FxEmbed data. Prefer this skill for X/Twitter post screenshots, clean editorial quote cards, X Article Markdown archives, and X Article long screenshots.
 

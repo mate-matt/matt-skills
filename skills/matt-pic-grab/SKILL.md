@@ -1,9 +1,9 @@
 ---
-name: matt-pic-grab-image
+name: matt-pic-grab
 description: Find and cache license-safe images by keyword or at random for covers, social posts, article illustrations, screenshots, backgrounds, and design assets. Use when Codex needs a high-resolution image URL plus a local saved file with preserved source, creator, license, and risk metadata; default to strict CC0/public-domain sources and use Pexels/Pixabay only when the user explicitly asks for modern stock-photo aesthetics or relaxed stock licensing.
 ---
 
-# Matt Pic Grab Image
+# Matt Pic Grab
 
 ## Core Rule
 
@@ -16,25 +16,25 @@ Read `references/source-policy.md` when you need provider-specific license detai
 Run the bundled script with Bun, resolving `scripts/grab-image.ts` relative to this `SKILL.md`. In this repository, use:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts --query "mountain landscape" --mode strict_cc0 --orientation landscape --count 1
+bun run skills/matt-pic-grab/scripts/grab-image.ts --query "mountain landscape" --mode strict_cc0 --orientation landscape --count 1
 ```
 
 For Chinese keywords, pass the original query and add an English fallback when useful:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts --query "山水" --fallback-query "mountain landscape" --mode strict_cc0 --orientation landscape
+bun run skills/matt-pic-grab/scripts/grab-image.ts --query "山水" --fallback-query "mountain landscape" --mode strict_cc0 --orientation landscape
 ```
 
 For random image selection:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts --random --mode strict_cc0 --orientation landscape
+bun run skills/matt-pic-grab/scripts/grab-image.ts --random --mode strict_cc0 --orientation landscape
 ```
 
 For modern stock-photo aesthetics after the user accepts relaxed licensing:
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts --query "workspace" --mode stock_beauty --provider pexels,pixabay --orientation landscape
+bun run skills/matt-pic-grab/scripts/grab-image.ts --query "workspace" --mode stock_beauty --provider pexels,pixabay --orientation landscape
 ```
 
 ## Workflow
@@ -61,7 +61,7 @@ Common options:
 - `--provider openverse,met,smithsonian,pexels,pixabay`: Override provider order.
 - `--orientation landscape|portrait|square|any`: Default `landscape`.
 - `--count 1..10`: Default `1`.
-- `--cache-dir PATH`: Default `$MATT_PIC_GRAB_CACHE_DIR`, `$PIC_GRAB_CACHE_DIR`, or `~/.cache/matt-pic-grab-image`.
+- `--cache-dir PATH`: Default `$MATT_PIC_GRAB_CACHE_DIR`, `$PIC_GRAB_CACHE_DIR`, or `~/.cache/matt-pic-grab`.
 - `--no-download`: Return URLs and metadata without saving the image.
 - `--seed VALUE`: Make random choices repeatable.
 
@@ -86,8 +86,8 @@ The script writes JSON to stdout:
       "image_url": "https://...",
       "source_url": "https://...",
       "license": "CC0",
-      "local_path": "/Users/.../.cache/matt-pic-grab-image/images/openverse/...",
-      "metadata_path": "/Users/.../.cache/matt-pic-grab-image/meta/openverse-id.json",
+      "local_path": "/Users/.../.cache/matt-pic-grab/images/openverse/...",
+      "metadata_path": "/Users/.../.cache/matt-pic-grab/meta/openverse-id.json",
       "risk_flags": []
     }
   ]

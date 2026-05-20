@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`matt-fx-brief-material-renderer` is the Codex skill for turning X/Twitter posts and X Articles into local editorial assets. It delegates deterministic work to the published `fxbrief` CLI.
+`matt-fx-brief` is the Codex skill for turning X/Twitter posts and X Articles into local editorial assets. It delegates deterministic work to the published `fxbrief` CLI.
 
 ## What You Can Create
 
@@ -33,7 +33,7 @@ npx playwright install chromium
 Install the Codex skill:
 
 ```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief-material-renderer
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief
 ```
 
 Restart Codex after installing a skill.
@@ -82,15 +82,15 @@ fxbrief article-shot "https://x.com/user/status/123" \
 
 | Example |
 | --- |
-| Use `$matt-fx-brief-material-renderer` to render `https://x.com/Google/status/2054285931260334181` as a screenshot, with the post body in Chinese. |
+| Use `$matt-fx-brief` to render `https://x.com/Google/status/2054285931260334181` as a screenshot, with the post body in Chinese. |
 | <img src="assets/google-android-prompt.jpeg" alt="Prompt asking the FxBrief skill to render a Chinese post body" width="560"> |
 | <img src="assets/google-android-output.jpeg" alt="Generated Google Android Chinese post screenshot" width="430"> |
 
 Other common requests:
 
 ```text
-Use $matt-fx-brief-material-renderer to export this X Article as Markdown with local assets: https://x.com/user/status/123
-Use $matt-fx-brief-material-renderer to turn this X Article into one full long screenshot and at least 3 slices: https://x.com/user/status/123
+Use $matt-fx-brief to export this X Article as Markdown with local assets: https://x.com/user/status/123
+Use $matt-fx-brief to turn this X Article into one full long screenshot and at least 3 slices: https://x.com/user/status/123
 ```
 
 ## Output Locations

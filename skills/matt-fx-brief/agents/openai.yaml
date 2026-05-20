@@ -1,0 +1,4 @@
+interface:
+  display_name: "Matt Fx Brief"
+  short_description: "Render X posts and X Articles"
+  default_prompt: "Use $matt-fx-brief to turn an X post or X Article into a local editorial asset."

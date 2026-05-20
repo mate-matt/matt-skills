@@ -1,8 +1,8 @@
-# Pic Grab Image 中文教程
+# Pic Grab 中文教程
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`matt-pic-grab-image` 帮 Codex 查找并缓存来源链路清楚的图片。适合封面、文章配图、社交媒体、截图背景、设计参考等场景。
+`matt-pic-grab` 帮 Codex 查找并缓存来源链路清楚的图片。适合封面、文章配图、社交媒体、截图背景、设计参考等场景。
 
 默认策略偏保守：优先选择 CC0 / Public Domain 来源，并保存来源、作者、授权、本地路径、元数据路径和风险标记。
 
@@ -17,7 +17,7 @@ bun --version
 安装 Codex skill：
 
 ```text
-$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab-image
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
 ```
 
 安装 skill 后重启 Codex。
@@ -35,13 +35,13 @@ $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skil
 
 | 案例 |
 | --- |
-| 使用 `$matt-pic-grab-image` 给我一张“山水”主题图片，要求免费商用、无需署名、可二改。 |
+| 使用 `$matt-pic-grab` 给我一张“山水”主题图片，要求免费商用、无需署名、可二改。 |
 | <img src="../assets/example-shanshui-landscape.jpg" alt="Public-domain 山水图片示例" width="420"> |
 
 直接脚本命令：
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "山水" \
   --fallback-query "Chinese landscape painting" \
   --mode strict_cc0 \
@@ -51,13 +51,13 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 
 | 案例 |
 | --- |
-| 使用 `$matt-pic-grab-image` 给文章封面找一张 CC0 历史绘画。 |
+| 使用 `$matt-pic-grab` 给文章封面找一张 CC0 历史绘画。 |
 | <img src="../assets/example-history-socrates.webp" alt="Public-domain 历史绘画示例" width="420"> |
 
 英文关键词命令：
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --query "history painting" \
   --mode strict_cc0 \
   --orientation landscape \
@@ -67,7 +67,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 随机获取安全图片：
 
 ```bash
-bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
+bun run skills/matt-pic-grab/scripts/grab-image.ts \
   --random \
   --mode strict_cc0 \
   --orientation landscape
@@ -88,8 +88,8 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
       "source_url": "https://...",
       "license": "CC0",
       "creator": "Unknown",
-      "local_path": "/Users/.../.cache/matt-pic-grab-image/images/openverse/...",
-      "metadata_path": "/Users/.../.cache/matt-pic-grab-image/meta/openverse-id.json",
+      "local_path": "/Users/.../.cache/matt-pic-grab/images/openverse/...",
+      "metadata_path": "/Users/.../.cache/matt-pic-grab/meta/openverse-id.json",
       "risk_flags": []
     }
   ]
@@ -107,7 +107,7 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 - `--provider openverse,met,smithsonian,pexels,pixabay`：覆盖 provider 顺序。
 - `--orientation landscape|portrait|square|any`：默认 `landscape`。
 - `--count 1..10`：默认 `1`。
-- `--cache-dir PATH`：默认 `$MATT_PIC_GRAB_CACHE_DIR`、`$PIC_GRAB_CACHE_DIR` 或 `~/.cache/matt-pic-grab-image`。
+- `--cache-dir PATH`：默认 `$MATT_PIC_GRAB_CACHE_DIR`、`$PIC_GRAB_CACHE_DIR` 或 `~/.cache/matt-pic-grab`。
 - `--no-download`：只返回 URL 和元数据，不下载图片。
 - `--seed VALUE`：让随机选择可复现。
 
@@ -120,6 +120,6 @@ bun run skills/matt-pic-grab-image/scripts/grab-image.ts \
 
 ## 来源策略
 
-provider 细节和风险处理见 [`source-policy.md`](../../skills/matt-pic-grab-image/references/source-policy.md)。
+provider 细节和风险处理见 [`source-policy.md`](../../skills/matt-pic-grab/references/source-policy.md)。
 
 如果是高风险商业使用，即使返回授权看起来宽松，也建议人工打开保存的来源页复核。
