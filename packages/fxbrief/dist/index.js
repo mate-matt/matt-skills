@@ -490,6 +490,15 @@ var FxTwitterClient = class {
       about_account: options.aboutAccount === false ? void 0 : "1"
     });
   }
+  async getProfileStatuses(handle, options = {}) {
+    return this.get(`/2/profile/${encodeURIComponent(handle)}/statuses`, {
+      count: options.count,
+      cursor: options.cursor,
+      with_replies: options.withReplies ? "1" : void 0,
+      groupthreads: options.groupThreads ? "1" : void 0,
+      lang: options.lang
+    });
+  }
   async get(pathname, query) {
     const url = new URL(pathname, this.baseUrl);
     for (const [key, value] of Object.entries(query)) {
@@ -501,6 +510,9 @@ var FxTwitterClient = class {
         "user-agent": this.userAgent
       }
     });
+    if (response.status === 204) {
+      return { code: 204, results: [] };
+    }
     const text = await response.text();
     let json;
     try {
@@ -556,6 +568,36 @@ function parseSocialUrl(input) {
     return { provider: "x", id: match[1], originalUrl: input };
   }
   throw new Error(`Unsupported provider host "${url.hostname}". First version supports X/Twitter via FxEmbed.`);
+}
+function parseProfileUrl(input) {
+  const directHandle = normalizeHandle(input);
+  if (directHandle) {
+    return { provider: "x", handle: directHandle, originalUrl: input };
+  }
+  let url;
+  try {
+    url = new URL(input);
+  } catch {
+    throw new Error(`Expected an X/Twitter profile URL or handle, got: ${input}`);
+  }
+  const host = url.hostname.toLowerCase();
+  if (!X_HOSTS.has(host)) {
+    throw new Error(`Unsupported provider host "${url.hostname}". First version supports X/Twitter via FxEmbed.`);
+  }
+  const [firstSegment, secondSegment] = url.pathname.split("/").filter(Boolean);
+  if (!firstSegment || secondSegment === "status" || secondSegment === "statuses") {
+    throw new Error(`Could not find a profile handle in URL: ${input}`);
+  }
+  const handle = normalizeHandle(firstSegment);
+  if (!handle) {
+    throw new Error(`Could not find a profile handle in URL: ${input}`);
+  }
+  return { provider: "x", handle, originalUrl: input };
+}
+function normalizeHandle(value) {
+  const handle = value.trim().replace(/^@/, "");
+  if (/^[A-Za-z0-9_]{1,15}$/.test(handle)) return handle;
+  return void 0;
 }
 
 // src/cli/options.ts
@@ -1766,6 +1808,321 @@ a {
   font-size: 14px;
 }
 
+.profile-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: 0 14px 36px rgba(15, 20, 25, ${dark ? "0.26" : "0.08"});
+}
+
+.profile-banner {
+  height: 174px;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(29, 155, 240, 0.36), transparent 34%),
+    linear-gradient(135deg, #dce8f4 0%, #f6f8fa 48%, #c8d8e8 100%);
+  background-position: center;
+  background-size: cover;
+}
+
+.profile-content {
+  padding: 0 34px 24px;
+}
+
+.profile-avatar-wrap {
+  width: 124px;
+  height: 124px;
+  border: 4px solid var(--surface);
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+  margin-top: -65px;
+}
+
+.profile-avatar-wrap .avatar {
+  width: 116px;
+  height: 116px;
+  font-size: 28px;
+}
+
+.profile-identity {
+  margin-top: 26px;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.profile-name-row h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 26px;
+  line-height: 1.08;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.profile-handle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.profile-description {
+  margin: 16px 0 0;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.48;
+  white-space: pre-wrap;
+}
+
+.profile-meta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 7px;
+  margin-top: 17px;
+}
+
+.profile-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-meta-item svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.profile-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.profile-stat {
+  min-width: 0;
+}
+
+.profile-stat strong {
+  display: inline;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.profile-stat span {
+  display: inline;
+  margin-left: 5px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.profile-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  margin: 34px -34px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-tabs span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 46px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.profile-tabs span.active {
+  color: var(--text);
+}
+
+.profile-tabs span.active::after {
+  content: "";
+  position: absolute;
+  left: 28%;
+  right: 28%;
+  bottom: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.profile-timeline {
+  margin: 0 -34px;
+}
+
+.profile-timeline-post {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 10px;
+}
+
+.profile-timeline-post:last-child {
+  border-bottom: 0;
+}
+
+.profile-pinned {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px 54px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.profile-pinned svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.profile-post-main {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.profile-post-main > .avatar {
+  width: 42px;
+  height: 42px;
+  margin-top: 1px;
+}
+
+.profile-post-body {
+  min-width: 0;
+}
+
+.profile-post-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profile-post-author {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.profile-post-name {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.profile-post-meta {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.profile-post-actions-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.profile-post-actions-top svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.profile-more-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.profile-more-icon span {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.profile-post-text {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.42;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.profile-timeline-post .quote-card,
+.profile-timeline-post .media-grid {
+  margin-top: 12px;
+}
+
+.profile-post-action-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  margin-top: 15px;
+  color: var(--muted);
+}
+
+.profile-post-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.profile-post-action svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.profile-card .source-footer {
+  margin-top: 24px;
+  padding-top: 14px;
+}
+
 @media (max-width: 560px) {
   .quote-wall {
     padding: 16px;
@@ -2423,8 +2780,187 @@ function ActionIcon2({ name }) {
   ] });
 }
 
-// src/render/templates/components/Metrics.tsx
+// src/render/templates/ProfileCard.tsx
 import { jsx as jsx11, jsxs as jsxs11 } from "react/jsx-runtime";
+function ProfileCard({ profile, options, timelinePosts = [] }) {
+  const author = profileToAuthor(profile);
+  const banner = profile.bannerAssetUrl ?? profile.bannerUrl;
+  const joined = formatJoined(profile.joined);
+  const website = profile.website ? compactUrl(profile.website) : void 0;
+  return /* @__PURE__ */ jsxs11("section", { className: "capture profile-card", "data-capture": true, children: [
+    /* @__PURE__ */ jsx11(
+      "div",
+      {
+        className: "profile-banner",
+        style: banner ? { backgroundImage: `url("${banner}")` } : void 0
+      }
+    ),
+    /* @__PURE__ */ jsxs11("div", { className: "profile-content", children: [
+      /* @__PURE__ */ jsx11("div", { className: "profile-avatar-wrap", children: /* @__PURE__ */ jsx11(Avatar, { author }) }),
+      /* @__PURE__ */ jsxs11("div", { className: "profile-identity", children: [
+        /* @__PURE__ */ jsxs11("div", { className: "profile-name-row", children: [
+          /* @__PURE__ */ jsx11("h1", { children: profile.name }),
+          /* @__PURE__ */ jsx11(VerificationBadge, { author })
+        ] }),
+        /* @__PURE__ */ jsxs11("div", { className: "profile-handle", children: [
+          "@",
+          profile.handle
+        ] })
+      ] }),
+      profile.description ? /* @__PURE__ */ jsx11("p", { className: "profile-description", children: profile.description }) : null,
+      /* @__PURE__ */ jsxs11("div", { className: "profile-meta-grid", children: [
+        profile.location ? /* @__PURE__ */ jsx11(ProfileMetaItem, { icon: "pin", label: profile.location }) : null,
+        joined ? /* @__PURE__ */ jsx11(ProfileMetaItem, { icon: "calendar", label: joined }) : null,
+        website ? /* @__PURE__ */ jsx11(ProfileMetaItem, { icon: "link", label: website }) : null
+      ] }),
+      /* @__PURE__ */ jsxs11("div", { className: "profile-stats", children: [
+        /* @__PURE__ */ jsx11(Stat, { label: "Following", value: profile.metrics.following }),
+        /* @__PURE__ */ jsx11(Stat, { label: "Followers", value: profile.metrics.followers })
+      ] }),
+      timelinePosts.length > 0 ? /* @__PURE__ */ jsx11(ProfileTabs, {}) : null,
+      timelinePosts.length > 0 ? /* @__PURE__ */ jsx11("div", { className: "profile-timeline", children: timelinePosts.map((post) => /* @__PURE__ */ jsx11(ProfileTimelinePost, { post, options }, post.id)) }) : null,
+      options.showSourceFooter ? /* @__PURE__ */ jsxs11("div", { className: "source-footer", children: [
+        "Source: X / @",
+        profile.handle,
+        " \xB7 ",
+        compactUrl(profile.url)
+      ] }) : null
+    ] })
+  ] });
+}
+function Stat({ label, value }) {
+  if (value === void 0) return null;
+  return /* @__PURE__ */ jsxs11("div", { className: "profile-stat", children: [
+    /* @__PURE__ */ jsx11("strong", { children: formatMetric(value) }),
+    /* @__PURE__ */ jsx11("span", { children: label })
+  ] });
+}
+function ProfileMetaItem({ icon, label }) {
+  return /* @__PURE__ */ jsxs11("span", { className: "profile-meta-item", children: [
+    /* @__PURE__ */ jsx11(MetaIcon, { name: icon }),
+    label
+  ] });
+}
+function ProfileTabs() {
+  const tabs = ["Posts", "Replies", "Highlights", "Articles", "Media", "Likes"];
+  return /* @__PURE__ */ jsx11("nav", { className: "profile-tabs", "aria-label": "Profile timeline tabs", children: tabs.map((tab, index) => /* @__PURE__ */ jsx11("span", { className: index === 0 ? "active" : void 0, children: tab }, tab)) });
+}
+function ProfileTimelinePost({ post, options }) {
+  return /* @__PURE__ */ jsxs11("article", { className: "profile-timeline-post", children: [
+    post.isPinned ? /* @__PURE__ */ jsxs11("div", { className: "profile-pinned", children: [
+      /* @__PURE__ */ jsx11(PinIcon, {}),
+      " Pinned"
+    ] }) : null,
+    /* @__PURE__ */ jsxs11("div", { className: "profile-post-main", children: [
+      /* @__PURE__ */ jsx11(Avatar, { author: post.author }),
+      /* @__PURE__ */ jsxs11("div", { className: "profile-post-body", children: [
+        /* @__PURE__ */ jsxs11("div", { className: "profile-post-header", children: [
+          /* @__PURE__ */ jsxs11("div", { className: "profile-post-author", children: [
+            /* @__PURE__ */ jsx11("span", { className: "profile-post-name", children: post.author.name }),
+            /* @__PURE__ */ jsx11(VerificationBadge, { author: post.author }),
+            /* @__PURE__ */ jsxs11("span", { className: "profile-post-meta", children: [
+              "@",
+              post.author.handle,
+              " \xB7 ",
+              formatPostDate(post.createdAt, options.timezone, "short")
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs11("div", { className: "profile-post-actions-top", children: [
+            /* @__PURE__ */ jsx11(GrokIcon3, {}),
+            /* @__PURE__ */ jsx11(MoreIcon, {})
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx11(PostText, { post, className: "profile-post-text", showTranslation: options.showTranslation, translatedText: options.translatedText }),
+        /* @__PURE__ */ jsx11(QuotedPost, { post: post.quote, timezone: options.timezone, mediaMode: options.mediaMode, translatedText: options.translatedText }),
+        /* @__PURE__ */ jsx11(MediaGrid, { media: post.media, mode: options.mediaMode }),
+        /* @__PURE__ */ jsx11(ProfilePostActionRow, { post })
+      ] })
+    ] })
+  ] });
+}
+function ProfilePostActionRow({ post }) {
+  return /* @__PURE__ */ jsxs11("div", { className: "profile-post-action-row", children: [
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "reply", value: post.metrics?.replies }),
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "repost", value: (post.metrics?.reposts ?? 0) + (post.metrics?.quotes ?? 0) || void 0 }),
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "like", value: post.metrics?.likes }),
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "views", value: post.metrics?.views }),
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "bookmark" }),
+    /* @__PURE__ */ jsx11(ActionMetric, { icon: "share" })
+  ] });
+}
+function ActionMetric({ icon, value }) {
+  return /* @__PURE__ */ jsxs11("span", { className: "profile-post-action", children: [
+    /* @__PURE__ */ jsx11(ActionIcon3, { name: icon }),
+    value !== void 0 ? /* @__PURE__ */ jsx11("span", { children: formatMetric(value) }) : null
+  ] });
+}
+function ActionIcon3({ name }) {
+  if (name === "reply") return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx11("path", { d: "M20 12a7.5 7.5 0 0 1-7.9 7.5 8.3 8.3 0 0 1-3.2-.8L4 20l1.4-4.4A7.3 7.3 0 0 1 4 12a7.5 7.5 0 0 1 8-7.5 7.5 7.5 0 0 1 8 7.5Z" }) });
+  if (name === "repost") return /* @__PURE__ */ jsxs11("svg", { viewBox: "0 0 24 24", children: [
+    /* @__PURE__ */ jsx11("path", { d: "M17 3l3 3-3 3" }),
+    /* @__PURE__ */ jsx11("path", { d: "M4 11V8a2 2 0 0 1 2-2h14" }),
+    /* @__PURE__ */ jsx11("path", { d: "M7 21l-3-3 3-3" }),
+    /* @__PURE__ */ jsx11("path", { d: "M20 13v3a2 2 0 0 1-2 2H4" })
+  ] });
+  if (name === "like") return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx11("path", { d: "M20.5 8.9c0 5.1-8.5 10.2-8.5 10.2S3.5 14 3.5 8.9A4.4 4.4 0 0 1 8 4.5a5 5 0 0 1 4 2 5 5 0 0 1 4-2 4.4 4.4 0 0 1 4.5 4.4Z" }) });
+  if (name === "views") return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx11("path", { d: "M5 20V10M12 20V4M19 20v-7" }) });
+  if (name === "bookmark") return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", children: /* @__PURE__ */ jsx11("path", { d: "M6 4.8A1.8 1.8 0 0 1 7.8 3h8.4A1.8 1.8 0 0 1 18 4.8V21l-6-4-6 4V4.8Z" }) });
+  return /* @__PURE__ */ jsxs11("svg", { viewBox: "0 0 24 24", children: [
+    /* @__PURE__ */ jsx11("path", { d: "M12 3v12" }),
+    /* @__PURE__ */ jsx11("path", { d: "m7 8 5-5 5 5" }),
+    /* @__PURE__ */ jsx11("path", { d: "M5 14v4a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4" })
+  ] });
+}
+function GrokIcon3() {
+  return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 33 32", "aria-hidden": "true", children: /* @__PURE__ */ jsx11("path", { d: "M12.745 20.54l10.97-8.19c.539-.4 1.307-.244 1.564.38 1.349 3.288.746 7.241-1.938 9.955-2.683 2.714-6.417 3.31-9.83 1.954l-3.728 1.745c5.347 3.697 11.84 2.782 15.898-1.324 3.219-3.255 4.216-7.692 3.284-11.693l.008.009c-1.351-5.878.332-8.227 3.782-13.031L33 0l-4.54 4.59v-.014L12.743 20.544m-2.263 1.987c-3.837-3.707-3.175-9.446.1-12.755 2.42-2.449 6.388-3.448 9.852-1.979l3.72-1.737c-.67-.49-1.53-1.017-2.515-1.387-4.455-1.854-9.789-.931-13.41 2.728-3.483 3.523-4.579 8.94-2.697 13.561 1.405 3.454-.899 5.898-3.22 8.364C1.49 30.2.666 31.074 0 32l10.478-9.466" }) });
+}
+function MoreIcon() {
+  return /* @__PURE__ */ jsxs11("span", { className: "profile-more-icon", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx11("span", {}),
+    /* @__PURE__ */ jsx11("span", {}),
+    /* @__PURE__ */ jsx11("span", {})
+  ] });
+}
+function PinIcon() {
+  return /* @__PURE__ */ jsxs11("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx11("path", { d: "M8 3h8l-1.1 6.2 3.1 3.1V15H6v-2.7l3.1-3.1L8 3Z" }),
+    /* @__PURE__ */ jsx11("path", { d: "M12 15v6" })
+  ] });
+}
+function MetaIcon({ name }) {
+  if (name === "calendar") {
+    return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx11("path", { d: "M7 3v3M17 3v3M4.5 9h15M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z" }) });
+  }
+  if (name === "link") {
+    return /* @__PURE__ */ jsx11("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: /* @__PURE__ */ jsx11("path", { d: "M9.5 14.5 14.5 9.5M10 7.5l1.2-1.2a4.2 4.2 0 0 1 5.9 5.9L16 13.4M14 16.5l-1.2 1.2a4.2 4.2 0 0 1-5.9-5.9L8 10.6" }) });
+  }
+  return /* @__PURE__ */ jsxs11("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx11("path", { d: "M19 10c0 5.2-7 10.5-7 10.5S5 15.2 5 10a7 7 0 1 1 14 0Z" }),
+    /* @__PURE__ */ jsx11("path", { d: "M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z" })
+  ] });
+}
+function profileToAuthor(profile) {
+  return {
+    name: profile.name,
+    handle: profile.handle,
+    ...profile.id ? { id: profile.id } : {},
+    ...profile.avatarUrl ? { avatarUrl: profile.avatarUrl } : {},
+    ...profile.avatarAssetUrl ? { avatarAssetUrl: profile.avatarAssetUrl } : {},
+    ...profile.verified !== void 0 ? { verified: profile.verified } : {},
+    ...profile.verificationType !== void 0 ? { verificationType: profile.verificationType } : {}
+  };
+}
+function formatJoined(value) {
+  if (!value) return void 0;
+  const date = new Date(value);
+  if (!Number.isNaN(date.getTime())) {
+    return `Joined ${new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date)}`;
+  }
+  return value.startsWith("Joined ") ? value : `Joined ${value}`;
+}
+
+// src/render/templates/components/Metrics.tsx
+import { jsx as jsx12, jsxs as jsxs12 } from "react/jsx-runtime";
 function Metrics({ metrics }) {
   if (!metrics) return null;
   const items = [
@@ -2436,72 +2972,76 @@ function Metrics({ metrics }) {
   ];
   const visible = items.filter(([, value]) => value !== void 0);
   if (visible.length === 0) return null;
-  return /* @__PURE__ */ jsx11("div", { className: "metrics", children: visible.map(([label, value]) => /* @__PURE__ */ jsxs11("span", { className: "metric", children: [
-    /* @__PURE__ */ jsx11("strong", { children: formatMetric(value) }),
-    /* @__PURE__ */ jsx11("span", { children: label })
+  return /* @__PURE__ */ jsx12("div", { className: "metrics", children: visible.map(([label, value]) => /* @__PURE__ */ jsxs12("span", { className: "metric", children: [
+    /* @__PURE__ */ jsx12("strong", { children: formatMetric(value) }),
+    /* @__PURE__ */ jsx12("span", { children: label })
   ] }, label)) });
 }
 
 // src/render/templates/QuoteWall.tsx
-import { jsx as jsx12, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs13 } from "react/jsx-runtime";
 function QuoteWall({ sourcePost, quotes, options }) {
   const columns = options.columns ?? (options.width <= 560 ? 1 : 2);
   const style = { "--wall-columns": columns };
   const sourceText = postBodyText(sourcePost, options.translatedText);
-  return /* @__PURE__ */ jsxs12("section", { className: "capture quote-wall", style, "data-capture": true, children: [
-    /* @__PURE__ */ jsx12("h1", { className: "wall-title", children: "Quoted reactions" }),
-    /* @__PURE__ */ jsxs12("p", { className: "wall-subtitle", children: [
+  return /* @__PURE__ */ jsxs13("section", { className: "capture quote-wall", style, "data-capture": true, children: [
+    /* @__PURE__ */ jsx13("h1", { className: "wall-title", children: "Quoted reactions" }),
+    /* @__PURE__ */ jsxs13("p", { className: "wall-subtitle", children: [
       "Responses quoting @",
       sourcePost.author.handle,
       ": ",
       sourceText.slice(0, 120),
       sourceText.length > 120 ? "..." : ""
     ] }),
-    quotes.length > 0 ? /* @__PURE__ */ jsx12("div", { className: "wall-grid", children: quotes.map((quote) => /* @__PURE__ */ jsxs12("article", { className: "wall-card", children: [
-      /* @__PURE__ */ jsx12(PostHeader, { post: quote, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true }),
-      /* @__PURE__ */ jsx12(PostText, { post: quote, showTranslation: options.showTranslation, translatedText: options.translatedText }),
-      options.showStats ? /* @__PURE__ */ jsx12(Metrics, { metrics: quote.metrics }) : null
-    ] }, quote.id)) }) : /* @__PURE__ */ jsx12("div", { className: "empty-state", children: "No quote posts were returned for this source post." }),
-    options.showSourceFooter ? /* @__PURE__ */ jsx12(SourceFooter, { post: sourcePost }) : null
+    quotes.length > 0 ? /* @__PURE__ */ jsx13("div", { className: "wall-grid", children: quotes.map((quote) => /* @__PURE__ */ jsxs13("article", { className: "wall-card", children: [
+      /* @__PURE__ */ jsx13(PostHeader, { post: quote, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true }),
+      /* @__PURE__ */ jsx13(PostText, { post: quote, showTranslation: options.showTranslation, translatedText: options.translatedText }),
+      options.showStats ? /* @__PURE__ */ jsx13(Metrics, { metrics: quote.metrics }) : null
+    ] }, quote.id)) }) : /* @__PURE__ */ jsx13("div", { className: "empty-state", children: "No quote posts were returned for this source post." }),
+    options.showSourceFooter ? /* @__PURE__ */ jsx13(SourceFooter, { post: sourcePost }) : null
   ] });
 }
 
 // src/render/templates/ThreadVertical.tsx
-import { jsx as jsx13, jsxs as jsxs13 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs14 } from "react/jsx-runtime";
 function ThreadVertical({ thread, options }) {
   const posts = thread.posts.slice(0, options.maxPosts ?? thread.posts.length);
-  return /* @__PURE__ */ jsx13("section", { className: "capture thread-vertical", "data-capture": true, children: posts.map((post, index) => /* @__PURE__ */ jsxs13("article", { className: "thread-item", children: [
-    /* @__PURE__ */ jsxs13("div", { className: "thread-rail", children: [
-      /* @__PURE__ */ jsx13(Avatar, { author: post.author }),
-      /* @__PURE__ */ jsx13("div", { className: "thread-line" })
+  return /* @__PURE__ */ jsx14("section", { className: "capture thread-vertical", "data-capture": true, children: posts.map((post, index) => /* @__PURE__ */ jsxs14("article", { className: "thread-item", children: [
+    /* @__PURE__ */ jsxs14("div", { className: "thread-rail", children: [
+      /* @__PURE__ */ jsx14(Avatar, { author: post.author }),
+      /* @__PURE__ */ jsx14("div", { className: "thread-line" })
     ] }),
-    /* @__PURE__ */ jsxs13("div", { className: "thread-body", children: [
-      /* @__PURE__ */ jsx13(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true, showAvatar: false }),
-      /* @__PURE__ */ jsx13(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
-      /* @__PURE__ */ jsx13(MediaGrid, { media: post.media, mode: options.mediaMode }),
-      options.showStats ? /* @__PURE__ */ jsx13(Metrics, { metrics: post.metrics }) : null,
-      options.showSourceFooter && index === posts.length - 1 ? /* @__PURE__ */ jsx13(SourceFooter, { post: thread.root }) : null
+    /* @__PURE__ */ jsxs14("div", { className: "thread-body", children: [
+      /* @__PURE__ */ jsx14(PostHeader, { post, timezone: options.timezone, showTimestamp: options.showTimestamp, compact: true, showAvatar: false }),
+      /* @__PURE__ */ jsx14(PostText, { post, showTranslation: options.showTranslation, translatedText: options.translatedText }),
+      /* @__PURE__ */ jsx14(MediaGrid, { media: post.media, mode: options.mediaMode }),
+      options.showStats ? /* @__PURE__ */ jsx14(Metrics, { metrics: post.metrics }) : null,
+      options.showSourceFooter && index === posts.length - 1 ? /* @__PURE__ */ jsx14(SourceFooter, { post: thread.root }) : null
     ] })
   ] }, post.id)) });
 }
 
 // src/render/renderHtml.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { jsx as jsx15 } from "react/jsx-runtime";
 function renderPostHtml(post, options) {
-  const element = options.template === "post-clean" ? /* @__PURE__ */ jsx14(PostClean, { post, options }) : /* @__PURE__ */ jsx14(PostMobile, { post, options });
+  const element = options.template === "post-clean" ? /* @__PURE__ */ jsx15(PostClean, { post, options }) : /* @__PURE__ */ jsx15(PostMobile, { post, options });
   return renderDocument(element, options);
 }
 function renderThreadHtml(thread, options) {
-  return renderDocument(/* @__PURE__ */ jsx14(ThreadVertical, { thread, options }), options);
+  return renderDocument(/* @__PURE__ */ jsx15(ThreadVertical, { thread, options }), options);
 }
 function renderQuoteWallHtml(sourcePost, quotes, options) {
-  return renderDocument(/* @__PURE__ */ jsx14(QuoteWall, { sourcePost, quotes, options }), options);
+  return renderDocument(/* @__PURE__ */ jsx15(QuoteWall, { sourcePost, quotes, options }), options);
 }
 function renderArticleShotHtml(article, options) {
-  return renderArticleDocument(/* @__PURE__ */ jsx14(ArticleShot, { article, options }), options);
+  return renderArticleDocument(/* @__PURE__ */ jsx15(ArticleShot, { article, options }), options);
+}
+function renderProfileHtml(profile, options, timelinePosts = []) {
+  return renderDocument(/* @__PURE__ */ jsx15(ProfileCard, { profile, options, timelinePosts }), options);
 }
 function defaultWidthForTemplate(template) {
   if (template === "quote-wall") return 920;
+  if (template === "profile-card") return 430;
   if (template === "post-mobile") return 430;
   return 390;
 }
@@ -2879,6 +3419,15 @@ async function hydrateArticleAssets(article, cache) {
     media
   };
 }
+async function hydrateProfileAssets(profile, cache) {
+  const avatarAssetUrl = profile.avatarUrl ? await cache.resolveImage(profile.avatarUrl, profile.handle) : void 0;
+  const bannerAssetUrl = profile.bannerUrl ? await cache.resolveImage(profile.bannerUrl, `${profile.handle}-banner`) : void 0;
+  return {
+    ...profile,
+    ...avatarAssetUrl ? { avatarAssetUrl } : {},
+    ...bannerAssetUrl ? { bannerAssetUrl } : {}
+  };
+}
 async function hydrateMedia(media, cache) {
   if (media.type === "video" || media.type === "external") {
     const thumbnailSource = media.thumbnailUrl;
@@ -3237,6 +3786,10 @@ function parseEnum2(value, allowed, fallback) {
   return typeof value === "string" && allowed.includes(value) ? value : fallback;
 }
 
+// src/cli/commands/json.ts
+import { writeFile as writeFile5 } from "fs/promises";
+import path7 from "path";
+
 // src/normalize/socialPost.ts
 function normalizePost(raw, provider = "x", depth = 0) {
   const source = asRecord4(raw);
@@ -3278,6 +3831,8 @@ function normalizePost(raw, provider = "x", depth = 0) {
   if (sourceName !== void 0) post.source = sourceName;
   const possiblySensitive = asBoolean2(source.possibly_sensitive);
   if (possiblySensitive !== void 0) post.possiblySensitive = possiblySensitive;
+  const isPinned = asBoolean2(source.is_pinned) ?? asBoolean2(source.pinned);
+  if (isPinned !== void 0) post.isPinned = isPinned;
   const communityNote = normalizeCommunityNote(source.community_note);
   if (communityNote !== void 0) post.communityNote = communityNote;
   return post;
@@ -3495,6 +4050,66 @@ function fallbackStatusUrl(provider, handle, id) {
   return `https://bsky.app/profile/${handle}/post/${id}`;
 }
 
+// src/cli/commands/json.ts
+async function fetchJsonCommand(input, rawOptions) {
+  const parsed = parseSocialUrl(input);
+  if (parsed.provider !== "x") throw new Error("First version supports X/Twitter JSON fetching only.");
+  const kind = parseKind(rawOptions.kind);
+  const raw = rawOptions.fixture ? await readJsonFixture(rawOptions.fixture) : await fetchRawJson(parsed.id, kind, rawOptions);
+  const data = rawOptions.normalized ? normalizeJson(raw, kind) : raw;
+  const json = `${JSON.stringify(data, null, rawOptions.compact ? 0 : 2)}
+`;
+  if (!rawOptions.out) {
+    return {
+      type: "stdout",
+      value: json
+    };
+  }
+  const outPath = resolveJsonOutputPath(kind, parsed.id, rawOptions.out);
+  await ensureParentDir(outPath);
+  await writeFile5(outPath, json, "utf8");
+  return {
+    type: "file",
+    value: outPath
+  };
+}
+async function fetchRawJson(id, kind, options) {
+  const client = new FxTwitterClient();
+  const lang = typeof options.lang === "string" && options.lang ? options.lang : void 0;
+  const aboutAccount = options.aboutAccount !== false;
+  if (kind === "thread") {
+    return client.getThread(id, { lang, aboutAccount });
+  }
+  if (kind === "quotes") {
+    return client.getQuotes(id, {
+      lang,
+      count: parseCount(options.count, 20),
+      cursor: typeof options.cursor === "string" && options.cursor ? options.cursor : void 0
+    });
+  }
+  return client.getPost(id, { lang, aboutAccount });
+}
+function normalizeJson(raw, kind) {
+  if (kind === "thread") return normalizeThreadResponse(raw, "x");
+  if (kind === "quotes") return normalizeQuotesResponse(raw, "x");
+  return normalizePostResponse(raw, "x");
+}
+function parseKind(value) {
+  if (value === "thread" || value === "quotes") return value;
+  return "post";
+}
+function parseCount(value, fallback) {
+  const number = typeof value === "number" ? value : typeof value === "string" ? Number(value) : fallback;
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  return Math.min(Math.round(number), 100);
+}
+function resolveJsonOutputPath(kind, id, requested) {
+  const absolute = toAbsolutePath(requested);
+  const ext = path7.extname(absolute);
+  if (ext) return absolute;
+  return path7.join(absolute, `fxembed-${kind}-${id}.json`);
+}
+
 // src/cli/commands/post.ts
 async function renderPostCommand(input, template, rawOptions) {
   const parsed = parseSocialUrl(input);
@@ -3519,6 +4134,153 @@ async function renderPostCommand(input, template, rawOptions) {
   return resolved.outPath;
 }
 
+// src/normalize/socialProfile.ts
+function normalizeProfileResponse(raw, provider = "x") {
+  const envelope = asRecord5(raw);
+  const source = asRecord5(envelope.user ?? envelope.profile ?? raw);
+  const handle = stripAt3(asString3(source.screen_name) ?? asString3(source.handle) ?? asString3(source.username) ?? "");
+  if (!handle) {
+    throw new Error("FxEmbed profile payload is missing a handle.");
+  }
+  const profile = {
+    provider,
+    url: asString3(source.url) ?? `https://x.com/${handle}`,
+    name: asString3(source.name) ?? handle,
+    handle,
+    metrics: {
+      ...definedNumber("followers", source.followers),
+      ...definedNumber("following", source.following),
+      ...definedNumber("posts", source.statuses),
+      ...definedNumber("media", source.media_count),
+      ...definedNumber("likes", source.likes)
+    }
+  };
+  const id = asString3(source.id);
+  if (id !== void 0) profile.id = id;
+  const avatarUrl = normalizeAvatarUrl(asString3(source.avatar_url) ?? asString3(source.avatar) ?? asString3(source.avatarUrl));
+  if (avatarUrl !== void 0) profile.avatarUrl = avatarUrl;
+  const bannerUrl = normalizeBannerUrl(asString3(source.banner_url) ?? asString3(source.bannerUrl));
+  if (bannerUrl !== void 0) profile.bannerUrl = bannerUrl;
+  const description = asString3(source.description) ?? asString3(asRecord5(source.raw_description).text);
+  if (description !== void 0) profile.description = description;
+  const location = asString3(source.location);
+  if (location !== void 0) profile.location = location;
+  const joined = asString3(source.joined);
+  if (joined !== void 0) profile.joined = joined;
+  const website = normalizeWebsite(source.website);
+  if (website !== void 0) profile.website = website;
+  const verification = asRecord5(source.verification);
+  const verified = asBoolean3(verification.verified);
+  if (verified !== void 0) profile.verified = verified;
+  const verificationType = asString3(verification.type);
+  if (verificationType === "organization" || verificationType === "government" || verificationType === "individual") {
+    profile.verificationType = verificationType;
+  } else if (verification.type === null) {
+    profile.verificationType = null;
+  }
+  const about = asRecord5(source.about_account);
+  const basedIn = asString3(about.based_in);
+  const sourceStore = asString3(about.source);
+  const usernameChanges = asNumber3(asRecord5(about.username_changes).count);
+  if (basedIn !== void 0 || sourceStore !== void 0 || usernameChanges !== void 0) {
+    profile.aboutAccount = {
+      ...basedIn !== void 0 ? { basedIn } : {},
+      ...sourceStore !== void 0 ? { source: sourceStore } : {},
+      ...usernameChanges !== void 0 ? { usernameChanges } : {}
+    };
+  }
+  return profile;
+}
+function normalizeAvatarUrl(url) {
+  if (!url) return void 0;
+  return url.replace(/_normal(\.[a-zA-Z0-9]+)(?:\?.*)?$/, "_400x400$1");
+}
+function normalizeBannerUrl(url) {
+  if (!url) return void 0;
+  if (/pbs\.twimg\.com\/profile_banners\/[^/]+\/[^/]+$/i.test(url)) {
+    return `${url}/1500x500`;
+  }
+  return url;
+}
+function normalizeWebsite(raw) {
+  if (typeof raw === "string") return raw;
+  const record = asRecord5(raw);
+  return asString3(record.expanded_url) ?? asString3(record.display_url) ?? asString3(record.url);
+}
+function stripAt3(value) {
+  return value.replace(/^@/, "");
+}
+function asRecord5(value) {
+  return value && typeof value === "object" ? value : {};
+}
+function asString3(value) {
+  return typeof value === "string" && value.length > 0 ? value : void 0;
+}
+function asNumber3(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : void 0;
+}
+function asBoolean3(value) {
+  return typeof value === "boolean" ? value : void 0;
+}
+function definedNumber(key, value) {
+  const number = asNumber3(value);
+  return number === void 0 ? {} : { [key]: number };
+}
+
+// src/cli/commands/profile.ts
+async function renderProfileCommand(input, rawOptions) {
+  const parsed = parseProfileUrl(input);
+  if (parsed.provider !== "x") throw new Error("First version supports X/Twitter profile rendering only.");
+  const resolved = resolveCliOptions("profile-card", parsed.handle, rawOptions, {
+    mediaMode: "first",
+    showStats: false,
+    showTimestamp: false
+  });
+  const client = new FxTwitterClient();
+  const raw = resolved.fixture ? await readJsonFixture(resolved.fixture) : await client.getProfile(parsed.handle, { aboutAccount: true });
+  const postCount = parseProfilePostCount(rawOptions);
+  const timelineRaw = postCount > 0 ? await client.getProfileStatuses(parsed.handle, {
+    count: postCount,
+    lang: resolved.lang,
+    withReplies: Boolean(rawOptions.withReplies)
+  }) : void 0;
+  const profile = normalizeProfileResponse(raw, "x");
+  const cache = new AssetCache({ cacheDir: resolved.cacheDir });
+  const hydrated = await hydrateProfileAssets(profile, cache);
+  const timelinePosts = timelineRaw ? profilePosts(timelineRaw).slice(0, postCount) : [];
+  const hydratedTimelinePosts = await hydratePostsAssets(timelinePosts, cache);
+  const html = renderProfileHtml(hydrated, resolved.render, hydratedTimelinePosts);
+  await captureHtml(html, {
+    width: resolved.render.width,
+    scale: resolved.scale,
+    format: resolved.format,
+    quality: resolved.quality,
+    transparent: resolved.transparent,
+    outPath: resolved.outPath,
+    debugHtmlPath: resolved.debugHtmlPath
+  });
+  return resolved.outPath;
+}
+function profilePosts(raw) {
+  const envelope = raw && typeof raw === "object" ? raw : {};
+  const results = Array.isArray(envelope.results) ? envelope.results : [];
+  const posts = [];
+  for (const item of results) {
+    try {
+      posts.push(normalizePost(item, "x"));
+    } catch {
+    }
+  }
+  return posts;
+}
+function parseProfilePostCount(rawOptions) {
+  const requested = rawOptions.count;
+  const fallback = rawOptions.latestPost ? 1 : 0;
+  const number = typeof requested === "number" ? requested : typeof requested === "string" ? Number(requested) : fallback;
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  return Math.min(Math.round(number), 6);
+}
+
 // src/cli/commands/quotes.ts
 async function renderQuoteWallCommand(input, rawOptions) {
   const parsed = parseSocialUrl(input);
@@ -3528,7 +4290,7 @@ async function renderQuoteWallCommand(input, rawOptions) {
     showStats: true,
     columns: 2
   });
-  const count = parseCount(rawOptions.count, 12);
+  const count = parseCount2(rawOptions.count, 12);
   const client = new FxTwitterClient();
   const [sourceRaw, quotesRaw] = await Promise.all([
     client.getPost(parsed.id, { lang: resolved.lang, aboutAccount: true }),
@@ -3551,7 +4313,7 @@ async function renderQuoteWallCommand(input, rawOptions) {
   });
   return resolved.outPath;
 }
-function parseCount(value, fallback) {
+function parseCount2(value, fallback) {
   const number = typeof value === "number" ? value : typeof value === "string" ? Number(value) : fallback;
   if (!Number.isFinite(number) || number <= 0) return fallback;
   return Math.min(Math.round(number), 100);
@@ -3584,7 +4346,7 @@ async function renderThreadCommand(input, rawOptions) {
 
 // src/cli/index.ts
 var program = new Command();
-program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.2");
+program.name("fxbrief").description("Render clean local news materials from FxEmbed-powered X/Twitter data.").version("0.2.4");
 addPostCommand(program);
 addShortcutPostCommand(program, "post-mobile", "Render a 430px mobile-style X post card.", "post-mobile");
 addShortcutPostCommand(program, "post-clean", "Render an editorial source quotation card.", "post-clean");
@@ -3592,6 +4354,8 @@ addThreadCommand(program);
 addQuoteWallCommand(program);
 addArticleCommand(program);
 addArticleShotCommand(program);
+addJsonCommand(program);
+addProfileCommand(program);
 program.parseAsync(process.argv).catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`Error: ${message}`);
@@ -3653,6 +4417,25 @@ function addArticleShotCommand(parent) {
   const command = new Command("article-shot").description("Render an X Article as a local long screenshot.").argument("<url-or-id>", "X/Twitter status URL or numeric status id containing an X Article.").option("-o, --out <path>", "Output image path, or output directory when no extension is provided.").option("--style <article-x|article-clean>", "Article screenshot style.", "article-x").option("--format <png|webp>", "Output image format.", "png").option("--width <px>", "Capture width in CSS pixels.", "540").option("--scale <number>", "Device scale factor for high-DPI output.", "2").option("--quality <number>", "WebP quality, 1-100.", "92").option("--theme <light|dark>", "Visual theme.", "light").option("--timezone <tz>", "Timezone used for rendered timestamps.", "Asia/Shanghai").option("--lang <code>", "Request FxEmbed with a target language when available.").option("--slice-height <px>", "Also export platform-friendly image slices at this CSS-pixel height.").option("--fixture <path>", "Read a saved FxEmbed article JSON response instead of calling the API.").option("--hide-source-footer", "Hide provenance footer.").option("--hide-actions", "Hide the X-style action row and header actions.").option("--no-cover", "Do not render the article cover image.").option("--transparent", "Capture with transparent background.").option("--cache-dir <path>", "Directory for downloaded image cache.", "cache/assets").option("--debug-html", "Write the intermediate HTML next to the image.");
   command.action(async (input, options) => {
     const out = await renderArticleShotCommand(input, options);
+    console.log(out);
+  });
+  parent.addCommand(command);
+}
+function addJsonCommand(parent) {
+  const command = new Command("json").alias("raw-json").description("Fetch FxEmbed JSON for an X/Twitter post, thread, or quote list.").argument("<url-or-id>", "X/Twitter status URL or numeric status id.").option("-o, --out <path>", "Write JSON to a file path, or to fxembed-<kind>-<id>.json inside a directory.").option("--kind <post|thread|quotes>", "FxEmbed data to fetch.", "post").option("--lang <code>", "Request FxEmbed translation for the target language, e.g. zh-cn or en.").option("--count <number>", "Quote count when --kind quotes is used.", "20").option("--cursor <value>", "Quote pagination cursor when --kind quotes is used.").option("--no-about-account", "Do not request expanded account metadata for post/thread responses.").option("--fixture <path>", "Read a saved FxEmbed JSON response instead of calling the API.").option("--normalized", "Output fxbrief normalized JSON instead of the raw FxEmbed response.").option("--compact", "Print or write compact JSON without indentation.");
+  command.action(async (input, options) => {
+    const result = await fetchJsonCommand(input, options);
+    process.stdout.write(result.value);
+    if (result.type === "file") process.stdout.write("\n");
+  });
+  parent.addCommand(command);
+}
+function addProfileCommand(parent) {
+  const command = addCommonOptions(
+    new Command("profile-card").description("Render an X/Twitter profile card for a handle or profile URL.").argument("<profile-url-or-handle>", "X/Twitter profile URL, @handle, or handle.").option("--fixture <path>", "Read a saved FxEmbed profile JSON response instead of calling the API.").option("--count <number>", "Append this many profile posts below the card, 1-6. Defaults to 0.", "0").option("--latest-post", "Shortcut for --count 1.").option("--with-replies", "Include replies when fetching profile posts.")
+  );
+  command.action(async (input, options) => {
+    const out = await renderProfileCommand(input, options);
     console.log(out);
   });
   parent.addCommand(command);

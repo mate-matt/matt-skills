@@ -61,6 +61,9 @@ export function normalizePost(raw: unknown, provider: ProviderName = 'x', depth 
   const possiblySensitive = asBoolean(source.possibly_sensitive);
   if (possiblySensitive !== undefined) post.possiblySensitive = possiblySensitive;
 
+  const isPinned = asBoolean(source.is_pinned) ?? asBoolean(source.pinned);
+  if (isPinned !== undefined) post.isPinned = isPinned;
+
   const communityNote = normalizeCommunityNote(source.community_note);
   if (communityNote !== undefined) post.communityNote = communityNote;
 

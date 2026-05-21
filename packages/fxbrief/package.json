@@ -1,6 +1,6 @@
 {
   "name": "@mate-matt/fxbrief",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "Local X/Twitter editorial asset renderer powered by FxEmbed data and Playwright screenshots.",
   "type": "module",
   "homepage": "https://github.com/mate-matt/matt-skills/tree/main/packages/fxbrief#readme",

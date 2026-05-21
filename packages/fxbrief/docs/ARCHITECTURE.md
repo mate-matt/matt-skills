@@ -1,6 +1,6 @@
 # Architecture
 
-`fx-brief` has three related pipelines.
+`fx-brief` has four related pipelines.
 
 Image rendering:
 
@@ -35,6 +35,16 @@ URL or id
   -> React article template
   -> Playwright long screenshot
   -> PNG/WebP output + optional slices
+```
+
+JSON export:
+
+```text
+URL or id
+  -> provider client
+  -> raw FxEmbed JSON
+  -> optional local normalizer
+  -> stdout or .json file
 ```
 
 ## Layers

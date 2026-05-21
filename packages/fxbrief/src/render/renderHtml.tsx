@@ -1,11 +1,12 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactElement } from 'react';
-import type { ArticleShotRenderOptions, RenderOptions, RenderTemplate, SocialArticle, SocialPost, SocialThread } from '../types.js';
+import type { ArticleShotRenderOptions, RenderOptions, RenderTemplate, SocialArticle, SocialPost, SocialProfile, SocialThread } from '../types.js';
 import { buildArticleStyles } from './styles/article.js';
 import { buildStyles } from './styles/base.js';
 import { ArticleShot } from './templates/ArticleShot.js';
 import { PostClean } from './templates/PostClean.js';
 import { PostMobile } from './templates/PostMobile.js';
+import { ProfileCard } from './templates/ProfileCard.js';
 import { QuoteWall } from './templates/QuoteWall.js';
 import { ThreadVertical } from './templates/ThreadVertical.js';
 
@@ -26,8 +27,13 @@ export function renderArticleShotHtml(article: SocialArticle, options: ArticleSh
   return renderArticleDocument(<ArticleShot article={article} options={options} />, options);
 }
 
+export function renderProfileHtml(profile: SocialProfile, options: RenderOptions, timelinePosts: SocialPost[] = []): string {
+  return renderDocument(<ProfileCard profile={profile} options={options} timelinePosts={timelinePosts} />, options);
+}
+
 export function defaultWidthForTemplate(template: RenderTemplate): number {
   if (template === 'quote-wall') return 920;
+  if (template === 'profile-card') return 430;
   if (template === 'post-mobile') return 430;
   return 390;
 }

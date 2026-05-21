@@ -10,8 +10,10 @@
 | --- | --- | --- |
 | 移动端推文截图 | `post-mobile` | 430px X 风格新闻引用卡。 |
 | 干净媒体引用卡 | `post-clean` | 更像报道配图，降低“官方截图”观感，同时保留来源。 |
+| 个人主页名片 | `profile-card` | 把 X 个人主页做成本地渲染的创作者名片。 |
 | X 长文 Markdown 归档 | `article-md` | `article.md`、本地 `assets/`、`metadata.json`，以及可选 raw FxEmbed 数据。 |
 | X 长文长截图 | `article-shot` | 完整长截图，也可以切成适合社交平台发布的编号图片。 |
+| 原始数据导出 | `json` | FxEmbed 原始 JSON，或 fxbrief 规范化后的本地 JSON 模型。 |
 
 ## 安装要求
 
@@ -22,7 +24,7 @@ npm install -g @mate-matt/fxbrief@latest
 fxbrief --version
 ```
 
-请使用 `fxbrief` `0.2.2` 或更新版本。这个版本包含 skill 需要的四个核心工作流，并且默认隐藏 post-mobile 的 Subscribe 按钮，除非显式要求显示。
+请使用 `fxbrief` `0.2.4` 或更新版本。这个版本包含 skill 需要的核心工作流、个人主页名片、默认隐藏 post-mobile 的 Subscribe 按钮，并支持导出 FxEmbed 原始 JSON。
 
 截图渲染使用 Playwright。如果本机还没有 Chromium，先安装一次：
 
@@ -67,6 +69,28 @@ fxbrief post-mobile "https://x.com/Google/status/2054285931260334181" \
 fxbrief post-clean "https://x.com/user/status/123" --media first --hide-stats
 ```
 
+生成个人主页名片：
+
+```bash
+fxbrief profile-card "https://x.com/user" --width 430 --scale 2
+```
+
+生成个人主页名片，并只追加一条最新主页动态：
+
+```bash
+fxbrief profile-card "https://x.com/mate_mattt" \
+  --latest-post \
+  --width 600 \
+  --scale 2 \
+  --out output/mate-mattt-profile.png
+```
+
+生成个人主页名片，并在下方接更长的主页动态列表：
+
+```bash
+fxbrief profile-card "https://x.com/user" --count 3 --width 600 --scale 2
+```
+
 导出 X 长文 Markdown：
 
 ```bash
@@ -84,6 +108,18 @@ fxbrief article-shot "https://x.com/user/status/123" \
   --out output/my-article
 ```
 
+只获取 FxEmbed 原始 JSON，不渲染截图：
+
+```bash
+fxbrief json "https://x.com/user/status/123"
+```
+
+导出规范化后的线程 JSON：
+
+```bash
+fxbrief json "https://x.com/user/status/123" --kind thread --normalized --out output/json
+```
+
 ## 具体案例
 
 | 案例 |
@@ -92,11 +128,17 @@ fxbrief article-shot "https://x.com/user/status/123" \
 | <img src="assets/google-android-prompt.jpeg" alt="在 Codex 中请求 FxBrief skill 生成中文正文截图" width="560"> |
 | <img src="assets/google-android-output.jpeg" alt="生成后的 Google Android 中文正文推文截图" width="430"> |
 
+| 个人主页名片案例 |
+| --- |
+| 使用 `$matt-fx-brief` 把 `https://x.com/mate_mattt` 生成创作者主页名片，并只追加一条最新主页动态。 |
+| <img src="assets/mate-mattt-profile-latest.png" alt="FxBrief 生成的 Matt X 个人主页名片" width="430"> |
+
 其他常用请求：
 
 ```text
 使用 $matt-fx-brief 将这篇 X 长文导出为 Markdown，并把图片资源保存到本地：https://x.com/user/status/123
 使用 $matt-fx-brief 将这篇 X 长文生成完整长截图和至少 3 张切分图：https://x.com/user/status/123
+使用 $matt-fx-brief 将这个 X 个人主页生成一张创作者名片，并带一条最新主页动态：https://x.com/mate_mattt
 ```
 
 ## 输出位置
@@ -138,6 +180,14 @@ output/my-article/
 - `--media <none|first|grid|mosaic|full>`：媒体展示模式。
 - `--hide-source-footer`：隐藏来源 footer。
 - `--debug-html`：保存中间 HTML，便于调试。
+
+JSON 导出可使用 `--kind post|thread|quotes`、`--normalized`、`--compact` 和 `--out <path>`。`json` 命令不使用 Playwright，也不会下载媒体资源。
+
+个人主页名片默认不接推文。需要时加 `--count <1-6>`，会在名片底部追加主页动态列表；`--latest-post` 等价于 `--count 1`。如果回复也可以被选中，再加 `--with-replies`。FxEmbed 当前能返回主页 statuses，但没有可靠的置顶推文字段。
+
+## Skill 路由说明
+
+X/FxEmbed 相关能力统一使用一个 skill：`matt-fx-brief`。如果输入是个人主页 URL 或 handle，走 `profile-card`。如果输入是 status URL，再按目标分流：普通截图走 `post-mobile` 或 `post-clean`；X 长文归档走 `article-md`；长截图或切片走 `article-shot`；调试、元数据或二次开发数据走 `json`。如果用户只给了 status URL，且普通推文和 X Article 的区别会影响结果，先用 `fxbrief json "<url>" --normalized` 看数据，再决定最终命令。
 
 ## 注意事项
 

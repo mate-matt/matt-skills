@@ -4,7 +4,8 @@ export type RenderTemplate =
   | 'post-mobile'
   | 'post-clean'
   | 'thread-vertical'
-  | 'quote-wall';
+  | 'quote-wall'
+  | 'profile-card';
 
 export type ArticleShotStyle = 'article-x' | 'article-clean';
 export type OutputFormat = 'png' | 'webp';
@@ -86,6 +87,7 @@ export interface SocialPost {
   source?: string;
   sourceLabel?: string;
   possiblySensitive?: boolean;
+  isPinned?: boolean;
   communityNote?: {
     text: string;
   } | null;
@@ -153,6 +155,38 @@ export interface SocialThread {
   root: SocialPost;
   posts: SocialPost[];
   author?: SocialAuthor;
+}
+
+export interface SocialProfileMetrics {
+  followers?: number;
+  following?: number;
+  posts?: number;
+  media?: number;
+  likes?: number;
+}
+
+export interface SocialProfile {
+  provider: ProviderName;
+  id?: string;
+  url: string;
+  name: string;
+  handle: string;
+  avatarUrl?: string;
+  avatarAssetUrl?: string;
+  bannerUrl?: string;
+  bannerAssetUrl?: string;
+  description?: string;
+  location?: string;
+  joined?: string;
+  website?: string;
+  verified?: boolean;
+  verificationType?: 'organization' | 'government' | 'individual' | null;
+  metrics: SocialProfileMetrics;
+  aboutAccount?: {
+    basedIn?: string;
+    source?: string;
+    usernameChanges?: number;
+  };
 }
 
 export interface RenderOptions {

@@ -8,8 +8,8 @@
 
 | 模块 | 入口 | 类型 | 能做什么 | 文档 |
 | --- | --- | --- | --- | --- |
-| X / FxBrief | `matt-fx-brief` | Codex skill | 把 X/Twitter 推文和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
-| X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据生成推文截图、媒体引用卡、长文 Markdown 和长截图。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / FxBrief | `matt-fx-brief` | Codex skill | 把 X/Twitter 推文、个人主页和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据生成推文截图、个人主页名片、媒体引用卡、长文 Markdown、长截图和 JSON 数据。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | Image Grab | `matt-pic-grab` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、作者、授权和风险元数据。 | [EN](docs/pic-grab/README.md) / [中文](docs/pic-grab/README.zh-CN.md) |
 
 ## X / FxBrief
@@ -22,14 +22,21 @@
 | --- | --- |
 | `post-mobile` | 430px 移动端 X 风格截图，适合新闻引用源。 |
 | `post-clean` | 媒体报道引用卡，保留来源信息，同时降低“官方截图”的观感。 |
+| `profile-card` | X 个人主页名片，可选追加最新主页动态。 |
 | `article-md` | X 长文导出：`article.md`、`assets/`、`metadata.json`，以及可选 raw FxEmbed 数据。 |
 | `article-shot` | X 长文长截图，可输出适合社交平台的编号切片。 |
+| `json` | 导出原始或规范化后的 FxEmbed 数据，适合调试和二次开发。 |
 
 | 案例 |
 | --- |
 | 使用 `$matt-fx-brief` 把 `https://x.com/Google/status/2054285931260334181` 生成截图，要求截图正文是中文的。 |
 | <img src="docs/fx-brief/assets/google-android-prompt.jpeg" alt="在 Codex 中请求 FxBrief 生成中文正文截图" width="520"> |
 | <img src="docs/fx-brief/assets/google-android-output.jpeg" alt="FxBrief 生成后的中文正文推文截图" width="420"> |
+
+| 个人主页名片案例 |
+| --- |
+| 使用 `$matt-fx-brief` 把 `https://x.com/mate_mattt` 生成个人主页名片，并只追加一条最新主页动态。 |
+| <img src="docs/fx-brief/assets/mate-mattt-profile-latest.png" alt="FxBrief 生成的 Matt X 个人主页名片" width="420"> |
 
 详细安装、案例、命令参数、输出结构和截图展示：
 

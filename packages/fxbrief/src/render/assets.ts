@@ -1,4 +1,4 @@
-import type { ArticleMedia, SocialArticle, SocialMedia, SocialPost, SocialThread } from '../types.js';
+import type { ArticleMedia, SocialArticle, SocialMedia, SocialPost, SocialProfile, SocialThread } from '../types.js';
 import { AssetCache } from '../cache/index.js';
 
 export async function hydratePostAssets(post: SocialPost, cache: AssetCache): Promise<SocialPost> {
@@ -49,6 +49,17 @@ export async function hydrateArticleAssets(article: SocialArticle, cache: AssetC
       : article.author,
     ...(cover ? { cover } : {}),
     media,
+  };
+}
+
+export async function hydrateProfileAssets(profile: SocialProfile, cache: AssetCache): Promise<SocialProfile> {
+  const avatarAssetUrl = profile.avatarUrl ? await cache.resolveImage(profile.avatarUrl, profile.handle) : undefined;
+  const bannerAssetUrl = profile.bannerUrl ? await cache.resolveImage(profile.bannerUrl, `${profile.handle}-banner`) : undefined;
+
+  return {
+    ...profile,
+    ...(avatarAssetUrl ? { avatarAssetUrl } : {}),
+    ...(bannerAssetUrl ? { bannerAssetUrl } : {}),
   };
 }
 

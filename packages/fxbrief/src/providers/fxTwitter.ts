@@ -19,6 +19,8 @@ export interface FetchPostOptions {
 export interface FetchListOptions extends FetchPostOptions {
   count?: number;
   cursor?: string | undefined;
+  withReplies?: boolean;
+  groupThreads?: boolean;
 }
 
 export class FxTwitterClient {
@@ -58,6 +60,16 @@ export class FxTwitterClient {
     });
   }
 
+  async getProfileStatuses(handle: string, options: FetchListOptions = {}): Promise<unknown> {
+    return this.get(`/2/profile/${encodeURIComponent(handle)}/statuses`, {
+      count: options.count,
+      cursor: options.cursor,
+      with_replies: options.withReplies ? '1' : undefined,
+      groupthreads: options.groupThreads ? '1' : undefined,
+      lang: options.lang,
+    });
+  }
+
   private async get(pathname: string, query: Record<string, string | number | undefined>): Promise<unknown> {
     const url = new URL(pathname, this.baseUrl);
     for (const [key, value] of Object.entries(query)) {
@@ -70,6 +82,10 @@ export class FxTwitterClient {
         'user-agent': this.userAgent,
       },
     });
+
+    if (response.status === 204) {
+      return { code: 204, results: [] };
+    }
 
     const text = await response.text();
     let json: unknown;

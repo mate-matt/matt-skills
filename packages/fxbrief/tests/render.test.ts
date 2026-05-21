@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { normalizeArticleResponse } from '../src/normalize/socialArticle.js';
+import { normalizeProfileResponse } from '../src/normalize/socialProfile.js';
 import { normalizePostResponse, normalizeQuotesResponse, normalizeThreadResponse } from '../src/normalize/socialPost.js';
-import { renderArticleShotHtml, renderPostHtml, renderQuoteWallHtml, renderThreadHtml } from '../src/render/renderHtml.js';
+import { renderArticleShotHtml, renderPostHtml, renderProfileHtml, renderQuoteWallHtml, renderThreadHtml } from '../src/render/renderHtml.js';
 import type { ArticleShotRenderOptions, RenderOptions } from '../src/types.js';
 
 const baseOptions: RenderOptions = {
@@ -92,5 +93,29 @@ describe('rendering', () => {
     expect(html).toContain('Inline fixture image');
     expect(html).toContain('article-code');
     expect(html).toContain('Source: X / @example');
+  });
+
+  it('normalizes and renders a profile card HTML document', async () => {
+    const raw = JSON.parse(await readFile('fixtures/profile.json', 'utf8')) as unknown;
+    const profile = normalizeProfileResponse(raw, 'x');
+    const html = renderProfileHtml(profile, { ...baseOptions, template: 'profile-card', showStats: false });
+
+    expect(profile.handle).toBe('example');
+    expect(profile.metrics.followers).toBe(125000);
+    expect(html).toContain('profile-card');
+    expect(html).toContain('Example News Lab');
+    expect(html).toContain('Source: X / @example');
+    expect(html).not.toContain('Latest post');
+  });
+
+  it('renders an optional latest post inside a profile card', async () => {
+    const profileRaw = JSON.parse(await readFile('fixtures/profile.json', 'utf8')) as unknown;
+    const postRaw = JSON.parse(await readFile('fixtures/post.json', 'utf8')) as unknown;
+    const profile = normalizeProfileResponse(profileRaw, 'x');
+    const post = normalizePostResponse(postRaw, 'x');
+    const html = renderProfileHtml(profile, { ...baseOptions, template: 'profile-card', showStats: false }, [post]);
+
+    expect(html).toContain('profile-timeline-post');
+    expect(html).toContain('OpenAI announced a new research update today');
   });
 });
