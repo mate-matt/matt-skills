@@ -10,6 +10,7 @@
 | --- | --- | --- | --- | --- |
 | X / FxBrief | `matt-fx-brief` | Codex skill | Turns X/Twitter posts, profiles, and X Articles into local editorial assets. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | X / FxBrief | `fxbrief` | npm CLI | Fetches FxEmbed data and renders post screenshots, profile cards, clean quote cards, article Markdown, long screenshots, and JSON exports. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / Poster | `matt-x-poster` | Codex skill + Bun scripts | Fetches real FxEmbed data and composes imagegen prompts for cinematic X promotional posters. | Skill bundle |
 | Image Grab | `matt-pic-grab` | Codex skill + Bun script | Finds and caches license-safe images with source, creator, license, and risk metadata. | [EN](docs/pic-grab/README.md) / [中文](docs/pic-grab/README.zh-CN.md) |
 
 ## X / FxBrief
@@ -76,6 +77,7 @@ Install from GitHub:
 ```text
 $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief
 $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-x-poster
 ```
 
 Manual install from a local clone:
@@ -84,6 +86,7 @@ Manual install from a local clone:
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 ln -s "$PWD/skills/matt-fx-brief" "${CODEX_HOME:-$HOME/.codex}/skills/matt-fx-brief"
 ln -s "$PWD/skills/matt-pic-grab" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab"
+ln -s "$PWD/skills/matt-x-poster" "${CODEX_HOME:-$HOME/.codex}/skills/matt-x-poster"
 ```
 
 ## Development

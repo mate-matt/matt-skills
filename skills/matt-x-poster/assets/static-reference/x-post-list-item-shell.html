@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=430, initial-scale=1" />
+    <title>X Post List Item Structural Reference</title>
+    <style>
+      body {
+        margin: 0;
+        background: #fff;
+        color: #0f1419;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .item {
+        width: 430px;
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: 58px 1fr;
+        gap: 10px;
+        padding: 15px 12px 12px;
+        border-top: 1px solid #eff3f4;
+        border-bottom: 1px solid #eff3f4;
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        background: #d7dce0;
+      }
+      .name-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1.1;
+      }
+      .handle {
+        color: #536471;
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .text {
+        margin-top: 5px;
+        font-size: 20px;
+        line-height: 1.28;
+        font-weight: 800;
+      }
+      .link {
+        margin-top: 4px;
+        color: #1d9bf0;
+        font-size: 20px;
+        font-weight: 900;
+      }
+      .card {
+        margin-top: 12px;
+        border: 1px solid #cfd9de;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .media {
+        aspect-ratio: 16 / 9;
+        background: linear-gradient(135deg, #f7f9f9, #d9e8f4);
+      }
+      .preview {
+        padding: 12px;
+      }
+      .preview .line {
+        height: 15px;
+        margin: 7px 0;
+        border-radius: 999px;
+        background: #dce3e8;
+      }
+      .actions {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        color: #536471;
+      }
+      .icon {
+        width: 24px;
+        height: 20px;
+        border: 3px solid currentColor;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <article class="item">
+      <div class="avatar"></div>
+      <div>
+        <div class="name-row">Display Name <span class="handle">@handle · 1d</span></div>
+        <div class="text">Post text lines appear here with compact mobile feed spacing.</div>
+        <div class="link">x.com/handle/status...</div>
+        <div class="card">
+          <div class="media"></div>
+          <div class="preview">
+            <div class="line" style="width: 92%"></div>
+            <div class="line" style="width: 84%"></div>
+            <div class="line" style="width: 66%"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <span class="icon"></span>
+          <span class="icon"></span>
+          <span class="icon"></span>
+          <span class="icon"></span>
+          <span class="icon"></span>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>

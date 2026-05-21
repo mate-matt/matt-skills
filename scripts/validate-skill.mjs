@@ -76,6 +76,47 @@ if (name === "matt-fx-brief") {
   }
 }
 
+if (name === "matt-x-poster") {
+  const dataScript = join(skillPath, "scripts", "x-card-data.ts");
+  if (!existsSync(dataScript)) {
+    fail(`Expected X data script not found: ${dataScript}`);
+  }
+
+  const composeScript = join(skillPath, "scripts", "compose-prompt.ts");
+  if (!existsSync(composeScript)) {
+    fail(`Expected prompt compose script not found: ${composeScript}`);
+  }
+
+  const promptPath = join(skillPath, "prompts", "profile-portal-3d.md");
+  if (!existsSync(promptPath)) {
+    fail(`Expected flagship prompt module not found: ${promptPath}`);
+  }
+
+  const referenceIndex = join(skillPath, "references", "visual-reference-index.md");
+  if (!existsSync(referenceIndex)) {
+    fail(`Expected visual reference index not found: ${referenceIndex}`);
+  }
+
+  for (const requiredAsset of [
+    "assets/reference-screenshots/x-profile-home.png",
+    "assets/reference-screenshots/x-article-page.png",
+    "assets/reference-screenshots/x-profile-post-list.png",
+    "assets/reference-screenshots/x-post-detail.png",
+    "assets/fxbrief-reference/profile-card.html",
+    "assets/fxbrief-reference/article-page.html",
+    "assets/fxbrief-reference/post-detail-card.html",
+  ]) {
+    const assetPath = join(skillPath, requiredAsset);
+    if (!existsSync(assetPath)) {
+      fail(`Expected visual reference asset not found: ${assetPath}`);
+    }
+  }
+
+  if (!content.includes("structural references only")) {
+    fail("matt-x-poster should state that screenshots and HTML are structural references only.");
+  }
+}
+
 console.log(`Skill is valid: ${name}`);
 
 function parseFlatYaml(source) {

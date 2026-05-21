@@ -1,0 +1,4 @@
+interface:
+  display_name: "Matt X Poster"
+  short_description: "Generate imagegen X content promo posters"
+  default_prompt: "Use $matt-x-poster to turn this X post into a 3D promotional poster."

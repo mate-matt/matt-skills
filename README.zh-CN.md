@@ -10,6 +10,7 @@
 | --- | --- | --- | --- | --- |
 | X / FxBrief | `matt-fx-brief` | Codex skill | 把 X/Twitter 推文、个人主页和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据生成推文截图、个人主页名片、媒体引用卡、长文 Markdown、长截图和 JSON 数据。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
+| X / Poster | `matt-x-poster` | Codex skill + Bun 脚本 | 获取真实 FxEmbed 数据，并组装 imagegen 提示词，生成电影感 X 内容宣传海报。 | Skill bundle |
 | Image Grab | `matt-pic-grab` | Codex skill + Bun 脚本 | 查找并缓存版权链路清楚的图片，保留来源、作者、授权和风险元数据。 | [EN](docs/pic-grab/README.md) / [中文](docs/pic-grab/README.zh-CN.md) |
 
 ## X / FxBrief
@@ -77,6 +78,7 @@ bun run skills/matt-pic-grab/scripts/grab-image.ts \
 ```text
 $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-fx-brief
 $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-pic-grab
+$skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skills/matt-x-poster
 ```
 
 如果已经 clone 到本地，也可以手动安装：
@@ -85,6 +87,7 @@ $skill-installer install https://github.com/mate-matt/matt-skills/tree/main/skil
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 ln -s "$PWD/skills/matt-fx-brief" "${CODEX_HOME:-$HOME/.codex}/skills/matt-fx-brief"
 ln -s "$PWD/skills/matt-pic-grab" "${CODEX_HOME:-$HOME/.codex}/skills/matt-pic-grab"
+ln -s "$PWD/skills/matt-x-poster" "${CODEX_HOME:-$HOME/.codex}/skills/matt-x-poster"
 ```
 
 ## 开发
