@@ -66,10 +66,10 @@ This structure is for bold public-facing creator posters. It should feel like a 
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a clean circular printed bitmap decal on the poster: a direct reproduction of the local avatar image inside a circular X avatar mask. It should not become a newly painted street portrait.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match the wall lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Do not render the avatar as a mural, stencil, spray-paint portrait, 3D badge, glass coin, hologram, sculpture, painted poster portrait, or enlarged hero face.
-- Paper grain, paste texture, wrinkles, tears, dirt, city glare, and wheatpaste distress may affect the surrounding poster surface or the outer avatar edge only. They must not enter the avatar interior or obscure the face, gesture, subject, crop, or background.
+- Paper grain, paste texture, wrinkles, tears, dirt, city glare, and wheatpaste distress may affect the surrounding poster surface or the outer avatar edge only. They must not enter the avatar interior or obscure the source bitmap pixels, crop, or background.
 - If fidelity is uncertain, keep the avatar smaller, flatter, front-facing, and placed in a clean printed UI circle with minimal distressing.
 - When local post media, article cover, or article media paths exist, treat them as strict visual references. They may appear as printed image panels within the street poster, with only mild paper texture and no heavy tearing over key content.
 

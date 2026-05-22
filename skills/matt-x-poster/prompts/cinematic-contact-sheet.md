@@ -65,7 +65,7 @@ This structure is for filmic creator posters, post showcases, and article eviden
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a direct source-avatar bitmap reproduction inside the X card within the selected contact frame, with at most a circular UI mask. It remains an X UI avatar image, not a new film portrait or actor sample.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar as a photographed actor, film still, headshot, hand-colored print, or darkroom portrait.
 - Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Do not render the avatar as a 3D object, glass coin, hologram, sculpture, painted portrait, enlarged hero face, or analog portrait remake.

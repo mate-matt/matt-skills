@@ -67,7 +67,7 @@ This structure is for accidental discovery, warm domestic realism, and dry visua
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the magnet card or mini X card, inside a clean circular X avatar mask.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration/pixel style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match kitchen lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Fridge reflections, paper texture, tape shine, magnet shadow, and shallow focus may affect the card surface around the avatar, but must not cover, recolor, blur, warp, relight, or distort the avatar interior.
 - Do not render the avatar as a fridge mascot, hand drawing, sticker illustration, 3D badge, enamel pin, hologram, painted portrait, or enlarged hero face.

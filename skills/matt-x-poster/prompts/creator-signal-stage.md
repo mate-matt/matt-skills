@@ -70,7 +70,7 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a direct source-avatar bitmap reproduction pasted into the UI, screen, printed board, or identity card, with at most a circular UI mask. It should not look like a newly invented portrait.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration/pixel style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not turn an animal avatar into a human, a human avatar into a different person, a photo into a generic illustration, or a distinctive avatar into a generic icon.
 - Do not reinterpret the avatar to match the scene lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Stage lights, LED pixel texture, screen glow, monitor reflections, printed-board shadows, and identity-card material may surround the avatar, but they must not cross, blur, recolor, relight, or distort the avatar interior.

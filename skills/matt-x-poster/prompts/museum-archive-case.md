@@ -81,7 +81,7 @@ This structure is for premium creator identity, historical evidence, public reco
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a direct source-avatar bitmap reproduction printed or displayed on the archive artifact inside a circular X avatar mask. It may read as an archival photo insert, circular bitmap label, or screen image, but not as a reinterpreted museum portrait.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match the museum lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Do not render the avatar as a bust, sculpture, coin, medallion, hologram, oil portrait, framed portrait, enlarged hero face, or museum illustration.
 - Glass glare, case reflections, label shadows, conservation mounts, acrylic edges, and depth of field may frame the avatar, but they must not cross, distort, recolor, or obscure the avatar interior.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const skillPath = process.argv[2];
@@ -87,7 +87,7 @@ if (name === "matt-x-poster") {
     fail(`Expected prompt compose script not found: ${composeScript}`);
   }
 
-  for (const requiredPrompt of [
+  const requiredPrompts = [
     "prompts/profile-portal-3d.md",
     "prompts/creator-signal-stage.md",
     "prompts/editorial-citation-desk.md",
@@ -98,7 +98,9 @@ if (name === "matt-x-poster") {
     "prompts/designer-pinboard.md",
     "prompts/skin-script-body-art.md",
     "prompts/bathroom-mirror-sticky-note.md",
-  ]) {
+  ];
+
+  for (const requiredPrompt of requiredPrompts) {
     const promptPath = join(skillPath, requiredPrompt);
     if (!existsSync(promptPath)) {
       fail(`Expected prompt module not found: ${promptPath}`);
@@ -135,6 +137,35 @@ if (name === "matt-x-poster") {
 
   if (!content.includes("Translation Aid")) {
     fail("matt-x-poster should document the Translation Aid prompt section.");
+  }
+
+  if (!content.includes("Avatar Reference Lock")) {
+    fail("matt-x-poster should document the Avatar Reference Lock workflow.");
+  }
+
+  if (!content.includes("Avatar Correction Pass")) {
+    fail("matt-x-poster should document the Avatar Correction Pass workflow.");
+  }
+
+  const composeContent = readFileSync(composeScript, "utf8");
+  const dataScriptContent = readFileSync(dataScript, "utf8");
+  if (!composeContent.includes("Reference Image A")) {
+    fail("matt-x-poster prompt composer should define local avatars as Reference Image A.");
+  }
+  if (/face shape|hair silhouette|same subject type/.test(dataScriptContent)) {
+    fail("matt-x-poster data script should not generate verbal avatar reconstruction guards.");
+  }
+
+  const promptDir = join(skillPath, "prompts");
+  const promptFiles = readdirSync(promptDir)
+    .filter((file) => file.endsWith(".md"))
+    .map((file) => `prompts/${file}`);
+
+  for (const promptFile of promptFiles) {
+    const promptContent = readFileSync(join(skillPath, promptFile), "utf8");
+    if (/face shape|hair silhouette|same subject type/.test(promptContent)) {
+      fail(`Prompt module should not contain verbal avatar reconstruction logic: ${promptFile}`);
+    }
   }
 }
 

@@ -83,7 +83,7 @@ This structure is for high-art fashion portraiture, intimate editorial photograp
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - In this style, place the avatar on the body as a small circular printed decal / original-bitmap sticker. It must remain an unchanged flat 2D reproduction, not tattoo ink and not a hand-drawn tattoo portrait.
 - The avatar may also appear as a small flat bitmap on a lower-right phone screen or printed card, but the primary style-specific avatar treatment is the body decal.
-- The avatar may be circularly clipped by the decal boundary, but its internal pixels should remain visually unchanged: same face shape, eye shape, hair silhouette, pose, accessories, crop, color treatment, style, and background.
+- The avatar may be circularly clipped by the decal boundary, but its internal pixels should remain visually unchanged from Reference Image A; do not use verbal appearance traits to reconstruct it.
 - Skin texture, body curvature, soft contact shadow, satin reflection, and decal edge perspective may make the sticker feel physically applied, but they must not repaint, blur, recolor, warp, or relight the avatar interior.
 - Do not beautify, relight, repaint, redraw, upscale into a new portrait, age-shift, change expression, change face angle, change hand gesture, or change avatar background.
 - Do not render the avatar as tattoo ink, a hand-drawn tattoo portrait, realistic human model, body-paint portrait, skin illustration, sculpture, hologram, glass badge, or enlarged hero face.

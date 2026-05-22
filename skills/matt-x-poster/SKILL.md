@@ -31,11 +31,11 @@ bun run scripts/compose-prompt.ts \
 
 4. If the user requested translation, run the agent translation workflow below before imagegen. Do not modify `card-context.json`; append a `Translation Aid` section to the prompt you send to imagegen.
 
-5. Read `final-prompt.md`, add any required avatar/media observations and optional translation aid, then call imagegen with that complete prompt. Do not stop after producing the prompt unless the user explicitly asks for prompt-only output.
+5. Read `final-prompt.md`, add any required media observations and optional translation aid, then call imagegen with that complete prompt. Do not stop after producing the prompt unless the user explicitly asks for prompt-only output.
 
-6. For high-fidelity imagegen work, inspect local avatar/media paths from `card-context.json`, true X app screenshot images from `assets/reference-screenshots/`, and HTML structure references from `assets/fxbrief-reference/` or `assets/static-reference/` before imagegen. Add short, task-specific layout notes when needed. When local avatar or post media exists, visually inspect it first and add concise observed visual details to the imagegen prompt, because paths alone may not lock the generated image tightly enough. For important avatars, preserve the avatar as a flat direct reproduction of the local image rather than a portrait to redraw or restyle; the selected prompt module defines where it appears.
+6. For high-fidelity imagegen work, inspect local avatar/media paths from `card-context.json`, true X app screenshot images from `assets/reference-screenshots/`, and HTML structure references from `assets/fxbrief-reference/` or `assets/static-reference/` before imagegen. Add short, task-specific layout notes when needed. For avatars, inspect the local file only to confirm Reference Image A exists; do not append verbal face, hair, clothing, pose, lighting, or mood descriptions that could make imagegen reconstruct a similar-looking person. For post/article media, visual observations are allowed because media content often needs layout-specific anchoring.
 
-7. Verify the generated image visually against `card-context.json`: exact author name, exact handle, exact post text or article title, and no invented metrics or extra UI facts.
+7. Verify the generated image visually against `card-context.json`: exact author name, exact handle, exact post text or article title, faithful avatar identity when an avatar is rendered, and no invented metrics or extra UI facts. If the only failure is avatar fidelity, use the Avatar Correction Pass below instead of regenerating the whole poster.
 
 ## Data Commands
 
@@ -65,6 +65,37 @@ Outputs:
 - Prefer local media paths from `card-context.json` when present; keep original media URLs as provenance.
 - For profile count rows, use `profile.display_counts.text` exactly; it intentionally follows X's visible profile row order, uses X-style compact K/M notation for counts above 1,000, and should not include a posts count.
 - Do not invent comments, replies, endorsements, analytics panels, new metrics, extra badges, new images, or unrelated links.
+
+## Avatar Reference Lock
+
+When `card-context.json` contains `profile.avatar_local_path` or `assets.profile_avatar_path`, the composed prompt defines that file as Reference Image A.
+
+- Treat Reference Image A as an image asset to reproduce, not as a textual portrait idea.
+- Do not describe the avatar's face, hair, clothing, pose, lighting, or mood in task-specific prompt notes. Such descriptions encourage imagegen to create a similar-looking avatar instead of preserving the source identity.
+- The selected prompt module controls avatar placement, scale, crop, and physical surface. The avatar lock controls identity fidelity only.
+- If fidelity is hard, prefer a smaller, flatter, more bitmap-like avatar over an enlarged or stylized avatar.
+- Do not add case-specific avatar fixes for one user, one handle, one gender, one pose, or one source image. The rule is asset-based and applies to every local avatar.
+
+## Avatar Correction Pass
+
+Use this only after an initial image has been generated and the rest of the poster is acceptable, but the rendered avatar does not look like Reference Image A.
+
+Do not regenerate the whole poster for an avatar-only failure. Use an image-editing pass with the generated poster as the base image and the local avatar file as Reference Image A.
+
+Correction prompt pattern:
+
+```md
+Only edit the circular avatar area that represents the X author/profile avatar.
+
+Replace that avatar with a faithful direct visual reproduction of Reference Image A:
+<local avatar path>
+
+Keep every other part of the image unchanged: all text, cards, media thumbnails, layout, board/material texture, lighting, shadows, crop, colors, and composition.
+
+Do not create a similar-looking person. Do not redraw, beautify, relight, stylize, change expression, change face angle, change crop, replace the subject, or alter the avatar background. The avatar should look like the same source bitmap placed into the existing avatar circle.
+```
+
+Use the correction pass only for avatar fidelity. If source text, handle, media, metrics, or layout facts are wrong, regenerate with stricter factual constraints instead.
 
 ## Agent Translation Workflow
 
@@ -176,12 +207,12 @@ When calling imagegen:
 - Do not force one fixed aspect ratio unless the user explicitly asks. For long text, let both width and height expand into a broad readable poster; avoid narrow extra-tall strips.
 - Preserve multilingual source text exactly, including Chinese, English, punctuation, emoji, and `@handle` spelling.
 - When translation is requested for post/article content, preserve the original source text as the factual anchor unless the user explicitly asked for translated-only rendering. Profile pages are not translated.
-- If local avatar/media paths exist, include both the paths and a short visual description observed from those files, such as subject type, pose, accessories, visible text, color treatment, and key media layout.
-- For local avatars, use avatar-lock language only for visual fidelity: strict local avatar source, same crop/subject/face/pose/style/background, no redrawing, relighting, beautifying, restyling, age/expression/pose changes, or face reinterpretation. The selected prompt module defines where and how the avatar appears.
-- If avatar fidelity is uncertain, prefer a smaller, flatter, more direct reproduction instead of asking imagegen to stylize it.
+- If local avatar/media paths exist, include the paths. For local avatars, rely on Reference Image A and do not include a verbal avatar appearance description. For local post/article media, include concise observed visual details only when they help preserve attached-media content and layout.
+- For local avatars, use avatar-lock language only for identity fidelity: Reference Image A, direct source-bitmap reproduction, no similar-looking substitute, no redrawing, no relighting, no beautifying, no restyling, no expression/angle/crop changes, and no face reinterpretation. The selected prompt module defines where and how the avatar appears.
+- If avatar fidelity is uncertain, prefer a smaller, flatter, more bitmap-like avatar instead of asking imagegen to stylize it.
 - Require readable typography: crisp strokes, high contrast, no blurry/warped Chinese text, no rain or particles covering source text.
 - Ask for a polished cinematic poster, not a plain screenshot.
-- If the first image has wrong text, wrong handle, invented numbers, or copied reference content, regenerate with a stricter prompt that repeats the factual content section and the negative constraints.
+- If the first image has wrong text, wrong handle, invented numbers, copied reference content, or wrong attached media, regenerate with a stricter prompt that repeats the factual content section and the negative constraints. If the only issue is avatar identity drift, run the Avatar Correction Pass instead.
 
 ## Quality Checklist
 
@@ -192,4 +223,5 @@ Before answering the user, confirm:
 - If translation was requested, the imagegen prompt includes a `Translation Aid` section for post/article sources, or explicitly skips translation for profile sources.
 - imagegen was called unless the user requested prompt-only output.
 - The generated image is based on the fetched X data, not the reference screenshots.
+- If an avatar is rendered, it has been visually checked against Reference Image A; avatar-only failures were handled with the Avatar Correction Pass rather than a full style regeneration.
 - Image references came only from `assets/reference-screenshots/`; HTML references came only from `assets/fxbrief-reference/` or `assets/static-reference/`.

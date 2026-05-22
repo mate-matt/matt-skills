@@ -95,8 +95,8 @@ ${input.styleText}
 - The poster must be based on the real X data in the JSON above.
 - Render the exact X profile name, handle, post text, article title, and source relationship from the JSON.
 - If the JSON contains post media, article cover media, or local media paths, render that media as the visual content associated with the elevated hero composition.
-- If local avatar or media paths are present, treat them as strict visual references. The avatar should look like a direct circular crop of the local avatar image, not a reimagined portrait; preserve attached-media content as closely as possible.
-- If a local avatar path is present and the selected prompt structure renders the avatar, preserve the avatar as a direct flat visual reproduction of the local image. Do not redraw, restyle, or reinterpret the face; avatar placement and surface are defined by the selected prompt structure.
+- If local avatar or media paths are present, treat them as strict visual references. Use the local avatar as Reference Image A; preserve attached-media content as closely as possible.
+- If a local avatar path is present and the selected prompt structure renders the avatar, the avatar must look like the same source bitmap from Reference Image A placed into the selected structure. Do not redraw, restyle, reinterpret, or create a similar-looking person; avatar placement, scale, crop, and surface are defined only by the selected prompt structure.
 - Render source text with crisp, readable, high-contrast typography. No blurry, warped, over-reflective, or unreadable text.
 - Use profile count strings exactly from profile.display_counts.text, including K/M compact notation; do not add posts count to the profile count row.
 - Do not invent usernames, metrics, badges, links, quotes, article titles, or images.
@@ -118,13 +118,13 @@ function buildAvatarLockAddendum(context: Record<string, unknown>): string {
 
 Because a local profile avatar exists, this generation is in avatar-lock mode.
 
-- Avatar reference path: ${avatarPath}
-- Use this image as the strict visual source whenever the selected prompt structure renders the avatar.
-- Preserve the original avatar identity as closely as possible: same subject type, face shape, eye shape, hair silhouette, pose, hand/held-object placement, accessories, crop, color treatment, image style, and background mood.
-- Do not redraw, reinterpret, beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, replace the subject, or change the background inside the avatar.
-- If high fidelity is difficult, prefer a smaller, flatter, more direct reproduction of the original avatar rather than stylizing it.
-- Avatar placement, scale, crop, and physical surface are defined only by the selected prompt structure.
-- When the avatar has been inspected with the local image viewer before imagegen, use that displayed avatar as Reference Image A and match Reference Image A over the textual description.
+- Reference Image A: ${avatarPath}
+- Treat Reference Image A as an image asset to visually reproduce, not as a textual portrait idea to reconstruct.
+- Whenever the selected prompt structure renders an avatar, it must look like the same source bitmap from Reference Image A placed into that structure.
+- Do not create a similar-looking avatar. Do not infer, redraw, beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, replace the subject, or change the background inside the avatar.
+- Do not rely on verbal appearance traits for the avatar. If any task-specific notes describe the avatar's face, pose, hair, clothing, lighting, or mood, ignore those notes and match Reference Image A instead.
+- If high fidelity is difficult, keep the avatar smaller, flatter, and more bitmap-like instead of stylizing it.
+- Avatar placement, scale, crop, and physical surface are defined only by the selected prompt structure; this addendum controls identity fidelity only.
 `;
 }
 

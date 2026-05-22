@@ -74,7 +74,7 @@ This structure is for quiet visual comedy, intimate morning atmosphere, and beli
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the sticky note, mirror card, or small X source card, inside a clean circular X avatar mask. It may read as a small printed photo sticker only because it is physically printed, not because it has been redrawn.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration/pixel style, line quality, and background mood from the avatar file.
+- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match bathroom lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Mirror fog, paper fibers, tape shine, water droplets, vanity light, reflection blur, and countertop shadows may surround the avatar or touch the outer card surface, but they must not cover, recolor, blur, warp, relight, or distort the avatar interior.
 - Do not render the avatar as a bathroom selfie, reflected person, soap label mascot, hand drawing, sticker illustration, 3D badge, glass coin, hologram, painted portrait, or enlarged hero face.

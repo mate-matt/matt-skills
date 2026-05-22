@@ -64,13 +64,13 @@ This structure is for creator identity mapping, brand research, and visual plann
 
 ## Avatar And Media Fidelity
 
-- When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
-- The avatar should look like a direct source-avatar bitmap reproduction printed on the pinned X card, inside a clean circular X avatar mask. It may feel like a physical photo sticker only because it is printed, not because it has been redrawn.
-- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration style, line quality, and background mood from the avatar file.
-- Do not reinterpret the avatar to match pinboard lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
-- Do not render the avatar as a newly drawn sticker illustration, mascot, sketch, 3D badge, glass coin, hologram, painted portrait, cutout face, or enlarged hero face.
-- Cork texture, tape shadows, pin shadows, paper grain, swatch overlap, and studio glare may surround the avatar, but they must not cover or alter the avatar interior.
-- If fidelity is uncertain, keep the avatar smaller, flatter, front-facing, and printed cleanly on the main source card.
+- When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as Reference Image A from the composed prompt.
+- The avatar must look like the same source bitmap from Reference Image A printed on the pinned X source card, inside a clean circular X avatar mask. It may feel like a physical photo sticker only because it is printed, not because it has been redrawn.
+- In this style, the avatar is an identity marker inside the X source card, not the main visual subject. Place it only in the author/profile row or profile-card header area. Do not create a separate avatar-only card, standalone portrait, large circle portrait, enlarged profile photo, or board centerpiece.
+- Keep the avatar compact and UI-like: visually comparable to a normal X author/profile avatar, roughly 6-10% of the main source card width, and never large enough to compete with the source card text or attached media.
+- Do not reinterpret the avatar to match pinboard lighting. Do not create a similar-looking person, beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
+- Cork texture, tape shadows, pin shadows, paper grain, swatch overlap, and studio glare may surround the avatar, but they must not cover, recolor, blur, warp, relight, redraw, or alter the avatar interior.
+- If fidelity is uncertain, keep the avatar smaller, flatter, more bitmap-like, and printed cleanly on the main source card.
 - When local post media, article cover, or article media paths exist, treat them as strict visual references. They may appear as pinned thumbnails, contact cards, printed image strips, or media panels attached to the board.
 
 ## UI Realism
@@ -103,8 +103,9 @@ This structure is for creator identity mapping, brand research, and visual plann
 - No raw unformatted follower counts when `profile.display_counts.text` supplies compact count strings.
 - No swapping Following and Followers values.
 - No posts count in the profile count row beneath the profile bio.
-- No replacing the real avatar with a generic portrait, sticker, sketch, mascot, icon, cutout face, or loosely inspired illustration.
-- No redrawing, relighting, beautifying, aging, expression-changing, face-angle-changing, pose-changing, hand-gesture-changing, or style-changing of the avatar.
+- No replacing the real avatar with a generic portrait, similar-looking person, sticker illustration, sketch, mascot, icon, cutout face, or loosely inspired illustration.
+- No standalone avatar portrait, large circular avatar centerpiece, enlarged profile-photo card, or avatar-only board element.
+- No redrawing, relighting, beautifying, aging, expression-changing, face-angle-changing, pose-changing, hand-gesture-changing, crop-changing, background-changing, or style-changing of the avatar.
 - No copying factual content from bundled reference screenshots or HTML.
 - No using bundled reference screenshot media as poster media.
 - No red-string boards, chaotic investigation walls, fake trend charts, fake scorecards, fake audience segments, or invented analysis notes.
