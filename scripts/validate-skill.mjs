@@ -128,6 +128,14 @@ if (name === "matt-x-poster") {
   if (!content.includes("structural references only")) {
     fail("matt-x-poster should state that screenshots and HTML are structural references only.");
   }
+
+  if (!content.includes("Agent Translation Workflow")) {
+    fail("matt-x-poster should document the agent translation workflow.");
+  }
+
+  if (!content.includes("Translation Aid")) {
+    fail("matt-x-poster should document the Translation Aid prompt section.");
+  }
 }
 
 console.log(`Skill is valid: ${name}`);
