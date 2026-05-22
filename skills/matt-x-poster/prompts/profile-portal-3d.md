@@ -26,9 +26,9 @@ Create a cinematic 3D promotional poster for an X creator's content. The composi
 4. From the selected post area on the profile screen, make the content rise toward the hero card as a controlled, physically plausible stream of blue-white particles, liquid glass droplets, and tiny refractive shards. The stream must be localized between the phone screen and the content area; it must not fill the whole image.
 5. At the upper focal point, do not simply make another normal X card. Instead, build a bold elevated hero composition:
    - a large readable liquid-glass content card using the exact post text or article title;
-   - a crisp author identity capsule with exact name, exact @handle, and avatar;
+   - a crisp author identity capsule with exact name, exact @handle, and a flat bitmap avatar reproduced from the local avatar image;
    - the real attached post media or article cover inside a floating glass frame, curved display, or holographic panel;
-   - layered depth, with text, avatar, and media at slightly different z-depths;
+   - layered depth, with text and media at slightly different z-depths while the avatar remains a flat UI texture;
    - enough X card DNA to feel related to X, but arranged as a cinematic promotional poster rather than a literal screenshot.
 6. If source_type is profile, render a creator identity hero with the exact profile name, @handle, bio/description, avatar, banner relationship, and display counts.
 
@@ -52,9 +52,10 @@ Create a cinematic 3D promotional poster for an X creator's content. The composi
 
 ## Avatar And Media Fidelity
 
-- When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image. The avatar inside the X UI must look like a direct circular crop of that local image, not a newly invented portrait.
-- Preserve the exact subject type, face shape, pose, crop, accessories, held objects or visible text, color/monochrome treatment, photo/illustration/pixel style, and background mood from the avatar file. Do not turn an animal avatar into a human, a photo into a generic illustration, or a distinctive avatar into a generic icon.
-- If the avatar is enlarged as a glass medallion, holographic coin, circular identity badge, or small 3D portrait disc near the hero text, keep it faithful to the same source image. If fidelity is uncertain, keep the avatar smaller and flatter rather than stylizing it.
+- When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image. The avatar inside the X UI must look like a direct reproduction of the local avatar bitmap: an unchanged flat 2D image pasted into the interface and circularly clipped, not a newly invented portrait.
+- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color/monochrome treatment, photo/illustration/pixel style, line quality, and background mood from the avatar file. Do not turn an animal avatar into a human, a photo into a generic illustration, or a distinctive avatar into a generic icon.
+- Treat the avatar circle as a protected flat bitmap island. Glass refraction, screen glow, particle streams, reflections, rain, bloom, and liquid-glass effects may surround the avatar, but they must not pass across, distort, recolor, relight, or blur the face, gesture, subject, crop, or background inside the avatar.
+- Do not render the avatar as a 3D object, glass medallion, holographic coin, sculpture, painted portrait, badge illustration, or enlarged hero face. The surrounding UI can be 3D or cinematic, but the avatar itself should remain a flat source-image texture. If fidelity is uncertain, keep the avatar smaller, flatter, front-facing, and closer to the source crop rather than stylizing it.
 - When post media local paths exist, treat them as strict media references. The media may be reframed inside glass, rain, holographic, or 3D perspective treatment, but visible source content should remain recognizable.
 
 ## UI Realism
@@ -93,6 +94,7 @@ Create a cinematic 3D promotional poster for an X creator's content. The composi
 - No fake comments, fake repost text, fake endorsement badges, fake analytics panels, fake UI labels, or invented source pages.
 - No generic stock-photo people.
 - No replacing the real avatar with a generic portrait, human face, unrelated animal, unrelated icon, or loosely inspired illustration.
+- No redrawing, relighting, beautifying, aging, expression-changing, pose-changing, hand-gesture-changing, or style-changing of the avatar.
 - No unrelated logos beyond the X context implied by the data.
 - No warped unreadable UI blocks where exact source text is required.
 - No blurry, distorted, melted, mirrored, low-contrast, over-reflective, or unreadable Chinese typography.

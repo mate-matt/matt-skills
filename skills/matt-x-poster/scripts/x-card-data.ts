@@ -308,20 +308,26 @@ function buildPromptGuards(values: Pick<CardContext, "profile"> & Partial<Pick<C
   if (displayCounts.length > 0) {
     const countText = displayCounts.map((item) => item.text).join(" then ");
     guards.push(
-      `On the X profile screen, render the profile count row exactly in X order: ${countText}. Use these exact compact count strings from profile.display_counts.text, including K/M suffixes. Never render raw unformatted follower counts, never swap Following and Followers, and do not add a Posts count to this profile count row.`,
+      `Profile count fidelity: if profile counts are rendered anywhere, render these exact count strings in this exact order: ${countText}. Use profile.display_counts.text as the source of truth, including K/M suffixes. Never render raw unformatted follower counts, never swap Following and Followers, and never add a Posts count.`,
     );
   }
 
   if (values.profile?.avatar_local_path) {
-    guards.push(`Use the local avatar image as the strict avatar source: ${values.profile.avatar_local_path}. The X UI avatar should look like a direct circular crop of this image, not a newly invented portrait. Preserve the exact subject type, face, pose, crop, accessories, held objects or text, color/monochrome treatment, and background mood. If fidelity is uncertain, keep the avatar smaller and flatter rather than reimagining it.`);
+    guards.push(
+      `Avatar fidelity: use the local avatar image as the strict visual source: ${values.profile.avatar_local_path}. If the avatar is rendered anywhere, preserve the original avatar identity as closely as possible: same subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or text, color treatment, image style, and background mood. Do not redraw, reinterpret, beautify, relight, restyle, repaint, upscale, simplify, age-shift, change expression, change face angle, change gesture, replace the subject, or turn it into a newly invented portrait. If fidelity is uncertain, prefer a smaller, flatter, more direct reproduction of the original avatar. Avatar placement, scale, and physical surface are defined only by the selected prompt structure.`,
+    );
   }
 
   if (values.profile?.banner_local_path) {
-    guards.push(`Use the local banner only if it improves the profile screen; if the banner is visually plain, the poster atmosphere may reinterpret it while keeping profile facts unchanged.`);
+    guards.push(`Banner fidelity: if the profile banner is rendered anywhere, use the local banner image as the visual source: ${values.profile.banner_local_path}. Do not invent unrelated banner content. Banner placement, scale, crop, and treatment are defined only by the selected prompt structure.`);
   }
 
   if (values.post?.media.some((item) => item.local_path)) {
-    guards.push("Use local post media paths as strict references for the post's attached image. The media may be embedded in a liquid-glass/holographic frame, but its visible content must match the source media.");
+    guards.push("Post media fidelity: if post media is rendered anywhere, use local post media paths as strict visual references for the post's attached media. Do not invent new attached media or replace the source media content. Media placement, scale, crop, and treatment are defined only by the selected prompt structure.");
+  }
+
+  if (values.article && (values.article.cover_local_path || values.article.media.some((item) => item.local_path))) {
+    guards.push("Article media fidelity: if article cover/media is rendered anywhere, use local article media paths as strict visual references. Do not invent new article media or replace the source media content. Media placement, scale, crop, and treatment are defined only by the selected prompt structure.");
   }
 
   return guards;

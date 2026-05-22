@@ -87,9 +87,22 @@ if (name === "matt-x-poster") {
     fail(`Expected prompt compose script not found: ${composeScript}`);
   }
 
-  const promptPath = join(skillPath, "prompts", "profile-portal-3d.md");
-  if (!existsSync(promptPath)) {
-    fail(`Expected flagship prompt module not found: ${promptPath}`);
+  for (const requiredPrompt of [
+    "prompts/profile-portal-3d.md",
+    "prompts/creator-signal-stage.md",
+    "prompts/editorial-citation-desk.md",
+    "prompts/street-poster-wheatpaste.md",
+    "prompts/museum-archive-case.md",
+    "prompts/creator-field-notes.md",
+    "prompts/cinematic-contact-sheet.md",
+    "prompts/designer-pinboard.md",
+    "prompts/skin-script-body-art.md",
+    "prompts/bathroom-mirror-sticky-note.md",
+  ]) {
+    const promptPath = join(skillPath, requiredPrompt);
+    if (!existsSync(promptPath)) {
+      fail(`Expected prompt module not found: ${promptPath}`);
+    }
   }
 
   const referenceIndex = join(skillPath, "references", "visual-reference-index.md");

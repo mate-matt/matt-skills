@@ -35,11 +35,11 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
    - verified state if present,
    - exact profile bio/description when present,
    - exact `profile.display_counts.text` in order,
-   - strict avatar reference,
+   - strict flat bitmap avatar reference,
    - optional small banner strip inside the card, printed poster header, or screen header.
 3. If `source_type` is `post`, the central display is a content launch card:
    - exact author name and exact `@handle`,
-   - strict avatar reference,
+   - strict flat bitmap avatar reference,
    - exact post text,
    - quote block when `post.quote` exists, using only quote facts from `card-context.json`,
    - attached media panel when local or remote post media exists.
@@ -47,7 +47,7 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
    - exact article title,
    - exact preview text when present,
    - exact author name and `@handle`,
-   - strict avatar reference,
+   - strict flat bitmap avatar reference,
    - article cover/media panel when present.
 5. Arrange secondary details as physical stage or workspace elements:
    - small side panels for profile bio, media, quote, or provenance;
@@ -69,10 +69,12 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
-- The avatar should look like a direct circular crop or faithful medallion based on the local image, not a newly invented portrait.
-- Preserve the exact subject type, face, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration/pixel style, and background mood from the avatar file.
+- The avatar should look like a direct source-avatar bitmap reproduction pasted into the UI, screen, printed board, or identity card, with at most a circular UI mask. It should not look like a newly invented portrait.
+- Preserve the exact subject type, face shape, eye shape, hair silhouette, pose, crop, accessories, held objects or visible text, color treatment, photo/illustration/pixel style, line quality, and background mood from the avatar file.
 - Do not turn an animal avatar into a human, a human avatar into a different person, a photo into a generic illustration, or a distinctive avatar into a generic icon.
-- If fidelity is uncertain, keep the avatar smaller, flatter, and closer to the source crop instead of stylizing it heavily.
+- Do not reinterpret the avatar to match the scene lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
+- Stage lights, LED pixel texture, screen glow, monitor reflections, printed-board shadows, and identity-card material may surround the avatar, but they must not cross, blur, recolor, relight, or distort the avatar interior.
+- Do not render the avatar as a 3D object, glass coin, hologram, sculpture, painted portrait, poster portrait, badge illustration, or enlarged hero face. If fidelity is uncertain, keep the avatar smaller, flatter, front-facing, and closer to the source crop instead of stylizing it heavily.
 - When local post media, article cover, or article media paths exist, treat them as strict visual references. They may appear on real screens, printed boards, framed display panels, tablet screens, monitor sidebars, or physical product boards, and visible source content should remain recognizable.
 - Do not invent new attached media. If no media exists, let the stage design rely on typography, avatar, profile identity, and lighting.
 
@@ -106,6 +108,7 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
 - No swapping Following and Followers values.
 - No posts count in the profile count row beneath the profile bio.
 - No replacing the real avatar with a generic portrait, unrelated person, unrelated animal, unrelated icon, or loosely inspired illustration.
+- No redrawing, relighting, beautifying, aging, expression-changing, face-angle-changing, pose-changing, hand-gesture-changing, or style-changing of the avatar.
 - No copying factual content from bundled reference screenshots or HTML.
 - No using bundled reference screenshot media as poster media.
 - No liquid-glass UI, holographic panels, translucent sci-fi cards, impossible floating screens, glass shards, abstract signal beams, full-screen particle fields, chaotic sprays, random neon symbols, or generic sci-fi noise.

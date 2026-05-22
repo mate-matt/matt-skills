@@ -54,6 +54,7 @@ function composePrompt(input: {
     ? input.context.prompt_guards.filter((item): item is string => typeof item === "string" && item.length > 0)
     : [];
   const guardText = guards.length > 0 ? guards.map((item) => `- ${item}`).join("\n") : "- No additional guards.";
+  const avatarLockAddendum = buildAvatarLockAddendum(input.context);
 
   return `# Matt X Poster Image Prompt
 
@@ -72,6 +73,8 @@ ${compactContext}
 ## Hard Factual Guards
 
 ${guardText}
+
+${avatarLockAddendum}
 
 ## Visual Reference Assets
 
@@ -93,12 +96,44 @@ ${input.styleText}
 - Render the exact X profile name, handle, post text, article title, and source relationship from the JSON.
 - If the JSON contains post media, article cover media, or local media paths, render that media as the visual content associated with the elevated hero composition.
 - If local avatar or media paths are present, treat them as strict visual references. The avatar should look like a direct circular crop of the local avatar image, not a reimagined portrait; preserve attached-media content as closely as possible.
+- If a local avatar path is present and the selected prompt structure renders the avatar, preserve the avatar as a direct flat visual reproduction of the local image. Do not redraw, restyle, or reinterpret the face; avatar placement and surface are defined by the selected prompt structure.
 - Render source text with crisp, readable, high-contrast typography. No blurry, warped, over-reflective, or unreadable text.
 - Use profile count strings exactly from profile.display_counts.text, including K/M compact notation; do not add posts count to the profile count row.
 - Do not invent usernames, metrics, badges, links, quotes, article titles, or images.
 - Keep the design promotional and cinematic, not a plain screenshot.
 - Keep the X UI references recognizable through structure, spacing, hierarchy, and card proportions, while avoiding direct reuse of any bundled reference content.
 `;
+}
+
+function buildAvatarLockAddendum(context: Record<string, unknown>): string {
+  const profile = asRecord(context.profile);
+  const assets = asRecord(context.assets);
+  const avatarPath =
+    asString(profile.avatar_local_path) ??
+    asString(assets.profile_avatar_path);
+
+  if (!avatarPath) return "";
+
+  return `## Avatar Lock Addendum
+
+Because a local profile avatar exists, this generation is in avatar-lock mode.
+
+- Avatar reference path: ${avatarPath}
+- Use this image as the strict visual source whenever the selected prompt structure renders the avatar.
+- Preserve the original avatar identity as closely as possible: same subject type, face shape, eye shape, hair silhouette, pose, hand/held-object placement, accessories, crop, color treatment, image style, and background mood.
+- Do not redraw, reinterpret, beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, replace the subject, or change the background inside the avatar.
+- If high fidelity is difficult, prefer a smaller, flatter, more direct reproduction of the original avatar rather than stylizing it.
+- Avatar placement, scale, crop, and physical surface are defined only by the selected prompt structure.
+- When the avatar has been inspected with the local image viewer before imagegen, use that displayed avatar as Reference Image A and match Reference Image A over the textual description.
+`;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function asString(value: unknown): string | undefined {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
 function parseArgs(argv: string[]): Args {
