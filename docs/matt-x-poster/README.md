@@ -66,10 +66,3 @@ Runtime styles are created per run:
 | --- | --- | --- |
 | `--style dynamic` | `output/matt-x-poster/<slug>/dynamic-style.md` | One-off content-specific visual structures. |
 | `--style film-dynamic` | `output/matt-x-poster/<slug>/film-dynamic-style.md` | Classic-cinema scene mechanisms without copying protected frames or actors. |
-
-## Output Hygiene
-
-- Keep generated run directories under `output/matt-x-poster/` out of published packages unless you intentionally curate them.
-- Do not commit private `card-context.json` files, raw FxEmbed payloads, local avatar paths, or generated prompts from non-public links.
-- Review every documentation image for public handles, email addresses, URLs, and source ownership before publishing.
-- The repository code is MIT licensed; X content, profile images, and attached media remain owned by their original rights holders.

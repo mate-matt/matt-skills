@@ -56,7 +56,7 @@ $matt-x-poster --style sunlit-sail-signal https://x.com/user/status/123
 | `--style dynamic` | 每次按内容临时写入 `dynamic-style.md` 的运行时风格。 |
 | `--style film-dynamic` | 每次按内容临时设计的经典电影场景机制。 |
 
-详细安装、执行流程、风格说明和开源前检查：
+详细安装、执行流程和风格说明：
 
 - [Matt X Poster guide in English](docs/matt-x-poster/README.md)
 - [Matt X Poster 中文教程](docs/matt-x-poster/README.zh-CN.md)

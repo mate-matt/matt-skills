@@ -56,7 +56,7 @@ Available styles:
 | `--style dynamic` | Runtime style written per source at `dynamic-style.md`. |
 | `--style film-dynamic` | Runtime classic-cinema scene mechanism written per source. |
 
-Detailed setup, output flow, style notes, and open-source hygiene:
+Detailed setup, output flow, and style notes:
 
 - [Matt X Poster guide in English](docs/matt-x-poster/README.md)
 - [Matt X Poster 中文教程](docs/matt-x-poster/README.zh-CN.md)

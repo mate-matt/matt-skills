@@ -66,10 +66,3 @@ bun run skills/matt-x-poster/scripts/compose-prompt.ts \
 | --- | --- | --- |
 | `--style dynamic` | `output/matt-x-poster/<slug>/dynamic-style.md` | 为单条内容临时设计一个专属视觉结构。 |
 | `--style film-dynamic` | `output/matt-x-poster/<slug>/film-dynamic-style.md` | 借用经典电影场景机制，但不复制受保护画面、演员或角色。 |
-
-## 开源前检查
-
-- 默认不要把 `output/matt-x-poster/` 里的完整运行目录发布出去，除非你已经人工挑选过。
-- 不要提交私有链接生成的 `card-context.json`、raw FxEmbed payload、本地头像路径或完整生成 prompt。
-- 发布文档图前，检查图里是否有公开 handle、邮箱、URL、来源归属等信息，并确认这些内容可以公开展示。
-- 本仓库代码是 MIT License；X 内容、头像和附带媒体仍归原权利方所有。
