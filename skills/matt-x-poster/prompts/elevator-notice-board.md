@@ -2,7 +2,7 @@
 
 Turn an X profile, post, or article into a humorous photorealistic elevator-lobby notice-board poster: the X content appears as a taped notice, cork-board flyer, building bulletin, or tiny laminated card beside ordinary apartment or office announcements. The joke is that the content has become so unavoidable it is now part of the building's daily notices.
 
-This structure is for public-place comedy, candid realism, and "found in the wild" promotion. It should feel like someone noticed the X source while waiting for the elevator, not like a formal ad campaign or a flat screenshot.
+This structure is for public-place comedy, candid realism, and "found in the wild" discovery. It should feel like someone noticed the X source while waiting for the elevator, not like a formal ad campaign or a flat screenshot.
 
 ## Canvas
 
@@ -66,8 +66,11 @@ This structure is for public-place comedy, candid realism, and "found in the wil
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the notice card, inside a clean circular X avatar mask.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker on the notice card. Acrylic glare, paper fibers, pushpin shadows, tape shine, hallway reflections, and lobby light may surround it, but they must not enter, recolor, blur, warp, relight, or repaint the avatar interior.
+- Keep the avatar a compact UI identity marker inside the notice-card author/profile row, roughly 6-10% of the main notice-card width when possible. It must not become a building portrait, warning icon, or enlarged lobby badge.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match lobby lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Acrylic glare, paper fibers, pushpin shadows, tape shine, and hallway depth may affect the card surface around the avatar, but must not cover, recolor, blur, warp, relight, or distort the avatar interior.
 - Do not render the avatar as a building icon, warning symbol, hand drawing, sticker illustration, 3D badge, hologram, painted portrait, or enlarged hero face.

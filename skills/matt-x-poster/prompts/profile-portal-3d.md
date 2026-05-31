@@ -1,6 +1,6 @@
 # Profile Portal 3D
 
-Create a cinematic 3D promotional poster for an X creator's content. The composition should feel like a premium product launch visual and a liquid-glass sci-fi editorial poster, not a flat social screenshot.
+Create a cinematic 3D poster for an X creator's content. The composition should feel like a premium product launch visual and a liquid-glass sci-fi editorial poster, not a flat social screenshot.
 
 ## Canvas
 
@@ -29,7 +29,7 @@ Create a cinematic 3D promotional poster for an X creator's content. The composi
    - a crisp author identity capsule with exact name, exact @handle, and a flat bitmap avatar reproduced from the local avatar image;
    - the real attached post media or article cover inside a floating glass frame, curved display, or holographic panel;
    - layered depth, with text and media at slightly different z-depths while the avatar remains a flat UI texture;
-   - enough X card DNA to feel related to X, but arranged as a cinematic promotional poster rather than a literal screenshot.
+   - enough X card DNA to feel related to X, but arranged as a cinematic poster rather than a literal screenshot.
 6. If source_type is profile, render a creator identity hero with the exact profile name, @handle, bio/description, avatar, banner relationship, and display counts.
 
 ## Text And Data Fidelity
@@ -53,8 +53,11 @@ Create a cinematic 3D promotional poster for an X creator's content. The composi
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image. The avatar inside the X UI must look like a direct reproduction of the local avatar bitmap: an unchanged flat 2D image pasted into the interface and circularly clipped, not a newly invented portrait.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
-- Treat the avatar circle as a protected flat bitmap island. Glass refraction, screen glow, particle streams, reflections, rain, bloom, and liquid-glass effects may surround the avatar, but they must not pass across, distort, recolor, relight, or blur the avatar interior pixels, crop, or background.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker inside the X UI. Glass refraction, screen glow, particle streams, reflections, rain, bloom, and liquid-glass effects may surround the avatar, but they must not pass across, distort, recolor, relight, repaint, or blur the avatar interior pixels, crop, or background.
+- Keep the avatar a compact UI identity marker. In profile-header layouts it may use normal X profile-avatar scale, but it must remain flat, pasted, UI-like, and never large enough to become a hero portrait or cinematic face study.
+- Do not create a similar-looking avatar. Do not infer, beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, replace the subject, or change the avatar background.
 - Do not render the avatar as a 3D object, glass medallion, holographic coin, sculpture, painted portrait, badge illustration, or enlarged hero face. The surrounding UI can be 3D or cinematic, but the avatar itself should remain a flat source-image texture. If fidelity is uncertain, keep the avatar smaller, flatter, front-facing, and closer to the source crop rather than stylizing it.
 - When post media local paths exist, treat them as strict media references. The media may be reframed inside glass, rain, holographic, or 3D perspective treatment, but visible source content should remain recognizable.
 

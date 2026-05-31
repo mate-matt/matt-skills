@@ -65,8 +65,11 @@ This structure is for intimate, lived-in, investigative creator posters. It shou
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the source card inside a circular X avatar mask, not a sketched portrait in the notebook. It may read as a small printed photo sticker only because it is physically printed, not because it has been redrawn.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker on the source card. Notebook paper grain, pen marks, sticky tabs, coffee shadows, clips, and desk light may surround it, but they must not enter, recolor, blur, warp, relight, or repaint the avatar interior.
+- Keep the avatar a compact UI identity marker in the author/profile row, roughly 6-10% of the main source-card width when possible. It must stay secondary to the field-note typography and exact source text.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match the desk lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Do not render the avatar as a hand drawing, newly drawn sticker illustration, stamp, 3D badge, glass coin, hologram, painted portrait, or enlarged hero face.
 - Notebook paper grain, pen marks, sticky tabs, coffee shadows, clips, and desk light may sit around the avatar card, but they must not cover, recolor, blur, or alter the avatar interior.

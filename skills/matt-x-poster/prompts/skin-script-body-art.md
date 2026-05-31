@@ -81,9 +81,12 @@ This structure is for high-art fashion portraiture, intimate editorial photograp
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - In this style, place the avatar on the body as a small circular printed decal / original-bitmap sticker. It must remain an unchanged flat 2D reproduction, not tattoo ink and not a hand-drawn tattoo portrait.
+- Treat the avatar circle as a protected flat bitmap island. Skin texture, body curvature, satin reflection, soft contact shadow, warm light, and decal edge perspective may surround the avatar sticker, but they must not enter, recolor, blur, warp, relight, repaint, or blend into the avatar interior.
+- Keep the avatar a compact identity marker, not the main body-art subject: smaller than the primary script block and no larger than a normal X author/profile avatar would feel on a small printed source card. If fidelity is uncertain, move it to a flatter shoulder, garment edge, phone screen, or printed card surface.
 - The avatar may also appear as a small flat bitmap on a lower-right phone screen or printed card, but the primary style-specific avatar treatment is the body decal.
-- The avatar may be circularly clipped by the decal boundary, but its internal pixels should remain visually unchanged from Reference Image A; do not use verbal appearance traits to reconstruct it.
+- The avatar may be circularly clipped by the decal boundary, but its internal pixels should remain visually unchanged from the current avatar asset; do not use verbal appearance traits to reconstruct it.
 - Skin texture, body curvature, soft contact shadow, satin reflection, and decal edge perspective may make the sticker feel physically applied, but they must not repaint, blur, recolor, warp, or relight the avatar interior.
 - Do not beautify, relight, repaint, redraw, upscale into a new portrait, age-shift, change expression, change face angle, change hand gesture, or change avatar background.
 - Do not render the avatar as tattoo ink, a hand-drawn tattoo portrait, realistic human model, body-paint portrait, skin illustration, sculpture, hologram, glass badge, or enlarged hero face.

@@ -69,8 +69,11 @@ This structure is not a literal X screenshot and not a phone-portal scene. It is
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - The avatar should look like a direct source-avatar bitmap reproduction pasted into the UI, screen, printed board, or identity card, with at most a circular UI mask. It should not look like a newly invented portrait.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker on the stage UI/source surface. Stage lights, LED pixels, screen glow, monitor reflections, and printed-board shadows may surround it, but they must not pass through, recolor, blur, warp, relight, or repaint the avatar interior.
+- Keep the avatar a compact UI identity marker inside the author/profile row or identity card, roughly 6-10% of the main source-surface width when possible. It must not become a stage portrait, performer image, or hero badge.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not turn an animal avatar into a human, a human avatar into a different person, a photo into a generic illustration, or a distinctive avatar into a generic icon.
 - Do not reinterpret the avatar to match the scene lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Stage lights, LED pixel texture, screen glow, monitor reflections, printed-board shadows, and identity-card material may surround the avatar, but they must not cross, blur, recolor, relight, or distort the avatar interior.

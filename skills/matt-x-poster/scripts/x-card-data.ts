@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -21,6 +22,7 @@ type ProfileContext = {
   description?: string;
   avatar_url?: string;
   avatar_local_path?: string;
+  avatar_asset_id?: string;
   banner_url?: string;
   banner_local_path?: string;
   location?: string;
@@ -90,6 +92,9 @@ type ArticleContext = {
   article_id?: string;
   title: string;
   preview_text?: string;
+  body_text_path?: string;
+  body_char_count?: number;
+  body_block_count?: number;
   cover_url?: string;
   cover_local_path?: string;
   cover_alt_text?: string;
@@ -114,6 +119,7 @@ type CardContext = {
   post?: PostContext;
   article?: ArticleContext;
   assets: {
+    profile_avatar_id?: string;
     profile_avatar_url?: string;
     profile_avatar_path?: string;
     profile_banner_url?: string;
@@ -175,6 +181,9 @@ async function buildContext(client: FxTwitterClient, args: Args): Promise<CardCo
 
   const rawStatus = asRecord(asRecord(rawPost).status ?? rawPost);
   const article = hasArticle(rawStatus) ? normalizeArticle(rawPost) : undefined;
+  if (article) {
+    await writeArticleBodyText(rawPost, article, args.outDir);
+  }
   const post = normalizePost(rawPost);
   const authorHandle = article?.author.handle ?? post.author.handle ?? parseHandleFromStatusUrl(args.input);
   let profile: ProfileContext | undefined;
@@ -234,9 +243,23 @@ function baseContext(
       "Use bundled true X app screenshots from assets/reference-screenshots/ and HTML references from assets/fxbrief-reference/ or assets/static-reference/ only for structure, spacing, hierarchy, and X mobile UI layout cues.",
       "Do not quote or reuse any text, images, metrics, or media from bundled reference screenshots or HTML.",
       "Preserve exact text, handle, profile name, article title, and media relationships from the fetched FxEmbed data.",
+      ...(values.article?.body_text_path
+        ? ["X Article body text is saved outside card-context.json at article.body_text_path for the article-only Summary workflow. Do not paste the full article body into imagegen."]
+        : []),
     ],
     prompt_guards: buildPromptGuards(values),
   };
+}
+
+async function writeArticleBodyText(raw: unknown, article: ArticleContext, outDir: string): Promise<void> {
+  const body = extractArticleBodyText(raw);
+  if (!body) return;
+
+  const bodyPath = path.join(outDir, "article-body.md");
+  await writeFile(bodyPath, body.text, "utf8");
+  article.body_text_path = bodyPath;
+  article.body_char_count = body.charCount;
+  article.body_block_count = body.blockCount;
 }
 
 async function downloadContextAssets(context: CardContext, outDir: string): Promise<void> {
@@ -244,7 +267,9 @@ async function downloadContextAssets(context: CardContext, outDir: string): Prom
   const failures: string[] = [];
 
   if (context.profile?.avatar_url) {
-    const localPath = await downloadAsset(context.profile.avatar_url, mediaDir, "profile-avatar").catch(() => undefined);
+    const avatarAsset = buildProfileAvatarAsset(context);
+    context.profile.avatar_asset_id = avatarAsset.id;
+    const localPath = await downloadAsset(context.profile.avatar_url, mediaDir, avatarAsset.basename).catch(() => undefined);
     if (localPath) context.profile.avatar_local_path = localPath;
     else failures.push("profile avatar");
   }
@@ -284,6 +309,7 @@ async function downloadContextAssets(context: CardContext, outDir: string): Prom
 
 function refreshAssetIndex(context: CardContext): void {
   context.assets = {
+    ...(context.profile?.avatar_asset_id ? { profile_avatar_id: context.profile.avatar_asset_id } : {}),
     ...(context.profile?.avatar_url ? { profile_avatar_url: context.profile.avatar_url } : {}),
     ...(context.profile?.avatar_local_path ? { profile_avatar_path: context.profile.avatar_local_path } : {}),
     ...(context.profile?.banner_url ? { profile_banner_url: context.profile.banner_url } : {}),
@@ -313,8 +339,10 @@ function buildPromptGuards(values: Pick<CardContext, "profile"> & Partial<Pick<C
   }
 
   if (values.profile?.avatar_local_path) {
+    const avatarAssetId = values.profile.avatar_asset_id ?? `current-x-avatar-${sanitizeAssetToken(values.profile.handle)}`;
+    const avatarOwner = values.profile.handle ? `@${values.profile.handle}` : "the current X profile";
     guards.push(
-      `Avatar fidelity: Reference Image A is the local avatar image: ${values.profile.avatar_local_path}. If the avatar is rendered anywhere, match Reference Image A as a source bitmap placed into the selected prompt structure, not as a textual portrait idea. Do not create a similar-looking avatar, redraw, reinterpret, beautify, relight, restyle, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change gesture, replace the subject, change the avatar background, or turn it into a newly invented portrait. If task-specific notes describe the avatar's face, hair, clothing, pose, lighting, or mood, ignore those notes and match Reference Image A instead. If fidelity is uncertain, prefer a smaller, flatter, more bitmap-like avatar. Avatar placement, scale, crop, and physical surface are defined only by the selected prompt structure.`,
+      `Avatar fidelity: current avatar asset ${avatarAssetId} is the local avatar image for ${avatarOwner}: ${values.profile.avatar_local_path}. If the avatar is rendered anywhere, use only this current avatar asset as a source bitmap placed into the selected prompt structure, not as a textual portrait idea. Ignore any avatar reference, generated poster, or profile image from earlier generations. Do not create a similar-looking avatar, redraw, reinterpret, beautify, relight, restyle, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change gesture, replace the subject, change the avatar background, or turn it into a newly invented portrait. If task-specific notes describe the avatar's face, hair, clothing, pose, lighting, or mood, ignore those notes and match the current avatar asset instead. If fidelity is uncertain, prefer a smaller, flatter, more bitmap-like avatar. Avatar placement, scale, crop, and physical surface are defined only by the selected prompt structure.`,
     );
   }
 
@@ -350,6 +378,45 @@ async function downloadAsset(url: string, mediaDir: string, basename: string): P
   if (bytes.byteLength < 256) throw new Error("Downloaded image is unexpectedly small.");
   await writeFile(localPath, bytes);
   return localPath;
+}
+
+function buildProfileAvatarAsset(context: CardContext): { id: string; basename: string } {
+  const handle = sanitizeAssetToken(context.profile?.handle ?? context.post?.author.handle ?? context.article?.author.handle ?? "unknown");
+  const source = sanitizeAssetToken(profileAvatarSourceToken(context));
+  const hash = shortHash(
+    [
+      context.profile?.avatar_url ?? context.assets.profile_avatar_url ?? "",
+      context.source_url ?? "",
+      context.source_input,
+    ].join("\n"),
+  );
+
+  return {
+    id: `x-avatar-${handle}-${source}-${hash}`,
+    basename: `profile-avatar-${handle}-${source}-${hash}`,
+  };
+}
+
+function profileAvatarSourceToken(context: CardContext): string {
+  if (context.post?.id) return context.post.id;
+  if (context.article?.source_post_id) return context.article.source_post_id;
+  if (context.article?.article_id) return context.article.article_id;
+  if (context.source_type === "profile") return "profile";
+  return context.source_url ?? context.source_input;
+}
+
+function sanitizeAssetToken(value: string | undefined): string {
+  const token = (value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64);
+  return token || "unknown";
+}
+
+function shortHash(value: string): string {
+  return createHash("sha256").update(value).digest("hex").slice(0, 12);
 }
 
 function extensionFromContentType(contentType: string): string | undefined {
@@ -581,6 +648,56 @@ function normalizeArticleMedia(raw: unknown): MediaContext | undefined {
     ...(asNumber(info.original_img_height) !== undefined ? { height: asNumber(info.original_img_height) } : {}),
     ...(asString(info.ext_alt_text) ? { alt_text: asString(info.ext_alt_text) } : {}),
   };
+}
+
+function extractArticleBodyText(raw: unknown): { text: string; charCount: number; blockCount: number } | undefined {
+  const status = asRecord(asRecord(raw).status ?? raw);
+  const article = asRecord(status.article);
+  const content = asRecord(article.content);
+  const rawBlocks = Array.isArray(content.blocks) ? content.blocks : [];
+  const orderedCounters = new Map<number, number>();
+  const blocks: string[] = [];
+
+  for (const rawBlock of rawBlocks) {
+    const formatted = formatArticleBodyBlock(rawBlock, orderedCounters);
+    if (formatted) blocks.push(formatted);
+  }
+
+  const text = blocks.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (!text) return undefined;
+  return {
+    text,
+    charCount: Array.from(text).length,
+    blockCount: blocks.length,
+  };
+}
+
+function formatArticleBodyBlock(raw: unknown, orderedCounters: Map<number, number>): string | undefined {
+  const block = asRecord(raw);
+  const text = asString(block.text)?.trim();
+  if (!text) return undefined;
+
+  const type = asString(block.type) ?? "unstyled";
+  const depth = Math.max(0, Math.min(asNumber(block.depth) ?? 0, 3));
+  const indent = "  ".repeat(depth);
+
+  if (type === "unordered-list-item") {
+    return `${indent}- ${text}`;
+  }
+
+  if (type === "ordered-list-item") {
+    const count = (orderedCounters.get(depth) ?? 0) + 1;
+    orderedCounters.set(depth, count);
+    return `${indent}${count}. ${text}`;
+  }
+
+  orderedCounters.clear();
+
+  if (type === "header-one") return `# ${text}`;
+  if (type === "header-two") return `## ${text}`;
+  if (type === "header-three") return `### ${text}`;
+  if (type === "blockquote") return `> ${text}`;
+  return text;
 }
 
 function normalizeMetrics(source: Record<string, unknown>): PostContext["metrics"] {

@@ -66,8 +66,11 @@ This structure is for everyday errand comedy, fluorescent realism, and casual "f
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the source card or label, inside a clean circular X avatar mask.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker on the machine note/source card. Machine reflections, paper texture, tape shine, chrome highlights, lint haze, and shallow focus may surround it, but they must not enter, recolor, blur, warp, relight, or repaint the avatar interior.
+- Keep the avatar a compact UI identity marker inside the X author/profile row, roughly 6-10% of the note/source-card width when possible. It must not become a detergent mascot, laundry icon, or enlarged machine badge.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match laundromat lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Machine reflections, paper texture, tape shine, chrome highlights, and shallow focus may affect the card surface around the avatar, but must not cover, recolor, blur, warp, relight, or distort the avatar interior.
 - Do not render the avatar as a detergent mascot, laundry icon, hand drawing, sticker illustration, 3D badge, hologram, painted portrait, or enlarged hero face.

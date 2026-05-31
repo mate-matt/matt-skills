@@ -66,8 +66,11 @@ This structure is for accidental discovery, warm domestic realism, and dry visua
 ## Avatar And Media Fidelity
 
 - When `profile.avatar_local_path` or `assets.profile_avatar_path` exists, treat it as the strict avatar source image.
+- The current avatar file listed in Current Avatar Binding is the real profile avatar of the current X account owner. Reproduce that exact avatar image 1:1 inside the circular avatar area as a direct bitmap sticker. It is not a style reference, not a character concept, and not an illustration prompt; do not redraw, reinterpret, pixel-art, iconify, beautify, relight, recolor, crop differently, replace the person, or create a similar-looking avatar.
 - The avatar should look like a direct source-avatar bitmap reproduction printed on the magnet card or mini X card, inside a clean circular X avatar mask.
-- Match Reference Image A directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
+- Treat the avatar circle as a protected flat bitmap island and small circular printed decal / original-bitmap sticker on the magnet card. Fridge reflections, paper texture, tape shine, magnet shadows, kitchen light, and shallow focus may surround it, but they must not enter, recolor, blur, warp, relight, or repaint the avatar interior.
+- Keep the avatar a compact UI identity marker inside the X author/profile row, roughly 6-10% of the magnet/source-card width when possible. It must not become a fridge mascot, large photo magnet, or standalone portrait.
+- Match the current avatar asset directly as a source bitmap. Do not use verbal appearance traits to reconstruct the avatar; the generated avatar must look like the same image asset placed into this style's avatar surface.
 - Do not reinterpret the avatar to match kitchen lighting. Do not beautify, relight, repaint, upscale into a new drawing, simplify, age-shift, change expression, change face angle, change hand gesture, or change the avatar background.
 - Fridge reflections, paper texture, tape shine, magnet shadow, and shallow focus may affect the card surface around the avatar, but must not cover, recolor, blur, warp, relight, or distort the avatar interior.
 - Do not render the avatar as a fridge mascot, hand drawing, sticker illustration, 3D badge, enamel pin, hologram, painted portrait, or enlarged hero face.
