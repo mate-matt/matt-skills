@@ -1,0 +1,33 @@
+{
+  "title": "Water Cycle",
+  "duration": 7,
+  "autoplay": true,
+  "pause": {"keyboard": true, "button": true, "onHidden": true},
+  "replay": "loop",
+  "transition": "cut",
+  "visual": {"layout": "radial", "mechanicalArms": true, "armCount": 5, "console": true},
+  "palette": {"background": "#e8ede6", "surface": "#faf9f2", "ink": "#263f37", "accent": "#df7739"},
+  "nodes": [
+    {"id":"ocean","label":"Ocean","position":[0,0,0],"shape":"core"},
+    {"id":"vapor","label":"Vapor","position":[-4.5,0,-3.2],"shape":"stack"},
+    {"id":"cloud","label":"Cloud","position":[0,0,-5.5],"shape":"stack"},
+    {"id":"rain","label":"Rain","position":[4.5,0,-3.2],"shape":"stack"},
+    {"id":"river","label":"River","position":[4,0,3.1],"shape":"disk"},
+    {"id":"soil","label":"Soil","position":[-4,0,3.1],"shape":"disk"}
+  ],
+  "edges": [
+    {"from":"ocean","to":"vapor","kind":"flow","start":0,"duration":1},
+    {"from":"vapor","to":"cloud","kind":"flow","start":1,"duration":1},
+    {"from":"cloud","to":"rain","kind":"flow","start":2,"duration":1},
+    {"from":"rain","to":"river","kind":"flow","start":3,"duration":1},
+    {"from":"rain","to":"soil","kind":"flow","start":3.2,"duration":1},
+    {"from":"soil","to":"river","kind":"flow","start":4.2,"duration":1},
+    {"from":"river","to":"ocean","kind":"feedback","start":5.2,"duration":1.3}
+  ],
+  "shots": [
+    {"name":"Overview","preset":"overview-orbit","focus":["ocean"],"weight":1,"span":6.8},
+    {"name":"Reservoir","preset":"hero-dolly","focus":["ocean"],"weight":1,"span":4.5},
+    {"name":"Atmosphere","preset":"cluster-cut","focus":["cloud","rain"],"weight":1,"span":4.5},
+    {"name":"Return","preset":"flow-follow","focus":["river","ocean"],"weight":1,"span":4.8}
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cinematic 3D Flow"
+  short_description: "拆解任意主题，用机械结构、可选运镜和播放策略制作单文件 3D 网页"
+  default_prompt: "使用 $cinematic-3d-flow 拆解我的主题，选择运镜、暂停方式和循环时长，制作可离线播放的单文件 3D HTML。"

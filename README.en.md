@@ -8,6 +8,7 @@
 
 | Module | Entry | Type | What It Does | Docs |
 | --- | --- | --- | --- | --- |
+| 3D Flow | `cinematic-3d-flow` | Codex skill + Three.js starter | Structures any topic, configures cameras and playback, and delivers a self-contained offline 3D HTML. | [Skill](skills/cinematic-3d-flow/SKILL.md) |
 | X / Poster | `matt-x-poster` | Codex skill + Bun scripts | Fetches real FxEmbed data and composes imagegen prompts for cinematic X posters. | [EN](docs/matt-x-poster/README.md) / [中文](docs/matt-x-poster/README.zh-CN.md) |
 | X / FxBrief | `matt-fx-brief` | Codex skill | Turns X/Twitter posts, profiles, and X Articles into local editorial assets. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | X / FxBrief | `fxbrief` | npm CLI | Fetches FxEmbed data and renders post screenshots, profile cards, clean quote cards, article Markdown, long screenshots, and JSON exports. | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |

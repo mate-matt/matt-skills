@@ -8,6 +8,7 @@
 
 | 模块 | 入口 | 类型 | 能做什么 | 文档 |
 | --- | --- | --- | --- | --- |
+| 3D Flow | `cinematic-3d-flow` | Codex skill + Three.js starter | 拆解任意主题，配置运镜、暂停和循环，交付可离线运行的单文件 3D HTML。 | [Skill](skills/cinematic-3d-flow/SKILL.md) |
 | X / Poster | `matt-x-poster` | Codex skill + Bun 脚本 | 获取真实 FxEmbed 数据，并组装 imagegen 提示词，生成电影感 X 内容海报。 | [EN](docs/matt-x-poster/README.md) / [中文](docs/matt-x-poster/README.zh-CN.md) |
 | X / FxBrief | `matt-fx-brief` | Codex skill | 把 X/Twitter 推文、个人主页和 X 长文变成本地新闻/创作素材。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |
 | X / FxBrief | `fxbrief` | npm CLI | 基于 FxEmbed 数据生成推文截图、个人主页名片、媒体引用卡、长文 Markdown、长截图和 JSON 数据。 | [EN](docs/fx-brief/README.md) / [中文](docs/fx-brief/README.zh-CN.md) |

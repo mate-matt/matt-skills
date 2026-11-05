@@ -1,0 +1,9 @@
+{
+  "name": "cinematic-flow-project",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "node scripts/build.mjs", "verify": "node scripts/verify.mjs"},
+  "dependencies": {"three": "0.181.2"},
+  "devDependencies": {"esbuild": "0.25.12", "@playwright/test": "1.61.0"}
+}
